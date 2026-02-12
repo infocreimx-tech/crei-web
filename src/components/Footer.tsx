@@ -1,6 +1,6 @@
 "use client";
 
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -28,10 +28,11 @@ export default function Footer() {
           <div className="text-center md:text-left">
             <div className="relative w-28 h-28 mx-auto md:mx-0 mb-6 bg-white rounded-full shadow-lg overflow-hidden p-4">
               <Image 
-                src="/logo.png" 
+                src="/logo-footer.png" 
                 alt="CREI - Centro de Reestructuración Emocional Integral" 
                 fill
                 className="object-contain"
+                unoptimized
               />
             </div>
             <p className="text-primary-foreground/80 text-sm max-w-xs leading-relaxed">
@@ -41,19 +42,22 @@ export default function Footer() {
           </div>
 
           <div className="flex gap-6">
-            <Link href="#" aria-label="Visitar Instagram de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.youtube.com/@Crei_mx" aria-label="Visitar YouTube de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+              <Youtube size={20} />
+            </Link>
+            <Link href="https://www.instagram.com/crei.mx/" aria-label="Visitar Instagram de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Instagram size={20} />
             </Link>
-            <Link href="#" aria-label="Visitar Facebook de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.facebook.com/CREImx/" aria-label="Visitar Facebook de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Facebook size={20} />
             </Link>
-            <Link href="#" aria-label="Visitar X (Twitter) de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://x.com/CreiMx" aria-label="Visitar X (Twitter) de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Twitter size={20} />
             </Link>
             <Link href="#" aria-label="Visitar LinkedIn de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Linkedin size={20} />
             </Link>
-            <Link href="#" aria-label="Visitar TikTok de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.tiktok.com/@crei.mx" aria-label="Visitar TikTok de CREI" className="hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <TikTokIcon size={20} />
             </Link>
           </div>

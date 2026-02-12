@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Team() {
   const leader = {
-    name: "Fernando Nuñez",
+    name: "Fernando Núñez",
     role: "Psicólogo",
     image: "/equipo-lider.jpeg",
     intro:
@@ -27,41 +27,39 @@ export default function Team() {
           </div>
           <div>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
-              Nuestro Equipo de Expertos:
+              ¿Quién es Fernando Núñez?
             </h2>
             <div className="space-y-4 text-foreground/90 leading-relaxed">
               <p>
-                Fernando Núñez es líder y un reconocido psicólogo mexicano cuya trayectoria destaca por
-                transformar una historia personal de adversidad extrema en un motor de ayuda para otros.
-                Tras superar años de adicción y haber pasado por el sistema penitenciario, decidió
-                profesionalizarse para combatir esta problemática.
+                Fernando Núñez es un destacado psicólogo y líder de opinión mexicano, reconocido por su
+                capacidad para transformar crisis profundas en modelos de intervención clínica y social. Tras
+                superar un proceso de adversidad personal, profesionalizó su experiencia para convertirse en un
+                referente en el tratamiento de conductas de riesgo y reinserción social.
               </p>
               <p className="font-semibold text-primary">Trayectoria y Enfoque Profesional</p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
-                  <span className="font-medium">Especialización en Adicciones:</span> Se formó como psicólogo
-                  con un enfoque humanista y basado en evidencia. Es el director del Centro de Reestructuración
-                  Emocional Integral (CREI), donde lidera procesos de rehabilitación y acompañamiento emocional.
+                  <span className="font-medium">Especialización en Adicciones:</span> Fundador del Centro de
+                  Reestructuración Emocional Integral (CREI). Bajo un enfoque humanista y basado en evidencia,
+                  Fernando lidera estrategias de rehabilitación y acompañamiento clínico de alta complejidad,
+                  transformando modelos de tratamiento en soluciones de vida.
                 </li>
                 <li>
-                  <span className="font-medium">Conferencista Motivacional:</span> Participa activamente en foros
-                  de prevención, como el Festival Sejuve y conferencias tituladas “En la mente de un adicto”,
-                  donde comparte su testimonio para sensibilizar a familias y jóvenes.
+                  <span className="font-medium">Presencia en Medios:</span> Líder de opinión consultado por
+                  plataformas nacionales como TV Azteca y Milenio. Su labor mediática se centra en desmitificar
+                  las adicciones y colocar la salud mental en el centro de la conversación pública y la reforma
+                  social.
                 </li>
                 <li>
-                  <span className="font-medium">Presencia en Medios:</span> Su historia de superación ha ganado
-                  relevancia en medios como TV Azteca y Milenio, donde expone la importancia de la salud mental
-                  y la reinserción social.
-                </li>
-                <li>
-                  <span className="font-medium">Autor:</span> Ha publicado obras bajo un enfoque psicológico
-                  sobre temas de relaciones y comportamiento, incluyendo títulos como “Cerebro, selección y cosas
-                  de pareja”.
+                  <span className="font-medium">Conferencista y Autor:</span> Ponente destacado en foros de
+                  prevención nacional como el Festival Sejuve. Su trayectoria como conferencista abarca diversas
+                  plataformas en México, donde comparte estrategias de alto impacto sobre resiliencia y salud
+                  mental.
                 </li>
               </ul>
               <p>
-                Su labor actual se centra en desmitificar el “tocar fondo” y proveer herramientas prácticas para
-                que las personas recuperen su autonomía y bienestar emocional.
+                Su labor se enfoca en desmitificar el concepto de “tocar fondo”, por herramientas prácticas que
+                devuelvan la autonomía, la funcionalidad y el propósito de vida a las personas.
               </p>
             </div>
           </div>

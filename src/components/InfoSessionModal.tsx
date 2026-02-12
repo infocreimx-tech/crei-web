@@ -53,7 +53,7 @@ export default function InfoSessionModal() {
  
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
-              href="https://zoom.us/j/1234567890"
+              href="https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"

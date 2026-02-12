@@ -194,7 +194,7 @@ export default function ChatBot() {
               <div className="mt-3 text-xs text-muted-foreground">
                 Atención inmediata:
                 <Link
-                  href="https://wa.me/525512345678?text=Hola%20CREI%2C%20quiero%20informes%20sobre%20planes"
+                  href="https://wa.me/525530412552?text=Hola%20CREI%2C%20quiero%20informes%20sobre%20planes"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-1 underline hover:text-primary"

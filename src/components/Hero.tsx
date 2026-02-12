@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Phone, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 
 function TikTokIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
@@ -68,19 +68,22 @@ export default function Hero() {
           </p>
 
           <div className="flex gap-6 mb-12">
-            <Link href="#" aria-label="Visitar Instagram de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.youtube.com/@Crei_mx" aria-label="Visitar YouTube de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+              <Youtube size={24} />
+            </Link>
+            <Link href="https://www.instagram.com/crei.mx/" aria-label="Visitar Instagram de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Instagram size={24} />
             </Link>
-            <Link href="#" aria-label="Visitar Facebook de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.facebook.com/CREImx/" aria-label="Visitar Facebook de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Facebook size={24} />
             </Link>
-            <Link href="#" aria-label="Visitar X (Twitter) de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://x.com/CreiMx" aria-label="Visitar X (Twitter) de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Twitter size={24} />
             </Link>
             <Link href="#" aria-label="Visitar LinkedIn de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Linkedin size={24} />
             </Link>
-            <Link href="#" aria-label="Visitar TikTok de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.tiktok.com/@crei.mx" aria-label="Visitar TikTok de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <TikTokIcon size={24} />
             </Link>
           </div>

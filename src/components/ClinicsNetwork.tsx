@@ -1,36 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Building2, MapPin, Phone, User, Send, CheckCircle2 } from "lucide-react";
+import { Building2, Send, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
-// Mock data for existing clinics
-const clinics = [
-  {
-    id: 1,
-    name: "Clínica Renacer Polanco",
-    director: "Dr. Roberto Campos",
-    address: "Av. Horacio 1504, Polanco, CDMX",
-    phone: "+52 55 5280 1234",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop"
-  },
-  {
-    id: 2,
-    name: "Centro CREI Valle",
-    director: "Dra. Elena Torres",
-    address: "Calzada del Valle 400, San Pedro, NL",
-    phone: "+52 81 8356 7890",
-    image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?q=80&w=800&auto=format&fit=crop"
-  },
-  {
-    id: 3,
-    name: "Unidad Médica Lomas",
-    director: "Dr. Javier Méndez",
-    address: "Paseo de las Palmas 735, Lomas, CDMX",
-    phone: "+52 55 5520 4321",
-    image: "https://images.unsplash.com/photo-1504813184591-01572f98c85f?q=80&w=800&auto=format&fit=crop"
-  }
-];
+// (Sin lista de clínicas en esta etapa)
 
 export default function ClinicsNetwork() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
@@ -64,7 +38,7 @@ export default function ClinicsNetwork() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-serif font-bold text-primary mb-6"
           >
-            Clínicas Afiliadas CREI
+            Próximamente encontrarás un lugar en nuestras clínicas asociadas
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -73,51 +47,11 @@ export default function ClinicsNetwork() {
             transition={{ delay: 0.1 }}
             className="text-lg text-muted-foreground"
           >
-            Una red de excelencia médica unida por un mismo propósito: tu bienestar integral.
+            Estamos ampliando nuestra red de clínicas asociadas para brindarte atención integral y cercana.
           </motion.p>
         </div>
 
-        {/* Clinics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-          {clinics.map((clinic, index) => (
-            <motion.div
-              key={clinic.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border"
-            >
-              <div className="h-48 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors z-10" />
-                <img 
-                  src={clinic.image} 
-                  alt={clinic.name}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-8">
-                <h3 className="text-xl font-bold text-primary mb-4 font-serif group-hover:text-accent-foreground transition-colors">
-                  {clinic.name}
-                </h3>
-                <div className="space-y-3 text-muted-foreground text-sm">
-                  <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-accent-foreground shrink-0 mt-0.5" />
-                    <span><strong className="text-primary/80">Director:</strong> {clinic.director}</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-accent-foreground shrink-0 mt-0.5" />
-                    <span>{clinic.address}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-accent-foreground shrink-0" />
-                    <a href={`tel:${clinic.phone}`} className="hover:text-primary transition-colors">{clinic.phone}</a>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Sin grilla de clínicas por ahora */}
 
         {/* Join Network Section */}
         <motion.div 
