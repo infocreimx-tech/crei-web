@@ -34,12 +34,12 @@ export const serviceCategories = [
     ]
   },
   {
-    title: "Consultoría y Coaching de Vida",
-    subtitle: "Liderazgo personal desde la consciencia.",
+    title: "Consultoría y Coaching en Adicciones",
+    subtitle: "Liderazgo personal en sobriedad y prevención de recaídas.",
     icon: Compass,
     items: [
-      { title: "Coaching Ejecutivo", desc: "Herramientas para manejar el estrés y mejorar la toma de decisiones bajo presión." },
-      { title: "Talleres de Prevención", desc: "Educación para empresas y escuelas sobre el impacto de la salud mental en el rendimiento." }
+      { title: "Coaching de Sobriedad", desc: "Estrategias para manejar disparadores y craving, construir hábitos y sostener cambios." },
+      { title: "Talleres de Prevención de Adicciones", desc: "Programas para empresas y escuelas: detección temprana, reducción de riesgos y protocolos de actuación." }
     ]
   }
 ];

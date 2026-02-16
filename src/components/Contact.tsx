@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
@@ -9,12 +9,41 @@ import { CheckCircle } from "lucide-react";
 
 export default function Contact() {
   const cardRef = useRef(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const { scrollYProgress } = useScroll({
     target: cardRef,
     offset: ["start end", "end start"]
   });
   
   const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitted(false);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const payload = {
+      nombre: String(fd.get("name") || ""),
+      email: String(fd.get("email") || ""),
+      telefono: String(fd.get("phone") || ""),
+      servicio: String(fd.get("service") || ""),
+      mensaje: String(fd.get("message") || ""),
+      consentimiento: fd.get("consentimiento") ? 1 : 0
+    };
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      setSubmitted(res.ok);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <section id="contacto" className="py-24 bg-muted/30">
@@ -85,15 +114,17 @@ export default function Contact() {
             className="bg-card border border-border p-8 md:p-10 rounded-3xl shadow-lg"
           >
             <h3 className="text-2xl font-serif font-bold text-primary mb-6">Agenda tu Cita</h3>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium text-primary">Nombre Completo</label>
                   <input 
                     type="text" 
                     id="name" 
+                    name="name"
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     placeholder="Juan Pérez"
+                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -101,8 +132,10 @@ export default function Contact() {
                   <input 
                     type="email" 
                     id="email" 
+                    name="email"
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                     placeholder="juan@ejemplo.com"
+                    required
                   />
                 </div>
               </div>
@@ -112,8 +145,10 @@ export default function Contact() {
                 <input 
                   type="tel" 
                   id="phone" 
+                  name="phone"
                   className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                   placeholder="+52 55 1234 5678"
+                  required
                 />
               </div>
 
@@ -121,7 +156,9 @@ export default function Contact() {
                 <label htmlFor="service" className="text-sm font-medium text-primary">Servicio de Interés</label>
                 <select 
                   id="service" 
+                  name="service"
                   className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                  required
                 >
                   <option value="">Selecciona una opción</option>
                   <option value="individual">Terapia Individual</option>
@@ -135,17 +172,23 @@ export default function Contact() {
                 <label htmlFor="message" className="text-sm font-medium text-primary">Mensaje (Opcional)</label>
                 <textarea 
                   id="message" 
+                  name="message"
                   rows={4}
                   className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all resize-none"
                   placeholder="Cuéntanos brevemente cómo podemos ayudarte..."
                 />
               </div>
 
+              <div className="flex items-center gap-3">
+                <input id="consentimiento" name="consentimiento" type="checkbox" defaultChecked className="w-5 h-5 rounded border border-border" />
+                <label htmlFor="consentimiento" className="text-sm text-muted-foreground">Acepto el aviso de privacidad y el tratamiento de mis datos.</label>
+              </div>
+
               <button 
-                type="button"
+                type="submit"
                 className="w-full py-4 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2"
               >
-                Enviar Solicitud <CheckCircle size={18} />
+                {submitting ? "Enviando..." : submitted ? "Enviado" : "Enviar Solicitud"} <CheckCircle size={18} />
               </button>
             </form>
           </motion.div>
