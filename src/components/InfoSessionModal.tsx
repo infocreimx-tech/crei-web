@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { X, CalendarDays, Video } from "lucide-react";
+import { X, CalendarDays, MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function InfoSessionModal() {
@@ -52,14 +52,16 @@ export default function InfoSessionModal() {
  
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
-              href="https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1"
+              href={`https://wa.me/?text=${encodeURIComponent(
+                "Link de acceso a la sesión: https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1 (19 de Febrero, 20:00 hrs)"
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label="Unirse por Zoom"
+              aria-label="Enviar link a mi WhatsApp"
             >
-              <Video className="w-5 h-5" />
-              Unirse por Zoom
+              <MessageSquare className="w-5 h-5" />
+              Enviar link a mi WhatsApp
             </Link>
             <button
               onClick={close}
