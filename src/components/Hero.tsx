@@ -102,7 +102,7 @@ export default function Hero() {
             >
               <div className="absolute inset-0 rounded-full bg-accent blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
               <a
-                href="tel:+525512345678"
+                href="tel:+525530412552"
                 className="relative flex items-center gap-3 px-10 py-5 bg-primary text-primary-foreground text-xl font-serif font-medium rounded-full overflow-hidden transition-all duration-300 border border-primary/20 hover:border-accent/50"
               >
                 <span className="relative z-10 flex items-center gap-2">
