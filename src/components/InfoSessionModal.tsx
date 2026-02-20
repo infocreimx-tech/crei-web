@@ -28,11 +28,11 @@ export default function InfoSessionModal() {
             <div>
               <h3 className="text-2xl font-serif font-bold text-primary">Superar una adicción es posible.</h3>
               <p className="mt-2 text-sm text-muted-foreground max-w-prose">
-                Estamos aquí para acompañarte a ti y a los tuyos.
+                Todos los jueves a las 20:00 hrs te esperamos. Acompáñanos a una sesión informativa semanal por Zoom para pacientes y familias: conoce nuestro enfoque clínico, resuelve dudas y da el primer paso con acompañamiento profesional.
               </p>
               <div className="mt-4 flex items-center gap-3 text-primary">
                 <CalendarDays className="w-5 h-5" />
-                <span className="text-sm font-medium">19 de Febrero a las 20:00 hrs</span>
+                <span className="text-sm font-medium">Todos los jueves • 20:00 hrs (hora CDMX)</span>
               </div>
             </div>
             <button
@@ -46,14 +46,12 @@ export default function InfoSessionModal() {
         </div>
  
         <div className="p-6">
-          <p className="text-sm text-muted-foreground">
-            Participa desde cualquier lugar. Cupo limitado; únete puntualmente.
-          </p>
+          <p className="text-sm text-muted-foreground">Participa desde cualquier lugar. Cupo limitado; únete puntualmente. Si quieres recibir el acceso, compártelo por WhatsApp o solicita el link y nuestro equipo te lo enviará.</p>
  
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
               href={`https://wa.me/?text=${encodeURIComponent(
-                "Link de acceso a la sesión: https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1 (19 de Febrero, 20:00 hrs)"
+                "Link de acceso a la sesión informativa (jueves 20:00 hrs, hora CDMX): https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1"
               )}`}
               target="_blank"
               rel="noopener noreferrer"
