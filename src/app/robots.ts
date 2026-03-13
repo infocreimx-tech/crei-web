@@ -5,7 +5,21 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/recursos", "/clinicas", "/portal"],
+        allow: [
+          "/",
+          "/es",
+          "/en",
+          "/es/recursos",
+          "/en/recursos",
+          "/es/clinicas",
+          "/en/clinicas",
+          "/es/portal",
+          "/en/portal",
+          "/es/tecnologia",
+          "/en/tecnologia",
+          "/es/aviso-de-privacidad",
+          "/en/aviso-de-privacidad"
+        ],
         disallow: ["/api/*"],
       },
     ],

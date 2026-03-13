@@ -3,29 +3,10 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Search, RefreshCw, Sun, ArrowDown } from "lucide-react";
-
-const steps = [
-  {
-    id: 1,
-    title: "Diagnóstico Estructural",
-    description: "Identificamos los cimientos debilitados. No solo miramos el síntoma, escaneamos la estructura emocional completa.",
-    icon: Search,
-  },
-  {
-    id: 2,
-    title: "Limpieza Emocional",
-    description: "Removemos escombros del pasado. Procesamos traumas y bloqueos que impiden la nueva construcción.",
-    icon: RefreshCw,
-  },
-  {
-    id: 3,
-    title: "Reconstrucción & Diseño",
-    description: "Levantamos nuevos pilares. Te damos herramientas de arquitectura mental para sostener tu nueva vida.",
-    icon: Sun,
-  },
-];
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function Method() {
+  const { lang } = useI18n();
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -33,6 +14,68 @@ export default function Method() {
   });
 
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const copy =
+    lang === "en"
+      ? {
+          label: "Our Process",
+          titleA: "The Restructuring",
+          titleB: "Method",
+          subtitle: "A step-by-step clinical system to move from chaos to clarity.",
+          cta: "Ready for step 1?",
+          steps: [
+            {
+              id: 1,
+              title: "Structural Assessment",
+              description:
+                "We identify weakened foundations. We don't just look at the symptom—we scan the full emotional structure.",
+              icon: Search
+            },
+            {
+              id: 2,
+              title: "Emotional Clearing",
+              description:
+                "We remove debris from the past. We process trauma and blocks that prevent the new build.",
+              icon: RefreshCw
+            },
+            {
+              id: 3,
+              title: "Rebuild & Design",
+              description:
+                "We raise new pillars. We give you mental architecture tools to sustain your new life.",
+              icon: Sun
+            }
+          ]
+        }
+      : {
+          label: "Nuestro Proceso",
+          titleA: "El Método de",
+          titleB: "Reestructuración",
+          subtitle: "Un sistema clínico paso a paso para ir del caos a la claridad.",
+          cta: "¿Listo para el paso 1?",
+          steps: [
+            {
+              id: 1,
+              title: "Diagnóstico Estructural",
+              description:
+                "Identificamos los cimientos debilitados. No solo miramos el síntoma, escaneamos la estructura emocional completa.",
+              icon: Search
+            },
+            {
+              id: 2,
+              title: "Limpieza Emocional",
+              description:
+                "Removemos escombros del pasado. Procesamos traumas y bloqueos que impiden la nueva construcción.",
+              icon: RefreshCw
+            },
+            {
+              id: 3,
+              title: "Reconstrucción & Diseño",
+              description:
+                "Levantamos nuevos pilares. Te damos herramientas de arquitectura mental para sostener tu nueva vida.",
+              icon: Sun
+            }
+          ]
+        };
 
   return (
     <section id="metodo" className="py-32 bg-background relative overflow-hidden">
@@ -50,7 +93,7 @@ export default function Method() {
             viewport={{ once: true }}
             className="text-accent font-medium tracking-widest uppercase text-sm"
           >
-            Nuestro Proceso
+            {copy.label}
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -59,7 +102,8 @@ export default function Method() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mt-4 mb-6"
           >
-            El Método de <br />Reestructuración
+            {copy.titleA} <br />
+            {copy.titleB}
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -68,7 +112,7 @@ export default function Method() {
             transition={{ delay: 0.2 }}
             className="text-lg text-muted-foreground"
           >
-            Un sistema clínico paso a paso para ir del caos a la claridad.
+            {copy.subtitle}
           </motion.p>
         </div>
 
@@ -82,7 +126,7 @@ export default function Method() {
           </div>
 
           <div className="space-y-24 md:space-y-32">
-            {steps.map((step, index) => {
+            {copy.steps.map((step, index) => {
               const isEven = index % 2 === 0;
               return (
                 <motion.div
@@ -132,7 +176,7 @@ export default function Method() {
             <div className="inline-flex flex-col items-center gap-4">
               <ArrowDown className="w-6 h-6 text-accent animate-bounce" />
               <p className="font-serif text-2xl text-primary font-medium">
-                ¿Listo para el paso 1?
+                {copy.cta}
               </p>
             </div>
           </motion.div>

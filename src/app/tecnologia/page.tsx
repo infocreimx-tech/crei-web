@@ -1,15 +1,5 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Technology from "@/components/Technology";
-import WhatsAppButton from "@/components/WhatsAppButton";
- 
+import { redirect } from "next/navigation";
+
 export default function TechnologyPage() {
-  return (
-    <main className="min-h-screen bg-background relative">
-      <Navbar />
-      <Technology />
-      <Footer />
-      <WhatsAppButton />
-    </main>
-  );
+  redirect("/es/tecnologia");
 }

@@ -3,23 +3,41 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-
-const navLinks = [
-  { name: "Quiénes Somos", href: "/#nosotros" },
-  { name: "Servicios", href: "/#servicios" },
-  { name: "Método", href: "/#metodo" },
-  { name: "Tecnología e Innovación", href: "/tecnologia" },
-  { name: "Recursos", href: "/recursos" },
-  { name: "Clínicas", href: "/clinicas" },
-  { name: "Equipo", href: "/#equipo" },
-  { name: "Contacto", href: "/#contacto" },
-];
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function Navbar() {
+  const { lang } = useI18n();
+  const pathname = usePathname() || `/${lang}`;
+  const otherLang = lang === "en" ? "es" : "en";
+  const otherHref = pathname.replace(/^\/(es|en)(?=\/|$)/, `/${otherLang}`);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks =
+    lang === "en"
+      ? [
+          { name: "About", href: `/${lang}/#nosotros` },
+          { name: "Services", href: `/${lang}/#servicios` },
+          { name: "Method", href: `/${lang}/#metodo` },
+          { name: "Technology", href: `/${lang}/tecnologia` },
+          { name: "Resources", href: `/${lang}/recursos` },
+          { name: "Clinics", href: `/${lang}/clinicas` },
+          { name: "Team", href: `/${lang}/#equipo` },
+          { name: "Contact", href: `/${lang}/#contacto` }
+        ]
+      : [
+          { name: "Quiénes Somos", href: `/${lang}/#nosotros` },
+          { name: "Servicios", href: `/${lang}/#servicios` },
+          { name: "Método", href: `/${lang}/#metodo` },
+          { name: "Tecnología e Innovación", href: `/${lang}/tecnologia` },
+          { name: "Recursos", href: `/${lang}/recursos` },
+          { name: "Clínicas", href: `/${lang}/clinicas` },
+          { name: "Equipo", href: `/${lang}/#equipo` },
+          { name: "Contacto", href: `/${lang}/#contacto` }
+        ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +57,7 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={`/${lang}`} className="flex items-center gap-2">
           <div className="relative w-12 h-12 md:w-16 md:h-16">
             <Image 
               src="/logo-header.png" 
@@ -66,20 +84,38 @@ export default function Navbar() {
           ))}
           
           <div className="h-4 w-px bg-primary/20 mx-2" />
+
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-primary/70">
+            {lang === "es" ? (
+              <span className="text-primary">ES</span>
+            ) : (
+              <Link href={otherHref} className="hover:text-primary transition-colors">
+                ES
+              </Link>
+            )}
+            <span className="text-primary/30">|</span>
+            {lang === "en" ? (
+              <span className="text-primary">EN</span>
+            ) : (
+              <Link href={otherHref} className="hover:text-primary transition-colors">
+                EN
+              </Link>
+            )}
+          </div>
           
           <Link
-            href="/portal"
+            href={`/${lang}/portal`}
             className="text-xs font-bold tracking-widest uppercase text-primary border border-primary/20 px-3 py-1.5 rounded-md hover:bg-primary hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            Portal del Paciente
+            {lang === "en" ? "Patient Portal" : "Portal del Paciente"}
           </Link>
 
           <Link
-            href="/#contacto"
-            aria-label="Ir a contacto para agendar evaluación"
+            href={`/${lang}/#contacto`}
+            aria-label={lang === "en" ? "Go to contact to schedule an evaluation" : "Ir a contacto para agendar evaluación"}
             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            Agenda tu evaluación
+            {lang === "en" ? "Schedule your evaluation" : "Agenda tu evaluación"}
           </Link>
         </div>
 
@@ -113,22 +149,48 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+
+              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-wider text-primary/70 border-t border-border mt-2 pt-4">
+                {lang === "es" ? (
+                  <span className="text-primary">ES</span>
+                ) : (
+                  <Link
+                    href={otherHref}
+                    className="hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    ES
+                  </Link>
+                )}
+                <span className="text-primary/30">|</span>
+                {lang === "en" ? (
+                  <span className="text-primary">EN</span>
+                ) : (
+                  <Link
+                    href={otherHref}
+                    className="hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    EN
+                  </Link>
+                )}
+              </div>
               
               <Link
-                href="/portal"
+                href={`/${lang}/portal`}
                 className="text-sm font-light uppercase tracking-wider text-primary/70 py-2 border-t border-border mt-2 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Portal del Paciente
+                {lang === "en" ? "Patient Portal" : "Portal del Paciente"}
               </Link>
 
               <Link
-                href="/#contacto"
-                aria-label="Ir a contacto para agendar evaluación"
+                href={`/${lang}/#contacto`}
+                aria-label={lang === "en" ? "Go to contact to schedule an evaluation" : "Ir a contacto para agendar evaluación"}
                 className="w-full text-center px-5 py-3 bg-primary text-primary-foreground text-base font-medium rounded-full hover:bg-primary/90 transition-colors mt-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Agenda tu evaluación
+                {lang === "en" ? "Schedule your evaluation" : "Agenda tu evaluación"}
               </Link>
             </div>
           </motion.div>

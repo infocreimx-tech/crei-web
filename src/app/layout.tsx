@@ -66,7 +66,9 @@ export const metadata: Metadata = {
     images: ["https://images.unsplash.com/photo-1573497019236-17f8177b81e8?q=80&w=1200&auto=format&fit=crop"],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/icon.svg",
+    shortcut: "/icon.svg"
   },
 };
 
@@ -77,6 +79,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png?v=3" sizes="32x32" type="image/png" />
+        <link rel="icon" href="/logo.png?v=3" sizes="48x48" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png?v=3" />
+      </head>
       <body
         className={`${playfair.variable} ${inter.variable} antialiased bg-background text-foreground font-sans relative`}
       >
@@ -88,7 +96,7 @@ export default function RootLayout({
               "@type": "MedicalClinic",
               name: "CREI | Centro de Reestructuración Emocional Integral",
               url: "https://crei.mx",
-              logo: "https://crei.mx/favicon.ico",
+              logo: "https://crei.mx/logo.png",
               sameAs: [
                 "https://www.facebook.com/",
                 "https://www.instagram.com/",

@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Phone, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function TikTokIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
@@ -21,9 +22,45 @@ function TikTokIcon({ size = 24, className = "" }: { size?: number; className?: 
 }
 
 export default function Hero() {
+  const { lang } = useI18n();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 300]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+
+  const copy =
+    lang === "en"
+      ? {
+          alt: "Warm therapy space with an armchair and books",
+          badge: "Comprehensive Emotional Restructuring Center",
+          titleA: "Restructure your",
+          titleB: "inner world",
+          subtitle:
+            "A calm, professional space where emotional intelligence meets clinical excellence.",
+          help: "I need help",
+          privacy: "Confidentiality guaranteed • Immediate attention",
+          youtube: "Visit CREI YouTube",
+          instagram: "Visit CREI Instagram",
+          facebook: "Visit CREI Facebook",
+          x: "Visit CREI X (Twitter)",
+          linkedin: "Visit CREI LinkedIn",
+          tiktok: "Visit CREI TikTok"
+        }
+      : {
+          alt: "Espacio de terapia cálido con sillón y libros",
+          badge: "Centro de Reestructuración Emocional Integral",
+          titleA: "Reestructura tu",
+          titleB: "mundo interior",
+          subtitle:
+            "Un espacio de calma y profesionalismo donde la inteligencia emocional se encuentra con la excelencia clínica.",
+          help: "Necesito Ayuda",
+          privacy: "Confidencialidad garantizada • Atención inmediata",
+          youtube: "Visitar YouTube de CREI",
+          instagram: "Visitar Instagram de CREI",
+          facebook: "Visitar Facebook de CREI",
+          x: "Visitar X (Twitter) de CREI",
+          linkedin: "Visitar LinkedIn de CREI",
+          tiktok: "Visitar TikTok de CREI"
+        };
 
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
@@ -34,7 +71,7 @@ export default function Hero() {
       >
         <Image 
           src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?q=80&w=1920&auto=format&fit=crop"
-          alt="Espacio de terapia cálido con sillón y libros"
+          alt={copy.alt}
           fill
           className="object-cover opacity-90"
           priority
@@ -55,35 +92,35 @@ export default function Hero() {
             transition={{ delay: 0.3, duration: 0.8 }}
             className="inline-block mb-4 text-sm font-medium tracking-[0.2em] uppercase text-primary/80"
           >
-            Centro de Reestructuración Emocional Integral
+            {copy.badge}
           </motion.span>
           
           <h1 className="mb-8 text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-primary leading-tight">
-            Reestructura tu <br />
-            <span className="italic font-light">mundo interior</span>
+            {copy.titleA} <br />
+            <span className="italic font-light">{copy.titleB}</span>
           </h1>
           
           <p className="max-w-xl mx-auto mb-8 text-lg md:text-xl text-primary/80 leading-relaxed font-medium">
-            Un espacio de calma y profesionalismo donde la inteligencia emocional se encuentra con la excelencia clínica.
+            {copy.subtitle}
           </p>
 
           <div className="flex gap-6 mb-12">
-            <Link href="https://www.youtube.com/@Crei_mx" aria-label="Visitar YouTube de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.youtube.com/@Crei_mx" aria-label={copy.youtube} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Youtube size={24} />
             </Link>
-            <Link href="https://www.instagram.com/crei.mx/" aria-label="Visitar Instagram de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.instagram.com/crei.mx/" aria-label={copy.instagram} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Instagram size={24} />
             </Link>
-            <Link href="https://www.facebook.com/CREImx/" aria-label="Visitar Facebook de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.facebook.com/CREImx/" aria-label={copy.facebook} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Facebook size={24} />
             </Link>
-            <Link href="https://x.com/CreiMx" aria-label="Visitar X (Twitter) de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://x.com/CreiMx" aria-label={copy.x} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Twitter size={24} />
             </Link>
-            <Link href="#" aria-label="Visitar LinkedIn de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="#" aria-label={copy.linkedin} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <Linkedin size={24} />
             </Link>
-            <Link href="https://www.tiktok.com/@crei.mx" aria-label="Visitar TikTok de CREI" className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+            <Link href="https://www.tiktok.com/@crei.mx" aria-label={copy.tiktok} className="text-primary/70 hover:text-primary transition-colors hover:scale-110 transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
               <TikTokIcon size={24} />
             </Link>
           </div>
@@ -107,7 +144,7 @@ export default function Hero() {
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <Phone className="w-5 h-5 animate-pulse" />
-                  Necesito Ayuda
+                  {copy.help}
                 </span>
                 {/* Button Hover Fill Effect */}
                 <div className="absolute inset-0 bg-accent/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
@@ -121,7 +158,7 @@ export default function Hero() {
               className="text-sm text-muted-foreground flex items-center gap-2"
             >
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Confidencialidad garantizada • Atención inmediata
+              {copy.privacy}
             </motion.p>
           </div>
         </motion.div>

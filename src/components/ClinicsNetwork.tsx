@@ -3,11 +3,71 @@
 import { motion } from "framer-motion";
 import { Building2, Send, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
-
-// (Sin lista de clínicas en esta etapa)
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function ClinicsNetwork() {
+  const { lang } = useI18n();
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const copy =
+    lang === "en"
+      ? {
+          label: "Our Network",
+          title: "Soon you'll find a place in our partner clinics",
+          subtitle:
+            "We're expanding our network of partner clinics to provide integrated, close-to-home care.",
+          badge: "Strategic Partnership",
+          ctaTitle: "Want your clinic to be part of the CREI network?",
+          ctaBody:
+            "Join the leading network in emotional restructuring. We look for institutions committed to clinical excellence and humane care to expand our reach.",
+          benefits: [
+            "Access to certified CREI methodology",
+            "Patient referral network",
+            "Ongoing training for your team",
+            "Support from a leading brand"
+          ],
+          successTitle: "Request sent!",
+          successBody:
+            "Thanks for your interest. Our partnerships team will review your request and contact you soon.",
+          sendAnother: "Send another request",
+          clinicName: "Clinic name",
+          clinicNamePlaceholder: "e.g., Comprehensive Medical Center",
+          ownerName: "Primary contact name",
+          ownerNamePlaceholder: "Dr. Firstname Lastname",
+          phone: "Contact phone",
+          location: "Location (City/State)",
+          locationPlaceholder: "e.g., Austin, Texas",
+          submitting: "Sending...",
+          submit: "Send partnership request"
+        }
+      : {
+          label: "Nuestra Red",
+          title: "Próximamente encontrarás un lugar en nuestras clínicas asociadas",
+          subtitle:
+            "Estamos ampliando nuestra red de clínicas asociadas para brindarte atención integral y cercana.",
+          badge: "Alianza Estratégica",
+          ctaTitle: "¿Te interesa que tu clínica sea parte de la red CREI?",
+          ctaBody:
+            "Únete a la red líder en reestructuración emocional. Buscamos instituciones comprometidas con la excelencia clínica y el trato humano para expandir nuestro alcance.",
+          benefits: [
+            "Acceso a metodología CREI certificada",
+            "Red de derivación de pacientes",
+            "Formación continua para tu equipo",
+            "Respaldo de marca líder"
+          ],
+          successTitle: "¡Solicitud Enviada!",
+          successBody:
+            "Gracias por tu interés. Nuestro equipo de alianzas estratégicas revisará tu solicitud y se pondrá en contacto contigo pronto.",
+          sendAnother: "Enviar otra solicitud",
+          clinicName: "Nombre de la Clínica",
+          clinicNamePlaceholder: "Ej. Centro Médico Integral",
+          ownerName: "Nombre del Responsable",
+          ownerNamePlaceholder: "Dr./Dra. Nombre Apellido",
+          phone: "Teléfono de Contacto",
+          location: "Ubicación (Ciudad/Estado)",
+          locationPlaceholder: "Ej. Guadalajara, Jalisco",
+          submitting: "Enviando...",
+          submit: "Enviar Solicitud de Afiliación"
+        };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +90,7 @@ export default function ClinicsNetwork() {
             viewport={{ once: true }}
             className="text-sm font-medium tracking-[0.2em] uppercase text-accent-foreground mb-4 block"
           >
-            Nuestra Red
+            {copy.label}
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
@@ -38,7 +98,7 @@ export default function ClinicsNetwork() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-serif font-bold text-primary mb-6"
           >
-            Próximamente encontrarás un lugar en nuestras clínicas asociadas
+            {copy.title}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -47,7 +107,7 @@ export default function ClinicsNetwork() {
             transition={{ delay: 0.1 }}
             className="text-lg text-muted-foreground"
           >
-            Estamos ampliando nuestra red de clínicas asociadas para brindarte atención integral y cercana.
+            {copy.subtitle}
           </motion.p>
         </div>
 
@@ -68,21 +128,16 @@ export default function ClinicsNetwork() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 text-accent mb-6">
                 <Building2 className="w-4 h-4" />
-                <span className="text-sm font-medium">Alianza Estratégica</span>
+                <span className="text-sm font-medium">{copy.badge}</span>
               </div>
               <h3 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-                ¿Te interesa que tu clínica sea parte de la red CREI?
+                {copy.ctaTitle}
               </h3>
               <p className="text-primary-foreground/80 text-lg mb-8 leading-relaxed">
-                Únete a la red líder en reestructuración emocional. Buscamos instituciones comprometidas con la excelencia clínica y el trato humano para expandir nuestro alcance.
+                {copy.ctaBody}
               </p>
               <ul className="space-y-4 mb-8">
-                {[
-                  "Acceso a metodología CREI certificada",
-                  "Red de derivación de pacientes",
-                  "Formación continua para tu equipo",
-                  "Respaldo de marca líder"
-                ].map((item, i) => (
+                {copy.benefits.map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-primary-foreground/90">
                     <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="w-4 h-4 text-accent" />
@@ -99,41 +154,41 @@ export default function ClinicsNetwork() {
                   <div className="w-20 h-20 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
-                  <h4 className="text-2xl font-bold mb-4">¡Solicitud Enviada!</h4>
+                  <h4 className="text-2xl font-bold mb-4">{copy.successTitle}</h4>
                   <p className="text-primary-foreground/70">
-                    Gracias por tu interés. Nuestro equipo de alianzas estratégicas revisará tu solicitud y se pondrá en contacto contigo pronto.
+                    {copy.successBody}
                   </p>
                   <button 
                     onClick={() => setFormStatus("idle")}
                     className="mt-8 text-accent hover:text-white transition-colors text-sm font-medium underline underline-offset-4"
                   >
-                    Enviar otra solicitud
+                    {copy.sendAnother}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary-foreground/80">Nombre de la Clínica</label>
+                    <label className="text-sm font-medium text-primary-foreground/80">{copy.clinicName}</label>
                     <input 
                       type="text" 
                       required
                       className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
-                      placeholder="Ej. Centro Médico Integral"
+                      placeholder={copy.clinicNamePlaceholder}
                     />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-primary-foreground/80">Nombre del Responsable</label>
+                      <label className="text-sm font-medium text-primary-foreground/80">{copy.ownerName}</label>
                       <input 
                         type="text" 
                         required
                         className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
-                        placeholder="Dr./Dra. Nombre Apellido"
+                        placeholder={copy.ownerNamePlaceholder}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-primary-foreground/80">Teléfono de Contacto</label>
+                      <label className="text-sm font-medium text-primary-foreground/80">{copy.phone}</label>
                       <input 
                         type="tel" 
                         required
@@ -144,12 +199,12 @@ export default function ClinicsNetwork() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary-foreground/80">Ubicación (Ciudad/Estado)</label>
+                    <label className="text-sm font-medium text-primary-foreground/80">{copy.location}</label>
                     <input 
                       type="text" 
                       required
                       className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
-                      placeholder="Ej. Guadalajara, Jalisco"
+                      placeholder={copy.locationPlaceholder}
                     />
                   </div>
 
@@ -159,10 +214,10 @@ export default function ClinicsNetwork() {
                     className="w-full bg-accent text-primary-foreground font-bold py-4 rounded-lg hover:bg-accent/90 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {formStatus === "submitting" ? (
-                      "Enviando..."
+                      copy.submitting
                     ) : (
                       <>
-                        Enviar Solicitud de Afiliación
+                        {copy.submit}
                         <Send className="w-5 h-5" />
                       </>
                     )}
