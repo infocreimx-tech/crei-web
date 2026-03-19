@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import nodemailer from "nodemailer";
 
 const SERVICE_LABELS: Record<string, string> = {
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Insert into Supabase ──
-    const { data: result, error } = await supabase
+    const { data: result, error } = await getSupabase()
       .from("appointments")
       .insert({
         full_name,
