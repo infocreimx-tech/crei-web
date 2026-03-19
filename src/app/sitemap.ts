@@ -24,13 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${base}/es/recursos`,
+      url: `${base}/es/blog`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${base}/en/recursos`,
+      url: `${base}/en/blog`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,

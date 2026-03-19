@@ -23,7 +23,7 @@ export default function Navbar() {
           { name: "Services", href: `/${lang}/#servicios` },
           { name: "Method", href: `/${lang}/#metodo` },
           { name: "Technology", href: `/${lang}/tecnologia` },
-          { name: "Resources", href: `/${lang}/recursos` },
+          { name: "Blog", href: `/${lang}/blog` },
           { name: "Clinics", href: `/${lang}/clinicas` },
           { name: "Team", href: `/${lang}/#equipo` },
           { name: "Contact", href: `/${lang}/#contacto` }
@@ -33,7 +33,7 @@ export default function Navbar() {
           { name: "Servicios", href: `/${lang}/#servicios` },
           { name: "Método", href: `/${lang}/#metodo` },
           { name: "Tecnología e Innovación", href: `/${lang}/tecnologia` },
-          { name: "Recursos", href: `/${lang}/recursos` },
+          { name: "Blog", href: `/${lang}/blog` },
           { name: "Clínicas", href: `/${lang}/clinicas` },
           { name: "Equipo", href: `/${lang}/#equipo` },
           { name: "Contacto", href: `/${lang}/#contacto` }

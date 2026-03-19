@@ -9,69 +9,69 @@ import { useI18n } from "@/i18n/I18nProvider";
 function getArticles(lang: "es" | "en") {
   return lang === "en"
     ? [
-        {
-          id: 1,
-          title: "Why anxiety isn't your enemy",
-          excerpt:
-            "Anxiety can be a warning signal of an overloaded emotional structure. Learn to read the dashboard.",
-          category: "Emotional Intelligence",
-          readTime: "4 min read",
-          image:
-            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
-        },
-        {
-          id: 2,
-          title: "The myth that “time heals everything”",
-          excerpt:
-            "Time only chronicizes what isn't restructured. Discover why waiting isn't a valid clinical strategy.",
-          category: "Myths & Reality",
-          readTime: "5 min read",
-          image:
-            "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
-        },
-        {
-          id: 3,
-          title: "The architecture of self-esteem",
-          excerpt:
-            "Self-esteem isn't something you “raise”—it's something you build. The 3 pillars of solid self-worth.",
-          category: "Growth",
-          readTime: "6 min read",
-          image:
-            "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
-        }
-      ]
+      {
+        id: 1,
+        title: "Why anxiety isn't your enemy",
+        excerpt:
+          "Anxiety can be a warning signal of an overloaded emotional structure. Learn to read the dashboard.",
+        category: "Emotional Intelligence",
+        readTime: "4 min read",
+        image:
+          "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        id: 2,
+        title: "The myth that “time heals everything”",
+        excerpt:
+          "Time only chronicizes what isn't restructured. Discover why waiting isn't a valid clinical strategy.",
+        category: "Myths & Reality",
+        readTime: "5 min read",
+        image:
+          "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        id: 3,
+        title: "The architecture of self-esteem",
+        excerpt:
+          "Self-esteem isn't something you “raise”—it's something you build. The 3 pillars of solid self-worth.",
+        category: "Growth",
+        readTime: "6 min read",
+        image:
+          "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
     : [
-        {
-          id: 1,
-          title: "¿Por qué la ansiedad no es tu enemiga?",
-          excerpt:
-            "La ansiedad es una señal de alerta de una estructura emocional sobrecargada. Aprende a leer el tablero de control.",
-          category: "Inteligencia Emocional",
-          readTime: "4 min lectura",
-          image:
-            "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
-        },
-        {
-          id: 2,
-          title: "El mito del 'tiempo lo cura todo'",
-          excerpt:
-            "El tiempo solo cronifica lo que no se reestructura. Descubre por qué esperar no es una estrategia clínica válida.",
-          category: "Mitos & Realidades",
-          readTime: "5 min lectura",
-          image:
-            "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
-        },
-        {
-          id: 3,
-          title: "Arquitectura de la autoestima",
-          excerpt:
-            "La autoestima no se 'sube', se construye. Los 3 pilares fundamentales para una autovaloración sólida.",
-          category: "Crecimiento",
-          readTime: "6 min lectura",
-          image:
-            "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
-        }
-      ];
+      {
+        id: 1,
+        title: "¿Por qué la ansiedad no es tu enemiga?",
+        excerpt:
+          "La ansiedad es una señal de alerta de una estructura emocional sobrecargada. Aprende a leer el tablero de control.",
+        category: "Inteligencia Emocional",
+        readTime: "4 min lectura",
+        image:
+          "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        id: 2,
+        title: "El mito del 'tiempo lo cura todo'",
+        excerpt:
+          "El tiempo solo cronifica lo que no se reestructura. Descubre por qué esperar no es una estrategia clínica válida.",
+        category: "Mitos & Realidades",
+        readTime: "5 min lectura",
+        image:
+          "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        id: 3,
+        title: "Arquitectura de la autoestima",
+        excerpt:
+          "La autoestima no se 'sube', se construye. Los 3 pilares fundamentales para una autovaloración sólida.",
+        category: "Crecimiento",
+        readTime: "6 min lectura",
+        image:
+          "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
+      }
+    ];
 }
 
 export default function Journal() {
@@ -79,19 +79,19 @@ export default function Journal() {
   const copy =
     lang === "en"
       ? {
-          label: "Resources",
-          title: "Restructuring Journal",
-          subtitle: "Clinical insights, practical tools, and reflections on modern mental health.",
-          all: "View all articles",
-          read: "Read article"
-        }
+        label: "Blog",
+        title: "Restructuring Journal",
+        subtitle: "Clinical insights, practical tools, and reflections on modern mental health.",
+        all: "View all articles",
+        read: "Read article"
+      }
       : {
-          label: "Recursos",
-          title: "Diario de Reestructuración",
-          subtitle: "Pensamientos clínicos, herramientas prácticas y reflexiones sobre la salud mental moderna.",
-          all: "Ver todos los artículos",
-          read: "Leer artículo"
-        };
+        label: "Blog",
+        title: "Diario de Reestructuración",
+        subtitle: "Pensamientos clínicos, herramientas prácticas y reflexiones sobre la salud mental moderna.",
+        all: "Ver todos los artículos",
+        read: "Leer artículo"
+      };
   const articles = getArticles(lang);
 
   return (
@@ -109,8 +109,8 @@ export default function Journal() {
               {copy.subtitle}
             </p>
           </div>
-          <Link 
-            href="#" 
+          <Link
+            href="#"
             className="hidden md:flex items-center gap-2 text-primary font-medium hover:text-accent transition-colors group"
           >
             {copy.all}
@@ -139,21 +139,21 @@ export default function Journal() {
                   {article.category}
                 </div>
               </div>
-              
+
               <div className="flex-1 flex flex-col">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                   <BookOpen className="w-3 h-3" />
                   <span>{article.readTime}</span>
                 </div>
-                
+
                 <h3 className="text-2xl font-serif font-bold text-primary mb-3 group-hover:text-accent transition-colors leading-tight">
                   {article.title}
                 </h3>
-                
+
                 <p className="text-muted-foreground mb-6 line-clamp-3">
                   {article.excerpt}
                 </p>
-                
+
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-2 text-sm font-medium text-primary border-b border-primary/20 pb-1 group-hover:border-accent group-hover:text-accent transition-all">
                     {copy.read}
@@ -166,8 +166,8 @@ export default function Journal() {
         </div>
 
         <div className="mt-12 text-center md:hidden">
-          <Link 
-            href="#" 
+          <Link
+            href="#"
             className="inline-flex items-center gap-2 text-primary font-medium hover:text-accent transition-colors"
           >
             {copy.all}
