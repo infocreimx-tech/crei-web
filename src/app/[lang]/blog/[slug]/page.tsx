@@ -109,6 +109,11 @@ export default async function BlogPostPage({
                 li: ({node, ...props}: any) => <li className="" {...props} />,
                 blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-accent pl-6 py-2 italic my-8 text-xl text-primary/80 bg-accent/5 rounded-r-lg" {...props} />,
                 strong: ({node, ...props}: any) => <strong className="font-bold text-primary" {...props} />,
+                img: ({node, ...props}: any) => (
+                  <span className="block my-10 relative rounded-2xl overflow-hidden shadow-lg border border-primary/5">
+                    <img className="w-full h-auto object-cover" {...props} alt={props.alt || "Blog image"} />
+                  </span>
+                ),
               }}
             >
               {post.content}

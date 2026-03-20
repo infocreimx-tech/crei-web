@@ -13,6 +13,8 @@ But in many cases, that help ends up becoming something very different: **an ena
 
 ## The Illusion of Control and Protection
 
+![Healthy Boundaries](/blog/limites-sanos.jpg)
+
 Tough love is an attitude that many family members must learn when they discover that a loved one has succumbed to the disease of addiction.
 
 Accepting this reality means understanding something profoundly difficult: **our loved one's life does not belong to us**. We cannot live it for them or make decisions in their place.
@@ -47,6 +49,8 @@ The family member cannot live the recovery for the addict, but they can stop sus
 
 ## The Environment as a Key Factor: The Rat Park Experiment
 
+![Rat Park Experiment](/blog/experimento-rat-park.jpg)
+
 To better understand how the environment influences addiction, we can observe a well-known experiment carried out in the 1970s by Canadian psychologist Dr. Bruce K. Alexander from Simon Fraser University.
 
 The experiment was known as **Rat Park**.
@@ -73,6 +77,8 @@ This may involve:
 It is not an easy job. But often what is initially perceived as harshness or rejection, eventually transforms into something different. When a person manages to recover, they usually understand that those boundaries did not stem from abandonment. **They stemmed from love.**
 
 ### Our Approach at CREI
+
+![CREI Approach](/blog/enfoque-crei.jpg)
 
 Therefore, at **CREI** we work not only with the person suffering from addiction, but also with their family. We offer accompaniment and guidance to understand the disease and learn to establish healthy boundaries that favor recovery.
 

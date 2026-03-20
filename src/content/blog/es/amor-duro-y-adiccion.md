@@ -13,6 +13,8 @@ Pero en muchos casos, esa ayuda termina convirtiéndose en algo muy diferente: *
 
 ## La ilusión del control y la protección
 
+![Límites sanos](/blog/limites-sanos.jpg)
+
 El amor duro es una actitud que muchos familiares deben aprender cuando descubren que un ser querido ha sucumbido ante la enfermedad de la adicción.
 
 Aceptar esta realidad implica comprender algo profundamente difícil: **la vida de nuestro ser querido no nos pertenece**. No podemos vivirla por él ni tomar decisiones en su lugar.
@@ -47,6 +49,8 @@ El familiar no puede vivir la recuperación por el adicto, pero sí puede dejar 
 
 ## El entorno como factor clave: El experimento de Rat Park
 
+![Rat Park Experimento](/blog/experimento-rat-park.jpg)
+
 Para comprender mejor cómo influye el entorno en la adicción, podemos observar un experimento muy conocido realizado en los años 70 por el psicólogo canadiense Dr. Bruce K. Alexander, de la Simon Fraser University.
 
 El experimento fue conocido como **Rat Park**.
@@ -73,6 +77,8 @@ Esto puede implicar:
 No es un trabajo fácil. Pero muchas veces lo que en un principio se percibe como dureza o rechazo, con el tiempo se transforma en algo diferente. Cuando una persona logra recuperarse, suele comprender que esos límites no nacían del abandono. **Nacían del amor.**
 
 ### Nuestro enfoque en CREI
+
+![Enfoque CREI](/blog/enfoque-crei.jpg)
 
 Por eso, en **CREI** trabajamos no solo con la persona que padece la adicción, sino también con su familia. Ofrecemos acompañamiento y orientación para comprender la enfermedad y aprender a establecer límites saludables que favorezcan la recuperación.
 
