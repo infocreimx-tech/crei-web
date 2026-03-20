@@ -97,8 +97,22 @@ export default async function BlogPostPage({
           </Link>
 
           {/* Content */}
-          <div className="prose prose-lg prose-headings:font-serif prose-headings:text-primary prose-p:text-muted-foreground prose-a:text-accent max-w-3xl mx-auto leading-relaxed">
-            <ReactMarkdown>{post.content}</ReactMarkdown>
+          <div className="max-w-3xl mx-auto">
+            <ReactMarkdown
+              components={{
+                h2: ({node, ...props}: any) => <h2 className="text-3xl font-serif font-bold text-primary mt-12 mb-6" {...props} />,
+                h3: ({node, ...props}: any) => <h3 className="text-2xl font-serif font-bold text-primary mt-8 mb-4" {...props} />,
+                p: ({node, ...props}: any) => <p className="text-muted-foreground text-lg mb-6 leading-relaxed text-justify" {...props} />,
+                a: ({node, ...props}: any) => <a className="text-accent underline hover:text-primary transition-colors" {...props} />,
+                ul: ({node, ...props}: any) => <ul className="list-disc pl-6 mb-6 text-muted-foreground text-lg space-y-2" {...props} />,
+                ol: ({node, ...props}: any) => <ol className="list-decimal pl-6 mb-6 text-muted-foreground text-lg space-y-2" {...props} />,
+                li: ({node, ...props}: any) => <li className="" {...props} />,
+                blockquote: ({node, ...props}: any) => <blockquote className="border-l-4 border-accent pl-6 py-2 italic my-8 text-xl text-primary/80 bg-accent/5 rounded-r-lg" {...props} />,
+                strong: ({node, ...props}: any) => <strong className="font-bold text-primary" {...props} />,
+              }}
+            >
+              {post.content}
+            </ReactMarkdown>
           </div>
         </div>
       </article>
