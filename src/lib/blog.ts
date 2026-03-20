@@ -34,11 +34,11 @@ export function getPosts(lang: "en" | "es"): BlogPost[] {
 
       return {
         slug,
-        title: data.title || "",
-        excerpt: data.excerpt || "",
-        category: data.category || "",
-        readTime: data.readTime || "",
-        image: data.image || "",
+        title: data.title?.trim() || "",
+        excerpt: data.excerpt?.trim() || "",
+        category: data.category?.trim() || "",
+        readTime: data.readTime?.trim() || "",
+        image: data.image?.trim() || "",
         date: data.date || new Date().toISOString(),
         content,
       } as BlogPost;
@@ -60,11 +60,11 @@ export function getPostBySlug(slug: string, lang: "en" | "es"): BlogPost | null 
 
   return {
     slug,
-    title: data.title || "",
-    excerpt: data.excerpt || "",
-    category: data.category || "",
-    readTime: data.readTime || "",
-    image: data.image || "",
+    title: data.title?.trim() || "",
+    excerpt: data.excerpt?.trim() || "",
+    category: data.category?.trim() || "",
+    readTime: data.readTime?.trim() || "",
+    image: data.image?.trim() || "",
     date: data.date || new Date().toISOString(),
     content,
   };
