@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
         budget: budget ? Number(budget) : null,
         payment_frequency: String(payment_frequency || "").trim(),
         therapy_type: String(therapy_type || "").trim(),
+        payment_receipt_url: data.payment_receipt_url ? String(data.payment_receipt_url) : null,
       })
       .select()
       .single();
