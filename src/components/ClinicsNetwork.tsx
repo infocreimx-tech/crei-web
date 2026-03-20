@@ -1,13 +1,22 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Send, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export default function ClinicsNetwork() {
   const { lang } = useI18n();
-  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
   const copy =
     lang === "en"
       ? {
@@ -25,10 +34,7 @@ export default function ClinicsNetwork() {
             "Ongoing training for your team",
             "Support from a leading brand"
           ],
-          successTitle: "Request sent!",
-          successBody:
-            "Thanks for your interest. Our partnerships team will review your request and contact you soon.",
-          sendAnother: "Send another request",
+
           clinicName: "Clinic name",
           clinicNamePlaceholder: "e.g., Comprehensive Medical Center",
           ownerName: "Primary contact name",
@@ -37,7 +43,9 @@ export default function ClinicsNetwork() {
           location: "Location (City/State)",
           locationPlaceholder: "e.g., Austin, Texas",
           submitting: "Sending...",
-          submit: "Send partnership request"
+          submit: "Send partnership request",
+          errorGeneric: "Something went wrong. Please try again.",
+          toastMessage: "Request sent successfully!"
         }
       : {
           label: "Nuestra Red",
@@ -54,10 +62,7 @@ export default function ClinicsNetwork() {
             "Formación continua para tu equipo",
             "Respaldo de marca líder"
           ],
-          successTitle: "¡Solicitud Enviada!",
-          successBody:
-            "Gracias por tu interés. Nuestro equipo de alianzas estratégicas revisará tu solicitud y se pondrá en contacto contigo pronto.",
-          sendAnother: "Enviar otra solicitud",
+
           clinicName: "Nombre de la Clínica",
           clinicNamePlaceholder: "Ej. Centro Médico Integral",
           ownerName: "Nombre del Responsable",
@@ -66,20 +71,63 @@ export default function ClinicsNetwork() {
           location: "Ubicación (Ciudad/Estado)",
           locationPlaceholder: "Ej. Guadalajara, Jalisco",
           submitting: "Enviando...",
-          submit: "Enviar Solicitud de Afiliación"
+          submit: "Enviar Solicitud de Afiliación",
+          errorGeneric: "Ocurrió un error. Inténtalo de nuevo.",
+          toastMessage: "¡Solicitud enviada exitosamente!"
         };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormStatus("submitting");
-    // Simulate API call
-    setTimeout(() => {
-      setFormStatus("success");
-    }, 1500);
+    setSubmitting(true);
+    setErrorMsg(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      clinic_name: formData.get("clinic_name"),
+      owner_name: formData.get("owner_name"),
+      phone: formData.get("phone"),
+      location: formData.get("location"),
+    };
+
+    try {
+      const res = await fetch("/api/reclutamiento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || copy.errorGeneric);
+      }
+
+      form.reset();
+      setShowToast(true);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : copy.errorGeneric);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <section id="clinicas" className="py-24 bg-muted/30 relative overflow-hidden">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 50, x: "-50%" }}
+            className="fixed bottom-8 left-1/2 z-50 bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium"
+          >
+            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            {copy.toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="container mx-auto px-6">
         
         {/* Section Header */}
@@ -149,28 +197,12 @@ export default function ClinicsNetwork() {
             </div>
 
             <div className="bg-background/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-              {formStatus === "success" ? (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-10 h-10" />
-                  </div>
-                  <h4 className="text-2xl font-bold mb-4">{copy.successTitle}</h4>
-                  <p className="text-primary-foreground/70">
-                    {copy.successBody}
-                  </p>
-                  <button 
-                    onClick={() => setFormStatus("idle")}
-                    className="mt-8 text-accent hover:text-white transition-colors text-sm font-medium underline underline-offset-4"
-                  >
-                    {copy.sendAnother}
-                  </button>
-                </div>
-              ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-primary-foreground/80">{copy.clinicName}</label>
                     <input 
                       type="text" 
+                      name="clinic_name"
                       required
                       className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                       placeholder={copy.clinicNamePlaceholder}
@@ -182,6 +214,7 @@ export default function ClinicsNetwork() {
                       <label className="text-sm font-medium text-primary-foreground/80">{copy.ownerName}</label>
                       <input 
                         type="text" 
+                        name="owner_name"
                         required
                         className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                         placeholder={copy.ownerNamePlaceholder}
@@ -191,6 +224,7 @@ export default function ClinicsNetwork() {
                       <label className="text-sm font-medium text-primary-foreground/80">{copy.phone}</label>
                       <input 
                         type="tel" 
+                        name="phone"
                         required
                         className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                         placeholder="+52..."
@@ -202,18 +236,25 @@ export default function ClinicsNetwork() {
                     <label className="text-sm font-medium text-primary-foreground/80">{copy.location}</label>
                     <input 
                       type="text" 
+                      name="location"
                       required
                       className="w-full bg-background/10 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
                       placeholder={copy.locationPlaceholder}
                     />
                   </div>
 
+                  {errorMsg && (
+                    <p className="text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 text-sm">
+                      {errorMsg}
+                    </p>
+                  )}
+
                   <button 
                     type="submit"
-                    disabled={formStatus === "submitting"}
+                    disabled={submitting}
                     className="w-full bg-accent text-primary-foreground font-bold py-4 rounded-lg hover:bg-accent/90 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {formStatus === "submitting" ? (
+                    {submitting ? (
                       copy.submitting
                     ) : (
                       <>
@@ -223,7 +264,6 @@ export default function ClinicsNetwork() {
                     )}
                   </button>
                 </form>
-              )}
             </div>
           </div>
         </motion.div>

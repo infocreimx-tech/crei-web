@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -12,13 +12,21 @@ export default function Contact() {
   const { lang } = useI18n();
   const cardRef = useRef(null);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const { scrollYProgress } = useScroll({
     target: cardRef,
     offset: ["start end", "end start"]
   });
   
   const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
   const copy =
     lang === "en"
       ? {
@@ -47,8 +55,8 @@ export default function Contact() {
           messagePlaceholder: "Tell us briefly how we can help…",
           consent: "I accept the privacy notice and the processing of my data.",
           sending: "Sending...",
-          sent: "Sent",
-          send: "Send request"
+          send: "Send request",
+          toastMessage: "✅ Request sent successfully!"
         }
       : {
           title: "Comienza tu proceso",
@@ -76,15 +84,14 @@ export default function Contact() {
           messagePlaceholder: "Cuéntanos brevemente cómo podemos ayudarte...",
           consent: "Acepto el aviso de privacidad y el tratamiento de mis datos.",
           sending: "Enviando...",
-          sent: "Enviado",
-          send: "Enviar Solicitud"
+          send: "Enviar Solicitud",
+          toastMessage: "✅ ¡Solicitud enviada exitosamente!"
         };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
-    setSubmitted(false);
     const form = e.currentTarget;
     const fd = new FormData(form);
     const payload = {
@@ -101,14 +108,32 @@ export default function Contact() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      setSubmitted(res.ok);
+      if (res.ok) {
+        form.reset();
+        setShowToast(true);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section id="contacto" className="py-24 bg-muted/30">
+    <section id="contacto" className="py-24 bg-muted/30 relative">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 50, x: "-50%" }}
+            className="fixed bottom-8 left-1/2 z-50 bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium"
+          >
+            <CheckCircle className="w-5 h-5 shrink-0" />
+            {copy.toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           
@@ -248,9 +273,10 @@ export default function Contact() {
 
               <button 
                 type="submit"
-                className="w-full py-4 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2"
+                disabled={submitting}
+                className="w-full py-4 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {submitting ? copy.sending : submitted ? copy.sent : copy.send} <CheckCircle size={18} />
+                {submitting ? copy.sending : copy.send} <CheckCircle size={18} />
               </button>
             </form>
           </motion.div>
@@ -259,3 +285,4 @@ export default function Contact() {
     </section>
   );
 }
+
