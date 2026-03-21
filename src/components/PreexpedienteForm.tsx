@@ -110,19 +110,34 @@ export default function PreexpedienteForm() {
         payload.payment_receipt_url = publicUrlData.publicUrl;
       }
 
-      // 2. Enviar datos JSON al backend
-      const res = await fetch("/api/preexpediente", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
+      // 2. Enviar datos directamente a Supabase
+      const dbPayload = {
+        caller_name: payload.caller_name ? String(payload.caller_name).trim() : null,
+        caller_city: payload.caller_city ? String(payload.caller_city).trim() : null,
+        caller_email: payload.caller_email ? String(payload.caller_email).trim() : null,
+        caller_phone: payload.caller_phone ? String(payload.caller_phone).trim() : null,
+        caller_age: payload.caller_age ? Number(payload.caller_age) : null,
+        patient_name: payload.patient_name ? String(payload.patient_name).trim() : null,
+        patient_age: payload.patient_age ? Number(payload.patient_age) : null,
+        addiction_type: payload.addiction_type ? String(payload.addiction_type).trim() : null,
+        rehab_history: payload.rehab_history ? String(payload.rehab_history).trim() : null,
+        substances_consumed: payload.substances_consumed ? String(payload.substances_consumed).trim() : null,
+        patient_notes: payload.patient_notes ? String(payload.patient_notes).trim() : null,
+        budget: payload.budget ? Number(payload.budget) : null,
+        payment_frequency: payload.payment_frequency ? String(payload.payment_frequency).trim() : null,
+        therapy_type: payload.therapy_type ? String(payload.therapy_type).trim() : null,
+        payment_receipt_url: payload.payment_receipt_url ? String(payload.payment_receipt_url) : null,
+      };
+
+      const sup = getSupabase();
+      const { error: dbErr } = await sup.from("preexpediente").insert(dbPayload);
+
+      if (!dbErr) {
         form.reset();
         setToast({ type: "success", msg: "¡Preexpediente guardado exitosamente!" });
         setTimeout(() => setToast(null), 6000);
       } else {
-        const err = await res.json();
-        setToast({ type: "error", msg: err.error || "Error al guardar el formulario." });
+        setToast({ type: "error", msg: `Error en base de datos: ${dbErr.message}` });
         setTimeout(() => setToast(null), 8000);
       }
     } catch {

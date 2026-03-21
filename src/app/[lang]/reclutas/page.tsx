@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Briefcase } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import Link from "next/link";
+import { getSupabase } from "@/lib/supabase";
 
 export default function ReclutasPage() {
   const { lang } = useI18n();
@@ -107,12 +108,15 @@ export default function ReclutasPage() {
     };
 
     try {
-      const res = await fetch("/api/reclutas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
+      const sup = getSupabase();
+      const dbPayload = {
+        ...payload,
+        status: "pendiente"
+      };
+
+      const { error: dbErr } = await sup.from("reclutas").insert(dbPayload);
+
+      if (!dbErr) {
         setSubmitted(true);
       } else {
         setError(copy.errorMsg);

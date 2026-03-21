@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPostBySlug } from "@/lib/blog";
+import { getPostBySlug, getPosts } from "@/lib/blog";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -7,6 +7,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, BookOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+
+export async function generateStaticParams() {
+  const postsEn = getPosts("en");
+  const postsEs = getPosts("es");
+  
+  const paramsEn = postsEn.map((p) => ({ lang: "en", slug: p.slug }));
+  const paramsEs = postsEs.map((p) => ({ lang: "es", slug: p.slug }));
+  
+  return [...paramsEn, ...paramsEs];
+}
 
 export default async function BlogPostPage({
   params,
