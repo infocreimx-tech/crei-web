@@ -5,7 +5,8 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
-import { getSupabase } from "@/lib/supabase";
+
+
 
 export default function Contact() {
   const { lang } = useI18n();
@@ -102,20 +103,12 @@ export default function Contact() {
       consentimiento: fd.get("consentimiento") ? 1 : 0
     };
     try {
-      const sup = getSupabase();
-      const dbPayload = {
-        full_name: payload.nombre,
-        email: payload.email,
-        phone: payload.telefono,
-        service: payload.servicio,
-        message: payload.mensaje || null,
-        privacy_consent: payload.consentimiento === 1,
-        status: "pending"
-      };
-
-      const { error: dbErr } = await sup.from("appointments").insert(dbPayload);
-
-      if (!dbErr) {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
         form.reset();
         setShowToast(true);
       }

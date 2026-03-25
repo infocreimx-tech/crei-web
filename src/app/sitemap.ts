@@ -1,7 +1,5 @@
 import type { MetadataRoute } from "next";
 
-export const dynamic = "force-static";
-
 const base = "https://crei.mx";
 
 export default function sitemap(): MetadataRoute.Sitemap {

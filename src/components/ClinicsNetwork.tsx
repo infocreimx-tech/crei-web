@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Send, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
-import { getSupabase } from "@/lib/supabase";
 
 export default function ClinicsNetwork() {
   const { lang } = useI18n();
@@ -93,19 +92,15 @@ export default function ClinicsNetwork() {
     };
 
     try {
-      const sup = getSupabase();
-      const dbPayload = {
-        clinic_name: payload.clinic_name,
-        owner_name: payload.owner_name,
-        phone: payload.phone,
-        location: payload.location,
-        status: "pendiente"
-      };
+      const res = await fetch("/api/reclutamiento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      const { error: dbErr } = await sup.from("reclutamiento").insert(dbPayload);
-
-      if (dbErr) {
-        throw new Error(dbErr.message);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || copy.errorGeneric);
       }
 
       form.reset();
