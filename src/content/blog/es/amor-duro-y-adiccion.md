@@ -1,5 +1,5 @@
 ---
-title: "Amor duro: por qué ayudar demasiado puede alimentar la adicción"
+title: "Amar con límite: por qué ayudar demasiado puede alimentar la adicción"
 excerpt: "Entiende la diferencia entre apoyar genuinamente a un ser querido y sostener su enfermedad, y aprende por qué establecer límites claros nace del amor."
 category: "Adicciones y Familia"
 readTime: "4 min lectura"
@@ -15,7 +15,7 @@ Pero en muchos casos, esa ayuda termina convirtiéndose en algo muy diferente: *
 
 ![Límites sanos](/blog/limites-sanos.jpg)
 
-El amor duro es una actitud que muchos familiares deben aprender cuando descubren que un ser querido ha sucumbido ante la enfermedad de la adicción.
+Amar con límite es una actitud que muchos familiares deben aprender cuando descubren que un ser querido ha sucumbido ante la enfermedad de la adicción.
 
 Aceptar esta realidad implica comprender algo profundamente difícil: **la vida de nuestro ser querido no nos pertenece**. No podemos vivirla por él ni tomar decisiones en su lugar.
 
@@ -37,9 +37,9 @@ Pero muchas veces ocurre lo contrario.
 
 > Sin darnos cuenta, creamos un entorno donde la persona puede seguir consumiendo sin enfrentar las consecuencias de su enfermedad.
 
-## ¿Qué es realmente el "Amor Duro"?
+## ¿Qué es realmente "Amar con límite"?
 
-El amor duro propone algo diferente. Consiste en establecer límites claros y firmes, incluso cuando eso resulta doloroso.
+Amar con límite propone algo diferente. Consiste en establecer límites claros y firmes, incluso cuando eso resulta doloroso.
 
 No nace del odio ni del resentimiento. **Nace del amor.**
 
