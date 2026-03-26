@@ -32,28 +32,6 @@ export default function Journal({ articles }: JournalProps) {
   return (
     <section className="py-32 bg-secondary/20">
       <div className="container mx-auto px-6">
-        {/* EBOOK CTA BANNER NUEVO */}
-        <div className="bg-primary text-secondary mb-20 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2000')] bg-cover bg-center opacity-10 group-hover:opacity-20 transition-opacity duration-700" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
-          
-          <div className="relative z-10 max-w-2xl">
-            <span className="text-accent font-medium tracking-widest uppercase text-sm mb-3 block">Nuevo Lanzamiento</span>
-            <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">La salida es hacia adentro</h3>
-            <p className="text-white/80 text-lg mb-8 max-w-xl">
-              Sí, necesitas estructura. Sí, necesitas grupo, terapia y guía profesional. Pero también puedes recuperar tu vida con fuego, con hielo, con energía y propósito. Descubre el nuevo formato de cuaderno de Fer Núñez.
-            </p>
-            <Link href={`/${lang}/ebook`} className="inline-flex items-center gap-2 bg-accent text-white px-8 py-4 rounded-full font-bold hover:bg-accent/90 transition-transform hover:scale-105 active:scale-95 shadow-xl">
-              <BookOpen className="w-5 h-5" />
-              Ver este BLOG / eBook
-            </Link>
-          </div>
-          
-          <div className="relative z-10 hidden md:block w-48 h-64 shadow-2xl rounded-sm overflow-hidden transform group-hover:-rotate-3 transition-transform duration-500">
-            <Image src="/blog/eeboock.jpeg" alt="Ebook Cover" fill className="object-cover" />
-          </div>
-        </div>
-
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <span className="text-accent font-medium tracking-widest uppercase text-sm mb-2 block">
