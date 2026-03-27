@@ -57,7 +57,9 @@ export default function IframeAppContainer() {
           <div className="h-6 w-px bg-stone-200" />
           <h2 className="font-bold text-primary flex items-center gap-2">
             Módulo: <span className="text-stone-800">{appNames[appId]}</span>
-            <ShieldCheck className="w-4 h-4 text-emerald-500 ml-1" title="SSO Inyectado Correctamente" />
+            <span title="SSO Inyectado Correctamente">
+              <ShieldCheck className="w-4 h-4 text-emerald-500 ml-1" />
+            </span>
           </h2>
         </div>
 
