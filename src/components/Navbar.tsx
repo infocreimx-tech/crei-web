@@ -111,6 +111,20 @@ export default function Navbar() {
           </Link>
 
           <Link
+            href={`/${lang}/portal-terapeutas`}
+            className="text-xs font-bold tracking-widest uppercase text-emerald-600 border border-emerald-600/20 px-3 py-1.5 rounded-md hover:bg-emerald-600 hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            {lang === "en" ? "Therapist Access" : "Acceso a Terapeuta"}
+          </Link>
+
+          <Link
+            href={`/${lang}/portal-pago`}
+            className="text-xs font-bold tracking-widest uppercase text-accent border border-accent/40 bg-accent/5 px-3 py-1.5 rounded-md hover:bg-accent hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            {lang === "en" ? "Payment Portal" : "Portal de Pagos"}
+          </Link>
+
+          <Link
             href={`/${lang}/#contacto`}
             aria-label={lang === "en" ? "Go to contact to schedule an evaluation" : "Ir a contacto para agendar evaluación"}
             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -182,6 +196,22 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {lang === "en" ? "Patient Portal" : "Portal del Paciente"}
+              </Link>
+
+              <Link
+                href={`/${lang}/portal-terapeutas`}
+                className="text-sm font-bold uppercase tracking-wider text-emerald-600 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {lang === "en" ? "Therapist Access" : "Acceso a Terapeuta"}
+              </Link>
+
+              <Link
+                href={`/${lang}/portal-pago`}
+                className="text-sm font-bold uppercase tracking-wider text-accent py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {lang === "en" ? "Payment Portal" : "Portal de Pagos"}
               </Link>
 
               <Link

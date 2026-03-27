@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Inyeccion Magistral SSO CREI -->
+    <script src="/legacy-apps/injectSSO.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Terapias — CREI</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css?v=4">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        /* -------- Admin-only sections hidden by default -------- */
+        .admin-only { display: none; }
+
+        /* Panel de Cambio de Contraseña */
+        #adminPanel {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 1px solid #4f46e5;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 30px;
+        }
+        #adminPanel h2 { color: #c7d2fe; margin-top: 0; margin-bottom: 24px; font-size: 1.25rem; }
+        .admin-form-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+        .admin-form-row .field { flex: 1; min-width: 180px; }
+        .admin-form-row .field label { display: block; margin-bottom: 6px; color: #a5b4fc; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+        .admin-form-row .field select,
+        .admin-form-row .field input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #4338ca; background: #1e1b4b; color: #e2e8f0; font-size: 15px; }
+        .btn-admin { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; border: none; border-radius: 10px; padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .btn-admin:hover { opacity: .88; }
+        #adminMsg { margin-top: 12px; font-size: 14px; min-height: 20px; }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-logo">GT</div>
+            <div class="brand-text">
+                <h1>Gestión de Terapias</h1>
+                <p>Registro y control de pagos — CREI</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span id="userBadge" class="badge badge-ok" style="display:none"></span>
+            <button id="logoutBtn" class="btn btn-ghost">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="app-grid" id="mainContent" style="display:none">
+
+        <!-- ================================================
+             PANEL ADMIN — Solo visible para el usuario Admin
+             ================================================ -->
+        <section id="adminPanel" class="admin-only" style="grid-column: span 12;">
+
+            <!-- Sub-panel 1: Cambiar contraseña -->
+            <h2>🔐 Cambiar Contraseña de Terapeuta</h2>
+            <form id="adminPassForm" class="admin-form-row">
+                <div class="field">
+                    <label>Selecciona Terapeuta</label>
+                    <select id="adminUser" required>
+                        <option value="">Cargando lista…</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Nueva Contraseña</label>
+                    <input id="adminPass1" type="password" placeholder="Nueva contraseña" required>
+                </div>
+                <div class="field">
+                    <label>Confirmar Contraseña</label>
+                    <input id="adminPass2" type="password" placeholder="Repite la contraseña" required>
+                </div>
+                <button type="submit" class="btn-admin">Actualizar Contraseña</button>
+            </form>
+            <div id="adminMsg"></div>
+
+            <hr style="border-color:#4338ca;margin:28px 0;">
+
+            <!-- Sub-panel 2: Gestionar terapeutas -->
+            <h2>👥 Gestionar Terapeutas</h2>
+            <div class="admin-form-row" style="align-items:flex-start;gap:40px;flex-wrap:wrap;">
+
+                <!-- Agregar -->
+                <div style="flex:1;min-width:260px;">
+                    <div style="color:#a5b4fc;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Agregar nuevo terapeuta</div>
+                    <form id="agregarTerForm">
+                        <div class="field" style="margin-bottom:12px;">
+                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Nombre de usuario</label>
+                            <input id="nuevoTerNombre" type="text" placeholder="Ej. Mario" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
+                        </div>
+                        <div class="field" style="margin-bottom:16px;">
+                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Contraseña inicial</label>
+                            <input id="nuevoTerPass" type="password" placeholder="Contraseña" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
+                        </div>
+                        <button type="submit" class="btn-admin" style="background:linear-gradient(135deg,#059669,#10b981);">+ Agregar Terapeuta</button>
+                    </form>
+                    <div id="agregarMsg" style="margin-top:10px;font-size:14px;"></div>
+                </div>
+
+                <!-- Eliminar -->
+                <div style="flex:1;min-width:260px;">
+                    <div style="color:#fca5a5;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Eliminar terapeuta</div>
+                    <form id="eliminarTerForm">
+                        <div class="field" style="margin-bottom:16px;">
+                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Selecciona terapeuta</label>
+                            <select id="eliminarTerSel" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #991b1b;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
+                                <option value="">Cargando lista…</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-admin" style="background:linear-gradient(135deg,#b91c1c,#ef4444);">✕ Eliminar Terapeuta</button>
+                    </form>
+                    <div id="eliminarMsg" style="margin-top:10px;font-size:14px;"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================================================
+             FORMULARIO DE NUEVO REGISTRO
+             ================================================ -->
+        <section class="card">
+            <h2>Nuevo Registro</h2>
+            <form id="registroForm" class="form-grid">
+                <div class="field">
+                    <label for="fecha">Fecha</label>
+                    <input id="fecha" name="fecha" type="date" required>
+                </div>
+                <div class="field">
+                    <label for="terapeuta">Terapeuta</label>
+                    <select id="terapeuta" name="terapeuta" required>
+                        <option value="">Cargando…</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="tipoPago">Tipo de Pago</label>
+                    <select id="tipoPago" name="tipoPago" required>
+                        <option value="">Selecciona…</option>
+                        <option>Semanal</option>
+                        <option>Quincenal</option>
+                        <option>Mensual</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="monto">Monto Total</label>
+                    <input id="monto" name="monto" type="number" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                <div class="field file">
+                    <label for="comprobante">Comprobante</label>
+                    <input id="comprobante" name="comprobante" type="file" accept="image/*,.pdf" required>
+                </div>
+
+                <!-- Distribución — solo visible para ADMIN -->
+                <div class="distribution admin-only" id="distBlock">
+                    <div class="dist-item"><div class="dist-label">CREI %</div><div id="creiPct" class="dist-value">0%</div></div>
+                    <div class="dist-item"><div class="dist-label">Terapeuta %</div><div id="terPct" class="dist-value">0%</div></div>
+                    <div class="dist-item"><div class="dist-label">CREI $</div><div id="creiMonto" class="dist-value">$0.00</div></div>
+                    <div class="dist-item"><div class="dist-label">Terapeuta $</div><div id="terMonto" class="dist-value">$0.00</div></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Guardar en Nube</button>
+                    <button type="reset" class="btn btn-ghost">Limpiar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Resumen financiero — solo Admin -->
+        <section class="card admin-only" id="resumenCard">
+            <h2>Resumen Financiero</h2>
+            <div class="summary">
+                <div class="summary-item"><div class="summary-label">Semana ISO</div><div id="resSemana" class="summary-value">-</div></div>
+                <div class="summary-item"><div class="summary-label">Total General</div><div id="resTotal" class="summary-value">$0.00</div></div>
+                <div class="summary-item"><div class="summary-label">CREI Ganado</div><div id="resCrei" class="summary-value">$0.00</div></div>
+                <div class="summary-item"><div class="summary-label">Terapeuta Ganado</div><div id="resTer" class="summary-value">$0.00</div></div>
+            </div>
+            <button id="btnEnviarCorreo" class="btn btn-primary" type="button" style="margin-top: 24px; width: 100%; background: linear-gradient(135deg, #10b981, #059669); font-weight: 800; font-size: 15px; box-shadow: 0 4px 15px rgba(16,185,129,0.3); border:none; transition: all 0.2s ease; cursor: pointer;">
+                <span id="btnEnviarText">✉️ Enviar a mi correo el Resumen Financiero</span>
+            </button>
+        </section>
+
+        <!-- Directorio de Pacientes -->
+        <section class="card">
+            <h2>Directorio de Pacientes</h2>
+            <div class="table-responsive" style="margin-top:20px;">
+                <table id="tablaPacientes">
+                    <thead><tr><th>Nombre</th><th>Apellido</th><th>Fecha Registro</th><th>Estado</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tabla de Registros completa -->
+        <section class="card table-card" style="grid-column:span 12;">
+            <div class="table-header">
+                <h2>Registros de Terapias</h2>
+                <div class="table-actions">
+                    <select id="filtroTerapeuta" class="admin-only" style="padding:10px;border-radius:10px;background:#1e293b;color:#fff;border:none;">
+                        <option value="">Todos los Terapeutas</option>
+                    </select>
+                    <input id="filtroDesde" type="date" class="admin-only" title="Desde" style="padding:10px;border-radius:10px;background:#1e293b;color:#fff;border:none;">
+                    <input id="filtroHasta" type="date" class="admin-only" title="Hasta" style="padding:10px;border-radius:10px;background:#1e293b;color:#fff;border:none;">
+                    <button id="btnDescargarZip" class="btn btn-primary admin-only" type="button" style="background:#6366f1;">Exportar ZIP</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table id="tablaRegistros">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Semana</th>
+                            <th>Terapeuta</th>
+                            <th>Tipo Pago</th>
+                            <!-- Las siguientes columnas solo las ve Admin -->
+                            <th class="admin-only col-admin">Monto</th>
+                            <th class="admin-only col-admin">CREI %</th>
+                            <th class="admin-only col-admin">Ter %</th>
+                            <th class="admin-only col-admin">CREI $</th>
+                            <th class="admin-only col-admin">Ter $</th>
+                            <th>Comprobante</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+
+
+<script>
+// ============================================================
+// CONFIGURACIÓN SUPABASE
+// ============================================================
+const SUPABASE_URL = "https://uywihjppwzrrfjkguvot.supabase.co";
+const SUPABASE_KEY = "sb_publishable_oW-4o2d_roO8yYzTwHdIww_gjO0hL1S";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SESSION_KEY = "crei_session";
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch { return null; }
+}
+function setSession(data) { localStorage.setItem(SESSION_KEY, JSON.stringify(data)); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+function isAdmin(s) { return s && String(s.user).trim() === "Admin"; }
+function isCrei(s)  { return s && String(s.user).trim().toLowerCase() === "crei"; }
+
+function showAdminElements() {
+    document.querySelectorAll(".admin-only").forEach(el => {
+        // Las columnas de tabla necesitan "table-cell", el resto "block"
+        el.style.display = el.tagName === "TH" || el.tagName === "TD" ? "table-cell" : "block";
+    });
+}
+
+function getIsoWeekCode(dStr) {
+    const d = new Date(dStr + "T12:00:00");
+    d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+    const w1 = new Date(d.getFullYear(), 0, 4);
+    return d.getFullYear() + "-W" + String(1 + Math.round(((d - w1) / 86400000 - 3 + (w1.getDay() + 6) % 7) / 7)).padStart(2, "0");
+}
+
+// ============================================================
+// LOGIN / SALIR
+// ============================================================
+function logout() { 
+    clearSession(); 
+    if (window.parent) {
+        window.parent.location.href = '/es/portal-terapeutas';
+    } else {
+        window.location.href = '/es/portal-terapeutas';
+    }
+}
+
+// ============================================================
+// CARGAR TERAPEUTAS DESDE SUPABASE Y POPULAR SELECTS
+// ============================================================
+let _terapeutas = []; // cache
+
+async function cargarTerapeutas() {
+    const { data, error } = await sb.rpc("get_terapeutas");
+    if (error || !data) return;
+    _terapeutas = data;
+    popularSelectsTerapeutas(data);
+}
+
+function popularSelectsTerapeutas(lista) {
+    const ids = ["terapeuta", "adminUser", "eliminarTerSel", "filtroTerapeuta"];
+    const firstOpts = {
+        terapeuta: "Selecciona terapeuta…",
+        adminUser: "Selecciona usuario…",
+        eliminarTerSel: "Selecciona terapeuta…",
+        filtroTerapeuta: "Todos los Terapeutas"
+    };
+
+    ids.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const current = sel.value;
+        sel.innerHTML = `<option value="">${firstOpts[id]}</option>`;
+        lista.forEach(t => {
+            const opt = document.createElement("option");
+            opt.value = t.username;
+            opt.textContent = t.username;
+            sel.appendChild(opt);
+        });
+        if (current) sel.value = current;
+    });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function initApp() {
+    const sess = getSession();
+    if (!sess) { 
+        if (window.parent) {
+            window.parent.location.href = '/es/portal-terapeutas';
+        } else {
+            window.location.href = '/es/portal-terapeutas';
+        }
+        return; 
+    }
+
+    const userIsAdmin = isAdmin(sess);
+    const userIsCrei  = isCrei(sess);
+
+    // Mostrar badge y contenido
+    document.getElementById("userBadge").textContent = sess.user;
+    document.getElementById("userBadge").style.display = "inline-block";
+    document.getElementById("mainContent").style.display = "";
+
+    // Cargar terapeutas desde Supabase
+    await cargarTerapeutas();
+
+    // — Admin: ve todo —
+    if (userIsAdmin) {
+        showAdminElements();
+        // Registrar eventos de los formularios de gestión de terapeutas
+        document.getElementById("agregarTerForm")?.addEventListener("submit", agregarTerapeuta);
+        document.getElementById("eliminarTerForm")?.addEventListener("submit", eliminarTerapeuta);
+    }
+
+
+
+    // Eventos de filtros admin
+    document.getElementById("filtroTerapeuta")?.addEventListener("change", cargarRegistros);
+    document.getElementById("filtroDesde")?.addEventListener("change", cargarRegistros);
+    document.getElementById("filtroHasta")?.addEventListener("change", cargarRegistros);
+    document.getElementById("terapeuta")?.addEventListener("change", actualizarPrevia);
+
+    cargarRegistros();
+    cargarPacientes();
+    actualizarPrevia();
+}
+
+// ============================================================
+// ADMIN — AGREGAR TERAPEUTA
+// ============================================================
+async function agregarTerapeuta(e) {
+    e.preventDefault();
+    const sess = getSession();
+    if (!isAdmin(sess)) return;
+
+    const nombre = String(document.getElementById("nuevoTerNombre").value || "").trim();
+    const pass   = String(document.getElementById("nuevoTerPass").value || "").trim();
+    const msg    = document.getElementById("agregarMsg");
+
+    if (!nombre || !pass) { msg.style.color = "#fca5a5"; msg.textContent = "Completa nombre y contraseña."; return; }
+    if (pass.length < 4)  { msg.style.color = "#fca5a5"; msg.textContent = "La contraseña debe tener al menos 4 caracteres."; return; }
+
+    const btn = e.submitter;
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+        const { data: res, error } = await sb.rpc("admin_add_terapeuta", {
+            p_admin_name: sess.user,
+            p_username: nombre,
+            p_password: pass
+        });
+        if (error) throw new Error(error.message);
+        if (!res?.success) throw new Error(res?.error || "Error desconocido");
+
+        msg.style.color = "#6ee7b7";
+        msg.textContent = `✅ Terapeuta "${nombre}" agregado exitosamente.`;
+        e.target.reset();
+        await cargarTerapeutas(); // Recargar listas
+    } catch(err) {
+        msg.style.color = "#fca5a5";
+        msg.textContent = "❌ " + err.message;
+    } finally {
+        btn.textContent = "+ Agregar Terapeuta"; btn.disabled = false;
+    }
+}
+
+// ============================================================
+// ADMIN — ELIMINAR TERAPEUTA
+// ============================================================
+async function eliminarTerapeuta(e) {
+    e.preventDefault();
+    const sess = getSession();
+    if (!isAdmin(sess)) return;
+
+    const nombre = document.getElementById("eliminarTerSel").value;
+    const msg    = document.getElementById("eliminarMsg");
+
+    if (!nombre) { msg.style.color = "#fca5a5"; msg.textContent = "Selecciona un terapeuta."; return; }
+    if (!confirm(`¿Seguro que deseas eliminar al terapeuta "${nombre}"? Esta acción no se puede deshacer.`)) return;
+
+    const btn = e.submitter;
+    btn.textContent = "Eliminando…"; btn.disabled = true;
+
+    try {
+        const { data: res, error } = await sb.rpc("admin_remove_terapeuta", {
+            p_admin_name: sess.user,
+            p_username: nombre
+        });
+        if (error) throw new Error(error.message);
+        if (!res?.success) throw new Error(res?.error || "Error desconocido");
+
+        msg.style.color = "#6ee7b7";
+        msg.textContent = `✅ Terapeuta "${nombre}" eliminado exitosamente.`;
+        e.target.reset();
+        await cargarTerapeutas(); // Recargar listas
+    } catch(err) {
+        msg.style.color = "#fca5a5";
+        msg.textContent = "❌ " + err.message;
+    } finally {
+        btn.textContent = "✕ Eliminar Terapeuta"; btn.disabled = false;
+    }
+}
+
+// ============================================================
+// PREVIA DISTRIBUCIÓN (solo cálculo, Admin la ve)
+// ============================================================
+function actualizarPrevia() {
+    const monto = parseFloat(document.getElementById("monto")?.value) || 0;
+    const terapeuta = document.getElementById("terapeuta")?.value || "";
+    const creiPct = (String(terapeuta).toUpperCase() === "CREI") ? 100 : 50;
+    const terPct  = 100 - creiPct;
+    document.getElementById("creiPct").textContent  = creiPct + "%";
+    document.getElementById("terPct").textContent   = terPct + "%";
+    document.getElementById("creiMonto").textContent = "$" + (monto * creiPct / 100).toFixed(2);
+    document.getElementById("terMonto").textContent  = "$" + (monto * terPct / 100).toFixed(2);
+}
+
+// ============================================================
+// GUARDAR REGISTRO
+// ============================================================
+async function handleRegistro(e) {
+    e.preventDefault();
+    const sess = getSession();
+    if (!sess) return;
+
+    const terapeuta = document.getElementById("terapeuta").value;
+    if (!terapeuta) { alert("Selecciona un terapeuta"); return; }
+    
+    const fecha   = document.getElementById("fecha").value;
+    const tipo    = document.getElementById("tipoPago").value;
+    const monto   = parseFloat(document.getElementById("monto").value) || 0;
+    const creiPct = (String(terapeuta).toUpperCase() === "CREI") ? 100 : 50;
+    const terPct  = 100 - creiPct;
+
+    const fileInput = document.getElementById("comprobante");
+    if (!fileInput.files?.length) { alert("Sube el comprobante primero"); return; }
+    const file = fileInput.files[0];
+
+    const btn = document.querySelector("#registroForm button[type='submit']");
+    btn.textContent = "Subiendo…"; btn.disabled = true;
+
+    try {
+        // Obtener ID del terapeuta
+        const { data: tRow } = await sb.from("usuarios").select("id").eq("username", terapeuta).single();
+        if (!tRow) throw new Error("Terapeuta no encontrado en la BD");
+
+        // Upload Storage
+        const ext = file.name.split(".").pop();
+        const path = `${Date.now()}_${terapeuta.replace(/\s/g,"")}.${ext}`;
+        const { error: upErr } = await sb.storage.from("comprobantes_terapias").upload(path, file);
+        if (upErr) throw new Error("Error subiendo imagen: " + upErr.message);
+
+        const { data: urlData } = sb.storage.from("comprobantes_terapias").getPublicUrl(path);
+
+        const { error: insErr } = await sb.from("terapias").insert({
+            fecha, semana_code: getIsoWeekCode(fecha),
+            terapeuta_id: tRow.id, tipo_pago: tipo, monto,
+            crei_pct: creiPct, ter_pct: terPct,
+            crei_monto: monto * creiPct / 100, ter_monto: monto * terPct / 100,
+            comprobante_url: urlData.publicUrl
+        });
+        if (insErr) throw new Error("Error guardando registro: " + insErr.message);
+
+        e.target.reset();
+        actualizarPrevia();
+        cargarRegistros();
+        alert("✅ Registro guardado exitosamente en la nube.");
+    } catch(err) {
+        alert("❌ " + err.message);
+    } finally {
+        btn.textContent = "Guardar en Nube"; btn.disabled = false;
+    }
+}
+
+// ============================================================
+// CARGAR REGISTROS
+// ============================================================
+async function cargarRegistros() {
+    const sess = getSession();
+    if (!sess) return;
+
+    let q = sb.from("terapias").select("*, usuarios(username)").order("fecha", { ascending: false }).limit(200);
+
+    if (isAdmin(sess)) {
+        const ter   = document.getElementById("filtroTerapeuta")?.value;
+        const desde = document.getElementById("filtroDesde")?.value;
+        const hasta = document.getElementById("filtroHasta")?.value;
+        if (ter) {
+            const { data: t } = await sb.from("usuarios").select("id").eq("username", ter).single();
+            if (t) q = q.eq("terapeuta_id", t.id);
+        }
+        if (desde) q = q.gte("fecha", desde);
+        if (hasta) q = q.lte("fecha", hasta);
+    } else {
+        q = q.eq("terapeuta_id", sess.id);
+    }
+
+    const { data, error } = await q;
+    if (error) { console.error(error); return; }
+
+    // Resumen admin
+    if (isAdmin(sess)) {
+        let tot = 0, cTot = 0, tTot = 0;
+        data.forEach(r => { tot += +r.monto; cTot += +r.crei_monto; tTot += +r.ter_monto; });
+        document.getElementById("resTotal").textContent = "$" + tot.toFixed(2);
+        document.getElementById("resCrei").textContent  = "$" + cTot.toFixed(2);
+        document.getElementById("resTer").textContent   = "$" + tTot.toFixed(2);
+        if (data.length) document.getElementById("resSemana").textContent = data[0].semana_code || "-";
+    }
+
+    const tbody = document.querySelector("#tablaRegistros tbody");
+    tbody.innerHTML = "";
+    const admin = isAdmin(sess);
+
+    data.forEach(r => {
+        const tr = document.createElement("tr");
+        const tName = r.usuarios?.username || "-";
+
+        // Columnas finan — solo Admin
+        const adminCols = admin ? `
+            <td style="font-weight:700;color:#f8fafc;">$${(+r.monto).toFixed(2)}</td>
+            <td>${r.crei_pct}%</td>
+            <td>${r.ter_pct}%</td>
+            <td style="color:#a78bfa;">$${(+r.crei_monto).toFixed(2)}</td>
+            <td style="color:#a78bfa;">$${(+r.ter_monto).toFixed(2)}</td>
+        ` : "";
+
+        tr.innerHTML = `
+            <td>${r.fecha}</td>
+            <td><span class="badge" style="background:#334155;">${r.semana_code || "-"}</span></td>
+            <td style="font-weight:600;">${tName}</td>
+            <td>${r.tipo_pago}</td>
+            ${adminCols}
+            <td>${r.comprobante_url ? `<a href="${r.comprobante_url}" target="_blank" style="color:#60a5fa;">🏞️ Ver</a>` : "N/A"}</td>
+            <td><span style="color:#10b981;">✔️</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// ============================================================
+// CARGAR PACIENTES
+// ============================================================
+async function cargarPacientes() {
+    const { data } = await sb.from("pacientes").select("*").order("created_at", { ascending: false }).limit(20);
+    const tbody = document.querySelector("#tablaPacientes tbody");
+    if (!tbody || !data) return;
+    tbody.innerHTML = "";
+    data.forEach(p => {
+        tbody.innerHTML += `<tr><td>${p.nombre}</td><td>${p.apellido||""}</td><td>${p.fecha_alta||""}</td><td style="color:#10b981;font-weight:bold;">☁️ Activo</td></tr>`;
+    });
+}
+
+// ============================================================
+// ADMIN — CAMBIAR CONTRASEÑA
+// ============================================================
+async function cambiarPassword(e) {
+    e.preventDefault();
+    const sess = getSession();
+    if (!isAdmin(sess)) { alert("Acceso denegado"); return; }
+
+    const target = document.getElementById("adminUser").value;
+    const p1 = document.getElementById("adminPass1").value;
+    const p2 = document.getElementById("adminPass2").value;
+    const msg = document.getElementById("adminMsg");
+
+    if (!target)     { msg.style.color = "#fca5a5"; msg.textContent = "Selecciona un usuario."; return; }
+    if (p1.length < 4) { msg.style.color = "#fca5a5"; msg.textContent = "La contraseña debe tener al menos 4 caracteres."; return; }
+    if (p1 !== p2)   { msg.style.color = "#fca5a5"; msg.textContent = "Las contraseñas no coinciden."; return; }
+
+    const btn = e.submitter;
+    const orig = btn.textContent;
+    btn.textContent = "Actualizando Nube…"; btn.disabled = true;
+    msg.textContent = "";
+
+    try {
+        const { data: res, error } = await sb.rpc("admin_update_password", {
+            p_admin_name: sess.user,
+            p_target_user: target,
+            p_new_password: p1
+        });
+        if (error) throw new Error(error.message);
+        if (!res?.success) throw new Error(res?.error || "Error desconocido");
+
+        msg.style.color = "#6ee7b7";
+        msg.textContent = `✅ Contraseña de ${target} actualizada correctamente.`;
+        e.target.reset();
+    } catch(err) {
+        msg.style.color = "#fca5a5";
+        msg.textContent = "❌ " + err.message;
+    } finally {
+        btn.textContent = orig; btn.disabled = false;
+    }
+}
+
+// ============================================================
+// ADMIN — DESCARGAR ZIP
+// ============================================================
+async function descargarZip() {
+    const sess = getSession();
+    if (!isAdmin(sess)) { alert("Solo el Admin puede descargar comprobantes."); return; }
+
+    const desde = document.getElementById("filtroDesde").value;
+    const hasta = document.getElementById("filtroHasta").value;
+    if (!desde || !hasta) { alert("Selecciona un rango de fechas primero."); return; }
+
+    const btn = document.getElementById("btnDescargarZip");
+    btn.textContent = "Descargando…"; btn.disabled = true;
+
+    try {
+        let q = sb.from("terapias").select("*, usuarios(username)").gte("fecha", desde).lte("fecha", hasta);
+        const ter = document.getElementById("filtroTerapeuta").value;
+        if (ter) {
+            const { data: t } = await sb.from("usuarios").select("id").eq("username", ter).single();
+            if (t) q = q.eq("terapeuta_id", t.id);
+        }
+        const { data: regs, error } = await q;
+        if (error) throw new Error(error.message);
+        if (!regs?.length) throw new Error("No hay registros en ese rango.");
+
+        const zip = new JSZip();
+        let csv = "ID,Fecha,Semana,Terapeuta,Tipo,Monto,CREI%,Ter%,CREI$,Ter$,URL\n";
+
+        for (const r of regs) {
+            const tName = r.usuarios?.username || "?";
+            csv += [r.id, r.fecha, r.semana_code, tName, r.tipo_pago, r.monto, r.crei_pct, r.ter_pct, r.crei_monto, r.ter_monto, r.comprobante_url].join(",") + "\n";
+            if (r.comprobante_url) {
+                try {
+                    const res = await fetch(r.comprobante_url);
+                    const blob = await res.blob();
+                    const ext = r.comprobante_url.split(".").pop().split("?")[0] || "jpg";
+                    zip.folder(tName).file(`${r.fecha}_${tName}_$${r.monto}.${ext}`, blob);
+                } catch(err) { console.warn("Imagen no descargada:", r.comprobante_url); }
+            }
+        }
+
+        zip.file("Reporte_Terapias.csv", csv);
+        btn.textContent = "Empaquetando…";
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, `Comprobantes_${desde}_${hasta}.zip`);
+    } catch(err) {
+        alert("Error al generar ZIP: " + err.message);
+    } finally {
+        btn.textContent = "Exportar ZIP"; btn.disabled = false;
+    }
+}
+
+// ============================================================
+// ENVIAR RESUMEN POR CORREO (PHP NATIVO)
+// ============================================================
+async function enviarCorteCorreo() {
+    const btn = document.getElementById("btnEnviarCorreo");
+    const txt = document.getElementById("btnEnviarText");
+    const orig = txt.textContent;
+    btn.disabled = true;
+    txt.textContent = "Enviando reporte encriptado...";
+    
+    try {
+        const payload = {
+            semana: document.getElementById("resSemana").textContent,
+            total: document.getElementById("resTotal").textContent,
+            crei: document.getElementById("resCrei").textContent,
+            ter: document.getElementById("resTer").textContent
+        };
+        const res = await fetch("enviar_resumen.php", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(data.success) {
+            alert("✅ ¡Corte financiero enviado exitosamente a lulu@crei.mx y mel@crei.mx!");
+        } else {
+            alert("❌ Fallo el envío: " + data.msg);
+        }
+    } catch(err) {
+        alert("Error de red enviando correo: " + err.message);
+    } finally {
+        btn.disabled = false;
+        txt.textContent = orig;
+    }
+}
+
+// ============================================================
+// BINDINGS
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("btnEnviarCorreo")?.addEventListener("click", enviarCorteCorreo);
+    document.getElementById("logoutBtn")?.addEventListener("click", logout);
+    document.getElementById("logoutBtn")?.addEventListener("click", logout);
+    document.getElementById("registroForm")?.addEventListener("submit", handleRegistro);
+    document.getElementById("adminPassForm")?.addEventListener("submit", cambiarPassword);
+    document.getElementById("btnDescargarZip")?.addEventListener("click", descargarZip);
+    document.getElementById("monto")?.addEventListener("input", actualizarPrevia);
+    initApp();
+});
+</script>
+</body>
+</html>

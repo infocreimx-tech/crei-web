@@ -1,0 +1,472 @@
+/* ============================================
+   CONFIGURACIÓN GLOBAL Y RESET
+   ============================================ */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #9333ea 100%);
+    background-attachment: fixed;
+}
+
+.app {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.app-header {
+    position: sticky;
+    top: 0;
+    backdrop-filter: saturate(140%) blur(8px);
+    background: rgba(15, 23, 42, .6);
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #22d3ee, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b1220;
+    font-weight: 800;
+}
+
+.brand-text h1 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: .2px;
+    color: #fff;
+}
+
+.brand-text p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+/* ============================================
+   GRID Y CARDS
+   ============================================ */
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 20px;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.card {
+    grid-column: span 12;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+}
+
+.card h2 {
+    margin: 0 0 12px 0;
+    color: #fff;
+    font-size: 18px;
+}
+
+/* ============================================
+   FORMULARIOS E INPUTS
+   ============================================ */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+}
+
+.field {
+    grid-column: span 6;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label {
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.field input:not([type="checkbox"]):not([type="radio"]),
+.field select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(0, 0, 0, .2);
+    border: 1px solid rgba(255, 255, 255, .2);
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+}
+
+.field input:not([type="checkbox"]):not([type="radio"])::placeholder {
+    color: rgba(226, 232, 240, .65);
+}
+
+.field select {
+    padding-right: 44px;
+    background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, .85) 50%),
+        linear-gradient(135deg, rgba(255, 255, 255, .85) 50%, transparent 50%);
+    background-position:
+        calc(100% - 20px) 50%,
+        calc(100% - 14px) 50%;
+    background-size: 7px 7px, 7px 7px;
+    background-repeat: no-repeat;
+}
+
+.field input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: .75;
+}
+
+.field input[type="file"] {
+    padding: 10px 12px;
+}
+
+.field input[type="file"]::-webkit-file-upload-button {
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.divider {
+    grid-column: span 12;
+    height: 1px;
+    background: rgba(255, 255, 255, .14);
+    margin: 6px 0;
+}
+
+.form-actions {
+    grid-column: span 12;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.distribution {
+    grid-column: span 12;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dist-item {
+    background: rgba(15, 23, 42, .45);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.dist-label {
+    color: rgba(226, 232, 240, .75);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dist-value {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.summary-item {
+    background: rgba(15, 23, 42, .45);
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.summary-label {
+    color: rgba(226, 232, 240, .75);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.summary-value {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.table-card .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.table-card .table-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.table-card .table-actions input,
+.table-card .table-actions select {
+    width: auto;
+    min-width: 160px;
+}
+
+.table-card .table-actions input[type="date"] {
+    min-width: 160px;
+}
+
+.table-card .table-actions button {
+    white-space: nowrap;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file {
+    grid-column: span 12;
+}
+
+.table-card {
+    grid-column: span 12;
+}
+
+@media (min-width: 900px) {
+    .card {
+        grid-column: span 6;
+    }
+    .card.table-card {
+        grid-column: span 12;
+    }
+}
+
+.field input:not([type="checkbox"]):not([type="radio"]):disabled,
+.field select:disabled {
+    opacity: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+/* --------------------------------------------
+   SOLUCIÓN FINAL RADIO BUTTONS CHROME
+   -------------------------------------------- */
+.field input[type="radio"].crei-ter-chk {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #fff; /* Borde blanco sólido para máximo contraste */
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    margin: 0 8px 0 0;
+    display: inline-block;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+}
+
+/* Cuando está seleccionado: Usamos un gradiente radial para dibujar el punto */
+/* Esto es mucho más compatible con Chrome que usar ::after */
+.field input[type="radio"].crei-ter-chk:checked {
+    background: radial-gradient(circle, #fff 40%, transparent 45%);
+    border-color: #22d3ee;
+    background-color: rgba(34, 211, 238, 0.4);
+}
+
+.field input[type="radio"].crei-ter-chk:hover {
+    border-color: #22d3ee;
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+.table-responsive {
+    overflow: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(15, 23, 42, .4);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    font-size: 13px;
+    color: #e2e8f0;
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+    text-align: left;
+}
+
+thead {
+    background: rgba(255, 255, 255, .05);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+.btn {
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #22d3ee, #3b82f6);
+    color: #0b1220;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .3);
+    color: #fff;
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+.hidden {
+    display: none !important;
+}
+
+.badge-ok {
+    background: rgba(16, 185, 129, .2);
+    color: #10b981;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 18px;
+}
+
+.modal-content {
+    background: rgba(11, 18, 32, .92);
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    width: min(520px, 100%);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .55);
+    backdrop-filter: blur(12px) saturate(130%);
+}
+
+.auth-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-brand {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #22d3ee, #3b82f6);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b1220;
+    font-weight: 900;
+    letter-spacing: .6px;
+    margin-bottom: 6px;
+}
+
+.auth-title {
+    margin: 0;
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+.auth-subtitle {
+    margin: 0;
+    color: rgba(226, 232, 240, .75);
+    font-size: 13px;
+}
+
+.auth-form {
+    margin-top: 12px;
+}
+
+.auth-form .field {
+    gap: 8px;
+}
+
+#authError {
+    color: #f87171;
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 4px;
+}

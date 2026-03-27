@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Inyeccion Magistral SSO CREI -->
+    <script src="/legacy-apps/injectSSO.js"></script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valoración confidencial | CREI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="%235b8cff"/><stop offset="1" stop-color="%238a5bff"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(%23g)"/><path d="M32 14c-6 9 6 10 0 18-5 6-2 10 0 18 2-8 5-12 0-18-6-8 6-9 0-18z" fill="white"/><circle cx="32" cy="32" r="4" fill="white"/></svg>'>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="logo">
+          <svg aria-hidden="true" width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+                <stop stop-color="#5b8cff"></stop>
+                <stop offset="1" stop-color="#8a5bff"></stop>
+              </linearGradient>
+            </defs>
+            <circle cx="32" cy="32" r="30" fill="url(#lg)"></circle>
+            <path d="M32 14c-6 9 6 10 0 18-5 6-2 10 0 18 2-8 5-12 0-18-6-8 6-9 0-18z" fill="white"></path>
+            <circle cx="32" cy="32" r="4" fill="white"></circle>
+          </svg>
+          <div class="brand">
+            <div class="brand-title">CREI</div>
+            <div class="brand-subtitle">Centro de Reestructuración Emocional Integral</div>
+          </div>
+        </div>
+        <div class="hero-text">
+          <h1>Información confidencial</h1>
+          <p>Esta valoración es confidencial y ayuda a entender tu caso para recomendar la mejor opción. Toma de 8 a 12 minutos.</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <noscript>Activa JavaScript para completar este formulario.</noscript>
+
+      <div class="form-card">
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+          <div class="progress-steps" id="progressSteps"></div>
+        </div>
+
+        <form id="creiForm" action="./process.php" method="post" novalidate>
+          <section class="step" data-step="1">
+            <h2>Contacto</h2>
+
+            <div class="field">
+              <label class="label required">¿Quién está pidiendo ayuda hoy?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="quien_ayuda" value="Mamá" required> <span>Mamá</span></label>
+                <label class="option"><input type="radio" name="quien_ayuda" value="Papá" required> <span>Papá</span></label>
+                <label class="option"><input type="radio" name="quien_ayuda" value="Soy yo quien busca ayuda" required> <span>Soy yo quien busca ayuda</span></label>
+                <label class="option"><input type="radio" name="quien_ayuda" value="Pareja" required> <span>Pareja</span></label>
+                <label class="option"><input type="radio" name="quien_ayuda" value="Ser querido" required> <span>Ser querido</span></label>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field">
+                <label class="label required">Nombre y apellido de quien contacta</label>
+                <input class="input" type="text" name="nombre_contacto" autocomplete="name" required>
+              </div>
+              <div class="field">
+                <label class="label required">Correo electrónico</label>
+                <input class="input" type="email" name="email" autocomplete="email" required>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field">
+                <label class="label required">Número de teléfono</label>
+                <input class="input" type="tel" name="telefono" placeholder="+52 55 0000 0000" required>
+              </div>
+              <div class="field">
+                <label class="label required">Fecha de nacimiento</label>
+                <input class="input" type="date" name="fecha_nacimiento" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label required">¿De qué ciudad y país nos estás contactando?</label>
+              <input class="input" type="text" name="ciudad_pais" required>
+            </div>
+
+            <div class="field">
+              <label class="label">Nombre de la persona por la que estás buscando ayuda</label>
+              <input class="input" type="text" name="nombre_persona">
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn next">Siguiente</button>
+            </div>
+          </section>
+
+          <section class="step" data-step="2">
+            <h2>Situación</h2>
+
+            <div class="field">
+              <label class="label required">¿Qué sustancias son parte del problema?</label>
+              <div class="options options-grid">
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Alcohol" required> <span>Alcohol</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Marihuana/Cannabis"> <span>Marihuana / Cannabis</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Benzodiacepinas"> <span>Benzodiacepinas</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Cocaína"> <span>Cocaína</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Cristal"> <span>Cristal</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Heroína"> <span>Heroína</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Inhalantes"> <span>Inhalantes</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Fentanilo"> <span>Fentanilo</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="Conductas sin sustancia"> <span>Conductas sin sustancia</span></label>
+                <label class="option"><input id="otroSustancia" type="checkbox" name="sustancias[]" value="Otros"> <span>Otros</span></label>
+                <label class="option"><input type="checkbox" name="sustancias[]" value="No estoy seguro"> <span>No estoy seguro</span></label>
+              </div>
+              <input class="input mt" type="text" id="otroSustanciaTexto" name="sustancias_otro" placeholder="Especifica si elegiste Otros">
+            </div>
+
+            <div class="field">
+              <label class="label required">¿Desde hace cuánto existe el consumo o el problema?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="tiempo_problema" value="1 mes a 1 año" required> <span>1 mes a 1 año</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="1 año a 2 años" required> <span>1 año a 2 años</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="2 años a 3 años" required> <span>2 a 3 años</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="4 años a 5 años" required> <span>4 a 5 años</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="5 años a 7 años" required> <span>5 a 7 años</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="7 años o más" required> <span>7 años o más</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="Otro" required> <span>Otro</span></label>
+                <label class="option"><input type="radio" name="tiempo_problema" value="No lo sé" required> <span>No lo sé</span></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label required">¿Qué tan recurrentes son los consumos?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="frecuencia" value="Diario" required> <span>Diario</span></label>
+                <label class="option"><input type="radio" name="frecuencia" value="Semanal" required> <span>Semanal</span></label>
+                <label class="option"><input type="radio" name="frecuencia" value="Quincenal" required> <span>Quincenal</span></label>
+                <label class="option"><input type="radio" name="frecuencia" value="Mensual" required> <span>Mensual</span></label>
+                <label class="option"><input type="radio" name="frecuencia" value="No lo sé" required> <span>No lo sé</span></label>
+                <label class="option"><input type="radio" name="frecuencia" value="Otro" required> <span>Otro</span></label>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn ghost back">Anterior</button>
+              <button type="button" class="btn next">Siguiente</button>
+            </div>
+          </section>
+
+          <section class="step" data-step="3">
+            <h2>Tratamientos</h2>
+
+            <div class="field">
+              <label class="label required">¿La persona ha intentado tratamiento antes?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="tratamiento_antes" value="Sí" required> <span>Sí</span></label>
+                <label class="option"><input type="radio" name="tratamiento_antes" value="No" required> <span>No</span></label>
+                <label class="option"><input type="radio" name="tratamiento_antes" value="No lo sé" required> <span>No lo sé</span></label>
+              </div>
+            </div>
+
+            <div class="field" id="tiposTratamiento">
+              <label class="label">¿Qué tipo de ayuda o tratamiento han intentado?</label>
+              <div class="options options-grid">
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Psicólogo"> <span>Psicólogo</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Psicólogo especialista en adicciones"> <span>Psicólogo especialista en adicciones</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Psiquiatra"> <span>Psiquiatra</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Psiquiatra especialista en adicciones"> <span>Psiquiatra especialista en adicciones</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Consejero/Coach/Terapeuta"> <span>Consejero/Coach/Terapeuta</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Consejero especialista adicciones y/o codependencia"> <span>Consejero especialista en adicciones y/o codependencia</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Internamiento/Clínica de rehabilitación"> <span>Internamiento/Clínica de rehabilitación</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Grupos de autoayuda"> <span>Grupos de autoayuda</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="Medicación"> <span>Medicación</span></label>
+                <label class="option"><input id="otroTratamiento" type="checkbox" name="tratamientos[]" value="Otro"> <span>Otro</span></label>
+                <label class="option"><input type="checkbox" name="tratamientos[]" value="No lo sé"> <span>No lo sé</span></label>
+              </div>
+              <input class="input mt" type="text" id="otroTratamientoTexto" name="tratamientos_otro" placeholder="Especifica si elegiste Otro">
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn ghost back">Anterior</button>
+              <button type="button" class="btn next">Siguiente</button>
+            </div>
+          </section>
+
+          <section class="step" data-step="4">
+            <h2>Más información</h2>
+
+            <div class="field">
+              <label class="label">¿Por qué medio conociste a CREI?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="medio_conocio" value="Facebook"> <span>Facebook</span></label>
+                <label class="option"><input type="radio" name="medio_conocio" value="Tik Tok"> <span>Tik Tok</span></label>
+                <label class="option"><input type="radio" name="medio_conocio" value="Instagram"> <span>Instagram</span></label>
+                <label class="option"><input type="radio" name="medio_conocio" value="Youtube"> <span>Youtube</span></label>
+                <label class="option"><input type="radio" name="medio_conocio" value="Recomendación"> <span>Recomendación de un familiar o amigo</span></label>
+                <label class="option"><input id="medioOtro" type="radio" name="medio_conocio" value="Otro"> <span>Otro</span></label>
+              </div>
+              <input class="input mt" type="text" id="medioOtroTexto" name="medio_otro" placeholder="Especifica si elegiste Otro">
+            </div>
+
+            <div class="field">
+              <label class="label">¿Cuántos internamientos ha tenido? (Responde sólo si aplica)</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="internamientos" value="No aplica"> <span>No aplica</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="1"> <span>1</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="2"> <span>2</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="3"> <span>3</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="4"> <span>4</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="5"> <span>5</span></label>
+                <label class="option"><input type="radio" name="internamientos" value="6 en adelante"> <span>6 en adelante</span></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">¿En qué lugares has recibido ayuda anteriormente?</label>
+              <input class="input" type="text" name="lugares_previos" placeholder="Clínicas, tratamientos, terapeutas, psicólogos u otros">
+            </div>
+
+            <div class="field">
+              <label class="label">A lo largo de este proceso ¿aproximadamente cuánto se ha invertido en buscar ayuda?</label>
+              <div class="options">
+                <label class="option"><input type="radio" name="inversion" value="$0 MXN / USD $0"> <span>$0 (MXN) / USD $0</span></label>
+                <label class="option"><input type="radio" name="inversion" value="$1 a $5,000 MXN / USD $1 a $250"> <span>$1 a $5,000 MXN / USD $1 a $250</span></label>
+                <label class="option"><input type="radio" name="inversion" value="$5,000 a $15,000 MXN / USD $250 a $750"> <span>$5,000 a $15,000 MXN / USD $250 a $750</span></label>
+                <label class="option"><input type="radio" name="inversion" value="$15,000 a $30,000 MXN / USD $750 a $1500"> <span>$15,000 a $30,000 MXN / USD $750 a $1500</span></label>
+                <label class="option"><input type="radio" name="inversion" value="$30,000 a $75,000 MXN / USD $1500 a $3750"> <span>$30,000 a $75,000 MXN / USD $1500 a $3750</span></label>
+                <label class="option"><input type="radio" name="inversion" value="$75,000 a $100,000 MXN / USD $3750 a $5000"> <span>$75,000 a $100,000 MXN / USD $3750 a $5000</span></label>
+                <label class="option"><input type="radio" name="inversion" value="Más de $100,000 MXN / más de USD $5000"> <span>Más de $100,000 MXN / más de USD $5000</span></label>
+                <label class="option"><input type="radio" name="inversion" value="Otro"> <span>Otro</span></label>
+                <label class="option"><input type="radio" name="inversion" value="No lo sé"> <span>No lo sé</span></label>
+                <label class="option"><input type="radio" name="inversion" value="Prefiero no responder"> <span>Prefiero no responder</span></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label required">En este momento ¿qué tipo de ayuda sientes que estás buscando?</label>
+              <div class="options options-grid">
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="Orientación gratuita" required> <span>Orientación gratuita para entender qué hacer</span></label>
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="Profesional especializado"> <span>Acompañamiento con profesional especializado</span></label>
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="Internamiento"> <span>Tratamiento de internamiento</span></label>
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="Acompañamiento integral"> <span>Acompañamiento integral / Proyecto completo de recuperación</span></label>
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="Post-tratamiento"> <span>Plan de post‑tratamiento</span></label>
+                <label class="option"><input type="checkbox" name="ayuda_buscada[]" value="No lo sé"> <span>No lo sé, necesito orientación</span></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">¿Del 1 al 5 qué tan urgente es el proceso que estás viviendo?</label>
+              <div class="options likert">
+                <label class="option"><input type="radio" name="urgencia" value="1"> <span>1</span></label>
+                <label class="option"><input type="radio" name="urgencia" value="2"> <span>2</span></label>
+                <label class="option"><input type="radio" name="urgencia" value="3"> <span>3</span></label>
+                <label class="option"><input type="radio" name="urgencia" value="4"> <span>4</span></label>
+                <label class="option"><input type="radio" name="urgencia" value="5"> <span>5</span></label>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn ghost back">Anterior</button>
+              <button type="submit" class="btn primary" id="submitBtn">Enviar</button>
+            </div>
+          </section>
+        </form>
+      </div>
+    </main>
+  </div>
+  <script src="./script.js"></script>
+</body>
+</html>
+

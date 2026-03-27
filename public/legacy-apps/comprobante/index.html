@@ -1,0 +1,136 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+    <script src="/legacy-apps/injectSSO.js"></script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de Gastos</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config={theme:{extend:{colors:{brand:{50:'#ecfeff',100:'#cffafe',600:'#0e7490',700:'#155e75',800:'#0b3a46'}},fontFamily:{sans:['Plus Jakarta Sans','Inter','system-ui','-apple-system','Segoe UI','Roboto','Helvetica','Arial','sans-serif']}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{font-family:Plus Jakarta Sans,Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .dropzone{border:2px dashed #e2e8f0}
+  .dropzone.drag{border-color:#0e7490;background:#ecfeff}
+</style>
+</head>
+<body class="relative min-h-screen bg-gradient-to-b from-cyan-50 via-sky-50 to-white">
+  <div class="relative overflow-hidden">
+    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-600 via-cyan-600 to-brand-800"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-brand-800 via-cyan-700 to-cyan-400 opacity-25 blur-3xl"></div>
+      <div class="absolute top-40 -right-16 h-96 w-96 rounded-full bg-gradient-to-tr from-cyan-500 via-brand-600 to-brand-800 opacity-15 blur-[90px]"></div>
+    </div>
+  </div>
+  <div class="max-w-3xl mx-auto px-4 py-12">
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-2 rounded-full bg-brand-50 text-brand-700 px-3 py-1 text-xs font-semibold">Gastos</div>
+      <h1 class="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">Control de Gastos</h1>
+      <p class="text-slate-600 mt-2">Registra tus gastos y adjunta el comprobante correspondiente.</p>
+    </div>
+    
+      <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">Gasto registrado correctamente.</div>
+    
+    <div class="bg-white/85 backdrop-blur rounded-2xl border border-slate-200 shadow-[0_6px_30px_rgba(2,6,23,0.06)]">
+      <form action="submit.php" method="post" enctype="multipart/form-data" class="p-6 md:p-8 space-y-7">
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">Usuario <span class="text-rose-600">*</span></label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="Admin" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Admin</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="Alberto" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Alberto</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="Arturo" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Arturo</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="Hector" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Héctor</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="Sergio" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Sergio</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="usuario" value="CREI" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">CREI</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label for="correo" class="block text-sm font-semibold text-slate-800 mb-2">Correo electrónico <span class="text-rose-600">*</span></label>
+          <input id="correo" name="correo" type="email" required placeholder="tucorreo@ejemplo.com" class="w-full rounded-xl border-slate-300 focus:border-brand-500 focus:ring-brand-500 text-base md:text-lg py-3 px-4">
+        </div>
+
+        <div>
+          <label for="concepto" class="block text-sm font-semibold text-slate-800 mb-2">Concepto del gasto <span class="text-rose-600">*</span></label>
+          <input id="concepto" name="concepto" type="text" required maxlength="160" placeholder="Describe el gasto (p. ej., Combustible, papelería)" class="w-full rounded-xl border-slate-300 focus:border-brand-500 focus:ring-brand-500 text-base md:text-lg py-3 px-4">
+        </div>
+
+        <div>
+          <label for="importe" class="block text-sm font-semibold text-slate-800 mb-2">Importe <span class="text-rose-600">*</span></label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">MXN</span>
+            <input id="importe" name="importe" type="number" step="0.01" min="0" placeholder="0.00" required class="w-full pl-16 rounded-xl border-slate-300 focus:border-brand-500 focus:ring-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">Tipo de comprobante <span class="text-rose-600">*</span></label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="tipo" value="Factura" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Factura</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="tipo" value="Ticket" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Ticket</span>
+            </label>
+            <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 hover:border-slate-300 cursor-pointer transition">
+              <input type="radio" name="tipo" value="Vale" class="text-brand-600 focus:ring-brand-500" required>
+              <span class="text-slate-800">Vale</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">Sube el comprobante (PDF o imagen) <span class="text-rose-600">*</span></label>
+          <div id="dropzone" class="dropzone rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-slate-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path d="M3 15a4 4 0 004 4h6a4 4 0 100-8h-.535A3.5 3.5 0 0010 3.5a3.5 3.5 0 00-3.465 3.5H6a4 4 0 00-3 8z"/></svg>
+            <p class="mt-3 text-slate-900 font-semibold">Cargar un archivo</p>
+            <p class="text-slate-500 text-sm">Arrastra y suelta o haz clic para seleccionar</p>
+            <p id="fileName" class="text-slate-600 text-sm mt-2 hidden"></p>
+          </div>
+          <input id="fileInput" name="comprobante" type="file" accept=".pdf,.jpg,.jpeg,.png" required class="hidden">
+          <p class="text-xs text-slate-500 mt-2">Tamaño máximo 10MB. Tipos: PDF, JPG, JPEG, PNG.</p>
+        </div>
+
+        <div class="flex items-center justify-end">
+          <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-brand-600 to-cyan-600 px-6 py-3 text-white font-semibold hover:from-brand-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">Enviar</button>
+        </div>
+      </form>
+    </div>
+    <p class="text-center text-xs text-slate-600 mt-6">Desarrollado por Dirección de Tecnología e Innovación</p>
+  </div>
+<script>
+const dz=document.getElementById('dropzone');const fi=document.getElementById('fileInput');const fn=document.getElementById('fileName');
+dz.addEventListener('click',()=>fi.click());
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files.length){fi.files=e.dataTransfer.files;updateName()}});
+fi.addEventListener('change',updateName);
+function updateName(){if(fi.files.length){fn.textContent=fi.files[0].name;fn.classList.remove('hidden')}}
+</script>
+</body>
+</html>
+
