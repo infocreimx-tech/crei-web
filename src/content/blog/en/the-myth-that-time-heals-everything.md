@@ -2,6 +2,7 @@
 title: "The myth that “time heals everything”"
 excerpt: "Time only chronicizes what isn't restructured. Discover why waiting isn't a valid clinical strategy."
 category: "Myths & Reality"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "5 min read"
 image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-18T10:00:00.000Z"

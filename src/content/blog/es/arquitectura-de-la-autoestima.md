@@ -2,6 +2,7 @@
 title: "Arquitectura de la autoestima"
 excerpt: "La autoestima no se 'sube', se construye. Los 3 pilares fundamentales para una autovaloración sólida."
 category: "Crecimiento"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "6 min lectura"
 image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-17T10:00:00.000Z"

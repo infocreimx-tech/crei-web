@@ -2,6 +2,7 @@
 title: "Tough Love: Why Helping Too Much Can Fuel Addiction"
 excerpt: "Understand the difference between genuinely supporting a loved one and sustaining their illness, and learn why setting clear boundaries comes from love."
 category: "Addiction and Family"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "4 min read"
 image: "/blog/amor-duro.jpg"
 date: "2026-03-20T10:00:00.000Z"

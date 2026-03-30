@@ -16,8 +16,8 @@ const sb = createClient(supabaseUrl, supabaseKey);
 
 const apps = [
   { id: "calendario", name: "Calendario", desc: "Gestión de citas y agenda diaria.", icon: CalendarDays, color: "bg-blue-500", shadow: "shadow-blue-500/20" },
-  { id: "expediente", name: "Expediente", desc: "Historial clínico de pacientes activos.", icon: FolderOpen, color: "bg-emerald-500", shadow: "shadow-emerald-500/20" },
   { id: "preexpediente", name: "Pre-expediente", desc: "Fichas de nuevo ingreso.", icon: FileText, color: "bg-amber-500", shadow: "shadow-amber-500/20" },
+  { id: "expediente", name: "Expediente", desc: "Historial clínico de pacientes activos.", icon: FolderOpen, color: "bg-emerald-500", shadow: "shadow-emerald-500/20" },
   { id: "terapias", name: "Terapias & Finanzas", desc: "Control de pagos y cortes financieros.", icon: Activity, color: "bg-indigo-500", shadow: "shadow-indigo-500/20" },
   { id: "busqueda", name: "Búsqueda Global", desc: "Buscador inteligente de pacientes.", icon: Search, color: "bg-purple-500", shadow: "shadow-purple-500/20" },
   { id: "comprobante", name: "Comprobantes", desc: "Carga rápida de depósitos.", icon: Receipt, color: "bg-teal-500", shadow: "shadow-teal-500/20" },
@@ -81,10 +81,11 @@ export default function EcosystemDashboard() {
             </div>
             <button 
               onClick={handleLogout}
-              className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-              title="Cerrar Sessión"
+              className="p-2 flex flex-col items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              title="Cerrar Sesión"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-bold leading-none uppercase tracking-wider">Salir</span>
             </button>
           </div>
         </div>

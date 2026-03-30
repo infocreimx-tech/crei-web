@@ -2,6 +2,7 @@
 title: "How to start recovering from an addiction: A possible path"
 excerpt: "Achieving lifelong recovery is a process that sounds simple but is practically a great challenge. Learn the keys and the role of the psychiatrist on this path."
 category: "Recovery"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "3 min read"
 image: "/blog/limites-sanos.jpg"
 date: "2026-03-26T10:00:00.000Z"

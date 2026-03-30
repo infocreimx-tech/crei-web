@@ -2,6 +2,7 @@
 title: "The architecture of self-esteem"
 excerpt: "Self-esteem isn't something you “raise”—it's something you build. The 3 pillars of solid self-worth."
 category: "Growth"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "6 min read"
 image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-17T10:00:00.000Z"

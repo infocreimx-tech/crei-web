@@ -2,6 +2,7 @@
 title: "Cómo empezar a recuperarme de una adicción: Un camino posible"
 excerpt: "Lograr una recuperación que dure toda la vida es un proceso que suena sencillo, pero que en la práctica es un gran reto. Conoce las claves y el papel del psiquiatra en este camino."
 category: "Recuperación"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "3 min lectura"
 image: "/blog/limites-sanos.jpg"
 date: "2026-03-26T10:00:00.000Z"

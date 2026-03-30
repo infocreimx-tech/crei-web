@@ -158,8 +158,8 @@
                     <input id="comprobante" name="comprobante" type="file" accept="image/*,.pdf" required>
                 </div>
 
-                <!-- Distribución — solo visible para ADMIN -->
-                <div class="distribution admin-only" id="distBlock">
+                <!-- Distribución general de porcentajes -->
+                <div class="distribution" id="distBlock">
                     <div class="dist-item"><div class="dist-label">CREI %</div><div id="creiPct" class="dist-value">0%</div></div>
                     <div class="dist-item"><div class="dist-label">Terapeuta %</div><div id="terPct" class="dist-value">0%</div></div>
                     <div class="dist-item"><div class="dist-label">CREI $</div><div id="creiMonto" class="dist-value">$0.00</div></div>
@@ -351,6 +351,13 @@ async function initApp() {
         // Registrar eventos de los formularios de gestión de terapeutas
         document.getElementById("agregarTerForm")?.addEventListener("submit", agregarTerapeuta);
         document.getElementById("eliminarTerForm")?.addEventListener("submit", eliminarTerapeuta);
+    } else {
+        const terSelect = document.getElementById("terapeuta");
+        if(terSelect) {
+            terSelect.innerHTML = `<option value="${sess.user}">${sess.user}</option>`;
+            terSelect.value = sess.user;
+            terSelect.disabled = true;
+        }
     }
 
 
@@ -448,7 +455,13 @@ async function eliminarTerapeuta(e) {
 function actualizarPrevia() {
     const monto = parseFloat(document.getElementById("monto")?.value) || 0;
     const terapeuta = document.getElementById("terapeuta")?.value || "";
-    const creiPct = (String(terapeuta).toUpperCase() === "CREI") ? 100 : 50;
+    const tName = String(terapeuta).toUpperCase();
+    let creiPct = 50;
+    if (tName === "CREI") {
+        creiPct = 100;
+    } else if (tName === "ARTURO") {
+        creiPct = (monto > 501) ? 50 : 40;
+    }
     const terPct  = 100 - creiPct;
     document.getElementById("creiPct").textContent  = creiPct + "%";
     document.getElementById("terPct").textContent   = terPct + "%";
@@ -470,7 +483,13 @@ async function handleRegistro(e) {
     const fecha   = document.getElementById("fecha").value;
     const tipo    = document.getElementById("tipoPago").value;
     const monto   = parseFloat(document.getElementById("monto").value) || 0;
-    const creiPct = (String(terapeuta).toUpperCase() === "CREI") ? 100 : 50;
+    const tName = String(terapeuta).toUpperCase();
+    let creiPct = 50;
+    if (tName === "CREI") {
+        creiPct = 100;
+    } else if (tName === "ARTURO") {
+        creiPct = (monto > 501) ? 50 : 40;
+    }
     const terPct  = 100 - creiPct;
 
     const fileInput = document.getElementById("comprobante");

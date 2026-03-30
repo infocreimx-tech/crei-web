@@ -2,6 +2,7 @@
 title: "¿Por qué la ansiedad no es tu enemiga?"
 excerpt: "La ansiedad es una señal de alerta de una estructura emocional sobrecargada. Aprende a leer el tablero de control."
 category: "Inteligencia Emocional"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "4 min lectura"
 image: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-19T10:00:00.000Z"

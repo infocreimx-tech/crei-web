@@ -2,6 +2,7 @@
 title: "Amor duro: por qué ayudar demasiado puede alimentar la adicción"
 excerpt: "Entiende la diferencia entre apoyar genuinamente a un ser querido y sostener su enfermedad, y aprende por qué establecer límites claros nace del amor."
 category: "Adicciones y Familia"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "4 min lectura"
 image: "/blog/amor-duro.jpg"
 date: "2026-03-20T10:00:00.000Z"

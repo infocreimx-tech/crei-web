@@ -2,6 +2,7 @@
 title: "El mito del 'tiempo lo cura todo'"
 excerpt: "El tiempo solo cronifica lo que no se reestructura. Descubre por qué esperar no es una estrategia clínica válida."
 category: "Mitos & Realidades"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "5 min lectura"
 image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-18T10:00:00.000Z"

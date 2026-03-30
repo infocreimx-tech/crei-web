@@ -9,6 +9,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   category: string;
+  author: string;
   readTime: string;
   image: string;
   date: string;
@@ -37,6 +38,7 @@ export function getPosts(lang: "en" | "es"): BlogPost[] {
         title: data.title?.trim() || "",
         excerpt: data.excerpt?.trim() || "",
         category: data.category?.trim() || "",
+        author: data.author?.trim() || "CREI Editorial",
         readTime: data.readTime?.trim() || "",
         image: data.image?.trim() || "",
         date: data.date || new Date().toISOString(),
@@ -63,6 +65,7 @@ export function getPostBySlug(slug: string, lang: "en" | "es"): BlogPost | null 
     title: data.title?.trim() || "",
     excerpt: data.excerpt?.trim() || "",
     category: data.category?.trim() || "",
+    author: data.author?.trim() || "CREI Editorial",
     readTime: data.readTime?.trim() || "",
     image: data.image?.trim() || "",
     date: data.date || new Date().toISOString(),

@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, BookOpen } from "lucide-react";
+import { ArrowLeft, Calendar, BookOpen, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export default async function BlogPostPage({
@@ -50,7 +50,11 @@ export default async function BlogPostPage({
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 leading-tight drop-shadow-md">
               {post.title}
             </h1>
-            <div className="flex items-center justify-center gap-6 text-sm text-white/90 border-t border-b border-white/20 py-4">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/90 border-t border-b border-white/20 py-4">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>{post.author}</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <time dateTime={post.date}>{dateStr}</time>
@@ -71,7 +75,11 @@ export default async function BlogPostPage({
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-primary mb-6 leading-tight">
               {post.title}
             </h1>
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground border-t border-b border-primary/10 py-4">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground border-t border-b border-primary/10 py-4">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>{post.author}</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <time dateTime={post.date}>{dateStr}</time>

@@ -1,0 +1,208 @@
+   ▲ Next.js 15.1.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.2.150:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1383ms
+ ○ Compiling /[lang]/portal-terapeutas/dashboard ...
+ ✓ Compiled /[lang]/portal-terapeutas/dashboard in 4.8s (1588 modules)
+ GET /es/portal-terapeutas/dashboard 200 in 4320ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 545ms (821 modules)
+ GET /icon.svg 200 in 677ms
+ GET /icon.svg 200 in 18ms
+ GET /icon.svg 200 in 9ms
+ ○ Compiling /[lang]/portal-terapeutas/app/[id] ...
+ ✓ Compiled /[lang]/portal-terapeutas/app/[id] in 529ms (1602 modules)
+ GET /es/portal-terapeutas/app/calendario 200 in 1616ms
+ GET /es/portal-terapeutas/app/calendario 200 in 36ms
+ GET /es/portal-terapeutas/dashboard 200 in 36ms
+ ✓ Compiled /[lang]/portal-terapeutas in 253ms (1605 modules)
+ GET /es/portal-terapeutas 200 in 616ms
+ GET /es/portal-terapeutas/dashboard 200 in 30ms
+ GET /es/portal-terapeutas/app/calendario 200 in 44ms
+ GET /es/portal-terapeutas/dashboard 200 in 60ms
+ ✓ Compiled in 540ms (778 modules)
+ GET /es/portal-terapeutas/dashboard 200 in 20ms
+ GET /es/portal-terapeutas/dashboard 200 in 220ms
+ GET /icon.svg 200 in 15ms
+ GET /icon.svg 200 in 7ms
+ GET /icon.svg 200 in 3ms
+ GET /es/portal-terapeutas/app/calendario 200 in 41ms
+ GET /es/portal-terapeutas/dashboard 200 in 35ms
+ ✓ Compiled in 812ms (1604 modules)
+ GET /es/portal-terapeutas/dashboard 200 in 93ms
+ GET /es/portal-terapeutas/dashboard 200 in 148ms
+ ✓ Compiled /icon.svg in 208ms (841 modules)
+ GET /icon.svg 200 in 269ms
+ GET /icon.svg 200 in 5ms
+ GET /icon.svg 200 in 6ms
+ GET /es/portal-terapeutas/app/preexpediente 200 in 61ms
+ GET /es/portal-terapeutas/dashboard 200 in 24ms
+ GET /es/portal-terapeutas/app/expediente 200 in 17ms
+ GET /es/portal-terapeutas/dashboard 200 in 14ms
+ GET /es/portal-terapeutas/app/busqueda 200 in 19ms
+ GET /es/portal-terapeutas/dashboard 200 in 22ms
+ GET /es/portal-terapeutas/app/terapias 200 in 18ms
+ GET /es/portal-terapeutas/dashboard 200 in 21ms
+ GET /es/portal-terapeutas/app/comprobante 200 in 25ms
+ GET /es/portal-terapeutas/dashboard 200 in 57ms
+ GET /es/portal-terapeutas/dashboard 200 in 131ms
+ GET /icon.svg 200 in 20ms
+ GET /icon.svg 200 in 41ms
+ GET /icon.svg 200 in 12ms
+ ✓ Compiled in 512ms (778 modules)
+ GET /es/portal-terapeutas/dashboard 200 in 18ms
+ GET /icon.svg 200 in 11ms
+ GET /icon.svg 200 in 9ms
+ GET /icon.svg 200 in 20ms
+ GET /icon.svg 200 in 4ms
+ GET /icon.svg 200 in 3ms
+ GET /icon.svg 200 in 3ms
+ ✓ Compiled in 392ms (778 modules)
+ GET /es/portal-terapeutas/dashboard 200 in 33ms
+ GET /icon.svg 200 in 15ms
+ GET /icon.svg 200 in 11ms
+ GET /icon.svg 200 in 71ms
+ GET /icon.svg 200 in 14ms
+ GET /icon.svg 200 in 13ms
+ GET /icon.svg 200 in 14ms
+ GET /es/portal-terapeutas/dashboard 200 in 73ms
+ GET /icon.svg 200 in 11ms
+ GET /icon.svg 200 in 8ms
+ GET /icon.svg 200 in 8ms
+ GET /es/portal-terapeutas/app/comprobante 200 in 23ms
+ GET /es/portal-terapeutas/dashboard 200 in 27ms
+ ⨯ ./node_modules/next/dist/lib/metadata/metadata-boundary.js
+Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/node_modules/next/dist/lib/metadata/metadata-boundary.js'
+
+Import trace for requested module:
+./node_modules/next/dist/lib/metadata/metadata-boundary.js
+ ○ Compiling /_error ...
+ ⨯ ./node_modules/next/dist/lib/require-instrumentation-client.js:11:1
+Module not found: Can't resolve 'private-next-instrumentation-client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/page-bootstrap.js
+./node_modules/next/dist/client/next-dev.js
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ GET /es/portal-terapeutas/dashboard 500 in 4776ms
+ GET /es/portal-terapeutas/dashboard 500 in 259ms
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ GET /es/portal-terapeutas/dashboard 500 in 2804ms
+ GET /es/portal-terapeutas/dashboard 500 in 240ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ ⨯ ./node_modules/next/dist/build/webpack/loaders/next-flight-loader/module-proxy.js:11:1
+Module not found: Can't resolve 'react-server-dom-webpack/server'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/error-boundary.js
+ ⨯ ./node_modules/next/dist/lib/require-instrumentation-client.js:11:1
+Module not found: Can't resolve 'private-next-instrumentation-client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/page-bootstrap.js
+./node_modules/next/dist/client/next-dev.js
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ ⨯ ./node_modules/next/dist/lib/require-instrumentation-client.js:11:1
+Module not found: Can't resolve 'private-next-instrumentation-client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/page-bootstrap.js
+./node_modules/next/dist/client/next-dev.js
+ ⨯ ./node_modules/next/dist/lib/require-instrumentation-client.js:11:1
+Module not found: Can't resolve 'private-next-instrumentation-client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/page-bootstrap.js
+./node_modules/next/dist/client/next-dev.js
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/luispaniaguapalacios/Desktop/CREI /CREI/crei-web/.next/fallback-build-manifest.json'
+}
+ GET /es/portal-terapeutas/dashboard 500 in 773ms
+ GET /es/portal-terapeutas/dashboard 500 in 236ms
+ ⨯ ./node_modules/next/dist/lib/require-instrumentation-client.js:11:1
+Module not found: Can't resolve 'private-next-instrumentation-client'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./node_modules/next/dist/client/page-bootstrap.js
+./node_modules/next/dist/client/next-dev.js
+[?25h

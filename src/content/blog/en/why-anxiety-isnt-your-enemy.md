@@ -2,6 +2,7 @@
 title: "Why anxiety isn't your enemy"
 excerpt: "Anxiety can be a warning signal of an overloaded emotional structure. Learn to read the dashboard."
 category: "Emotional Intelligence"
+author: "Mauricio Raúl Mora Ceballos"
 readTime: "4 min read"
 image: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=800&auto=format&fit=crop"
 date: "2026-03-19T10:00:00.000Z"
