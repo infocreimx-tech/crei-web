@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Lock, Loader2, ArrowRight, AlertCircle, Shield } from "lucide-react";
+import { Lock, Loader2, ArrowRight, AlertCircle, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase correctly using environment variables or fallbacks for local
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw"; 
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
 const sb = createClient(supabaseUrl, supabaseKey);
 
 export default function TherapistLogin() {
   const { lang } = useI18n();
   const router = useRouter();
-  
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -27,51 +27,35 @@ export default function TherapistLogin() {
     setErrorMsg("");
 
     try {
-      const email = `${username.toLowerCase().trim()}@crei.mx`;
-
-      // 1. Authenticate with Supabase Auth natively (generates sb-<id>-auth-token token)
-      // We try a few permutations of the email to maximize SSO compatibility with legacy apps
       const emailsToTry = [
         `${username.toLowerCase().trim()}@crei.mx`,
         `${username.toLowerCase().trim()}@gmail.com`,
         username.trim()
       ];
-      
-      let gotAuthToken = false;
+
       for (const email of emailsToTry) {
         const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
-        if (!authError && authData?.user) {
-          gotAuthToken = true;
-          break;
-        }
+        if (!authError && authData?.user) break;
       }
 
-      // 2. IMPORTANT: Even if standard email Auth fails, we MUST check the custom 'usuarios' table RPC
-      // because Terapias uses explicitly custom usernames (e.g. "Admin") instead of emails.
-      const { data: rpcData, error: rpcError } = await sb.rpc("login_user", { 
-        p_username: username, 
-        p_password: password 
+      const { data: rpcData } = await sb.rpc("login_user", {
+        p_username: username,
+        p_password: password
       });
 
       if (rpcData && rpcData.success) {
-        // Write complete "crei_session" so ALL legacy apps can extract the identity
         const sessionData = {
-          user: rpcData.user.username,      // primary key used by most apps
-          username: rpcData.user.username,   // explicit key for SSO injector
-          role: rpcData.user.role,           // "admin" or "therapist"
-          id: String(rpcData.user.id),       // ensure string for JWT sub
+          user: rpcData.user.username,
+          username: rpcData.user.username,
+          role: rpcData.user.role,
+          id: String(rpcData.user.id),
         };
         localStorage.setItem("crei_session", JSON.stringify(sessionData));
-        
-        // Let them through!
         router.push(`/${lang}/portal-terapeutas/dashboard`);
       } else {
-        // Both failed. The custom table doesn't have it either.
         throw new Error("Usuario o contraseña incorrectos.");
       }
-
     } catch (err: any) {
-      console.error(err);
       setErrorMsg(err.message || "Usuario o contraseña incorrectos.");
     } finally {
       setIsLoading(false);
@@ -79,94 +63,190 @@ export default function TherapistLogin() {
   };
 
   return (
-    <main className="min-h-screen bg-[#1e1b4b] flex items-center justify-center relative overflow-hidden p-6">
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/30 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-accent/20 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+    <main
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{ background: "#150b24" }} /* Deep midnight purple */
+    >
+      {/* Intense dark background blobs */}
+      <div
+        className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(124,92,191,0.2) 0%, transparent 60%)" }}
+      />
+      <div
+        className="absolute bottom-[-10%] left-[-10%] w-[700px] h-[700px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(159,134,192,0.15) 0%, transparent 60%)" }}
+      />
 
-      <div className="w-full max-w-md relative z-10">
-        
-        {/* Card */}
-        <div className="bg-[#1e293b]/80 backdrop-blur-2xl p-10 md:p-12 rounded-[2.5rem] shadow-2xl border border-white/10 flex flex-col items-center">
-          
-          <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-inner border border-primary/30">
-            <Shield className="w-10 h-10 text-primary-light text-white" />
+      {/* Back to website link */}
+      <Link
+        href={`/${lang}`}
+        className="absolute top-6 left-6 flex items-center gap-2 text-sm font-medium transition-colors z-10 hover:text-white"
+        style={{ color: "#c4b5fd" }}
+      >
+        <span className="text-lg">←</span>
+        Volver al sitio
+      </Link>
+
+      <div className="w-full max-w-md px-6 relative z-10">
+        {/* Logo + Brand */}
+        <div className="flex flex-col items-center mb-10">
+          <div className="relative w-24 h-24 mb-3">
+            <Image
+              src="/logo-header.png"
+              alt="CREI Logo"
+              fill
+              className="object-contain drop-shadow-[0_0_15px_rgba(124,92,191,0.5)]"
+              priority
+              unoptimized
+            />
+          </div>
+          <h1 className="text-4xl font-serif font-bold mb-1 tracking-tight" style={{ color: "#fbfaff", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
+            Portal Clínico
+          </h1>
+          <p className="text-[11px] tracking-[0.25em] uppercase font-bold" style={{ color: "#e9d5ff" }}>
+            Ecosistema CREI Pro
+          </p>
+        </div>
+
+        {/* Premium Dark Glass Card */}
+        <div
+          className="rounded-[2rem] p-8 md:p-10"
+          style={{
+            background: "rgba(30, 15, 45, 0.85)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(159, 134, 192, 0.25)",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(124, 92, 191, 0.15) inset",
+          }}
+        >
+          {/* Security badge */}
+          <div className="flex items-center justify-center gap-2 mb-8 text-xs font-bold tracking-widest uppercase" style={{ color: "#c4b5fd" }}>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            Conexión Segura
           </div>
 
-          <h1 className="text-3xl font-serif font-bold text-white mb-2 text-center">
-            Portal de Terapeutas
-          </h1>
-          <p className="text-indigo-200 text-center mb-10">
-            Ecosistema Clínico Unificado CREI
-          </p>
-
-          {(errorMsg || true) && errorMsg !== "" && (
-            <div className="w-full mb-6 bg-red-500/10 border border-red-500/50 rounded-xl p-4 flex items-start gap-3">
+          {errorMsg && (
+            <div
+              className="mb-6 rounded-2xl p-4 flex items-start gap-3"
+              style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}
+            >
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-200">{errorMsg}</p>
+              <p className="text-sm font-medium text-red-200">{errorMsg}</p>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="w-full space-y-5">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold tracking-wide text-indigo-200 uppercase">
+              <label
+                className="block text-[10px] font-bold tracking-widest uppercase"
+                style={{ color: "#c4b5fd" }}
+              >
                 Usuario
               </label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-5 py-4 rounded-xl border border-indigo-900 bg-[#0f172a] focus:bg-[#1e1b4b] focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-white text-lg"
-                  placeholder="Ej. Alberto" 
-                  autoComplete="username"
-                />
-              </div>
+              <input
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-5 py-4 rounded-xl text-sm outline-none transition-all placeholder:text-white/30 font-medium"
+                style={{
+                  background: "rgba(20, 10, 35, 0.9)",
+                  border: "1px solid rgba(124,92,191,0.4)",
+                  color: "#fbfaff",
+                  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)"
+                }}
+                placeholder="Identificador o correo"
+                autoComplete="username"
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#d8b4e2";
+                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(159,134,192,0.3)";
+                  e.currentTarget.style.background = "rgba(30, 15, 45, 1)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(124,92,191,0.4)";
+                  e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.2)";
+                  e.currentTarget.style.background = "rgba(20, 10, 35, 0.9)";
+                }}
+              />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold tracking-wide text-indigo-200 uppercase">
+              <label
+                className="block text-[10px] font-bold tracking-widest uppercase"
+                style={{ color: "#c4b5fd" }}
+              >
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-500" />
-                <input 
-                  type="password" 
+                <Lock
+                  className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
+                  style={{ color: "#9f86c0" }}
+                  id="lock-icon"
+                />
+                <input
+                  type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-5 py-4 rounded-xl border border-indigo-900 bg-[#0f172a] focus:bg-[#1e1b4b] focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-white text-lg"
-                  placeholder="••••••••" 
+                  className="w-full pl-12 pr-5 py-4 rounded-xl text-sm outline-none transition-all placeholder:text-white/30 font-medium"
+                  style={{
+                    background: "rgba(20, 10, 35, 0.9)",
+                    border: "1px solid rgba(124,92,191,0.4)",
+                    color: "#fbfaff",
+                    boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)"
+                  }}
+                  placeholder="••••••••"
                   autoComplete="current-password"
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#d8b4e2";
+                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(159,134,192,0.3)";
+                    e.currentTarget.style.background = "rgba(30, 15, 45, 1)";
+                    document.getElementById('lock-icon')!.style.color = "#d8b4e2";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(124,92,191,0.4)";
+                    e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.2)";
+                    e.currentTarget.style.background = "rgba(20, 10, 35, 0.9)";
+                    document.getElementById('lock-icon')!.style.color = "#9f86c0";
+                  }}
                 />
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
               disabled={isLoading || !username || !password}
-              className="w-full bg-gradient-to-r from-primary to-indigo-600 text-white mt-4 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all focus:ring-4 focus:ring-primary/40 disabled:opacity-50 text-lg shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+              className="w-full py-4 rounded-full font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50 mt-4 text-[13px] uppercase tracking-wider group"
+              style={{
+                background: isLoading
+                  ? "#4a2c5e"
+                  : "linear-gradient(135deg, #7c5cbf, #9f86c0)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                boxShadow: isLoading ? "none" : "0 8px 25px rgba(124,92,191,0.4)",
+              }}
+              onMouseEnter={(e) => {
+                if(!isLoading) e.currentTarget.style.boxShadow = "0 10px 30px rgba(159,134,192,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                if(!isLoading) e.currentTarget.style.boxShadow = "0 8px 25px rgba(124,92,191,0.4)";
+              }}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Conectando Entorno Seguro...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Autorizando...
                 </>
               ) : (
                 <>
-                  Ingresar al Ecosistema
-                  <ArrowRight className="w-5 h-5" />
+                  Acceder a la bóveda
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>
           </form>
 
-          <p className="mt-8 text-xs text-indigo-400/60 text-center font-medium">
-            Acceso exclusivo y confidencial a plataformas clínicas y calendarios de CREI.
+          <p className="mt-8 text-center text-[10px] tracking-widest uppercase font-bold" style={{ color: "#7c5cbf" }}>
+            CREI · Inteligencia Clínica
           </p>
-
         </div>
       </div>
     </main>

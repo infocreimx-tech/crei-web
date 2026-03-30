@@ -3,6 +3,7 @@
 <head>
     <!-- Inyeccion Magistral SSO CREI -->
     <script src="/legacy-apps/injectSSO.js"></script>
+    <link rel="stylesheet" href="/legacy-apps/crei-theme.css">
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,21 +18,21 @@
         /* -------- Admin-only sections hidden by default -------- */
         .admin-only { display: none; }
 
-        /* Panel de Cambio de Contraseña */
+        /* Panel de Cambio de Contraseña — CREI brand */
         #adminPanel {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-            border: 1px solid #4f46e5;
+            background: linear-gradient(135deg, #2e1a35 0%, #4a2c5e 100%);
+            border: 1px solid rgba(124,92,191,0.4);
             border-radius: 20px;
             padding: 32px;
             margin-bottom: 30px;
         }
-        #adminPanel h2 { color: #c7d2fe; margin-top: 0; margin-bottom: 24px; font-size: 1.25rem; }
+        #adminPanel h2 { color: #c4b5fd; margin-top: 0; margin-bottom: 24px; font-size: 1.25rem; }
         .admin-form-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
         .admin-form-row .field { flex: 1; min-width: 180px; }
-        .admin-form-row .field label { display: block; margin-bottom: 6px; color: #a5b4fc; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+        .admin-form-row .field label { display: block; margin-bottom: 6px; color: #c4b5fd; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
         .admin-form-row .field select,
-        .admin-form-row .field input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #4338ca; background: #1e1b4b; color: #e2e8f0; font-size: 15px; }
-        .btn-admin { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; border: none; border-radius: 10px; padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .admin-form-row .field input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(124,92,191,0.4); background: rgba(46,26,53,0.7); color: #f0eafc; font-size: 15px; }
+        .btn-admin { background: linear-gradient(135deg,#7c5cbf,#9f86c0); color: #fff; border: none; border-radius: 9999px; padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
         .btn-admin:hover { opacity: .88; }
         #adminMsg { margin-top: 12px; font-size: 14px; min-height: 20px; }
     </style>
