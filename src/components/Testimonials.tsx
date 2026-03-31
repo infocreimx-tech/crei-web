@@ -118,7 +118,7 @@ import { useI18n } from "@/i18n/I18nProvider";
   const testimonials = getTestimonials(lang);
 
    return (
-     <section id="testimonios" className="py-24 bg-muted/30 relative overflow-hidden">
+     <section id="testimonios" className="py-16 bg-transparent relative overflow-hidden">
        <div className="absolute -top-24 -right-24 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
  

@@ -3,7 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle, Lock, UserRound } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 
 
@@ -157,7 +158,28 @@ export default function Contact() {
               {copy.subtitle}
             </motion.p>
 
-
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+            >
+              <Link
+                href={`/${lang}/portal`}
+                className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-border shadow-sm rounded-xl text-primary font-bold tracking-wide uppercase hover:border-primary/50 transition-all hover:-translate-y-1 group"
+              >
+                <UserRound className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
+                {lang === "en" ? "Patient Access" : "Portal de Pacientes"}
+              </Link>
+              <Link
+                href={`/${lang}/portal-terapeutas`}
+                className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-emerald-600/20 shadow-sm rounded-xl text-emerald-700 font-bold tracking-wide uppercase hover:border-emerald-500/50 transition-all hover:-translate-y-1 group"
+              >
+                <Lock className="w-5 h-5 text-emerald-600/70 group-hover:text-emerald-600 transition-colors" />
+                {lang === "en" ? "Therapist Access" : "Acceso de Terapeutas"}
+              </Link>
+            </motion.div>
 
             <div 
               ref={cardRef}

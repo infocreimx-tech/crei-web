@@ -139,12 +139,28 @@ export default function Services() {
   const copy =
     lang === "en"
       ? {
+          label: "Our Services",
           title: "Services",
-          quote: "“We don't treat symptoms—we rebuild realities through a 360° intervention model.”"
+          quote: "“We don’t treat symptoms—we rebuild realities through a 360° intervention model.”",
+          statsTitle: "Our Impact, Year After Year",
+          stats: [
+            { value: "25,000+", label: "People guided annually" },
+            { value: "15+", label: "Years of clinical experience" },
+            { value: "360°", label: "Comprehensive intervention model" },
+            { value: "100%", label: "Personalized treatment" },
+          ]
         }
       : {
+          label: "Lo que hacemos",
           title: "Nuestros Servicios",
-          quote: "“No tratamos síntomas, reconstruimos realidades a través de un modelo de intervención 360°.”"
+          quote: "“No tratamos síntomas, reconstruimos realidades a través de un modelo de intervención 360°.”",
+          statsTitle: "Nuestro impacto, año con año",
+          stats: [
+            { value: "25,000+", label: "Personas acompañadas anualmente" },
+            { value: "15+", label: "Años de experiencia clínica" },
+            { value: "360°", label: "Modelo de intervención integral" },
+            { value: "100%", label: "Tratamiento personalizado" },
+          ]
         };
 
   return (
@@ -153,7 +169,15 @@ export default function Services() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
+          <motion.span
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-sm font-medium tracking-[0.2em] uppercase text-accent mb-4 block"
+          >
+            {copy.label}
+          </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -173,11 +197,30 @@ export default function Services() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-2xl md:text-3xl font-serif italic text-primary/80 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl font-serif italic text-primary/80 max-w-4xl mx-auto leading-relaxed"
           >
             {copy.quote}
           </motion.p>
         </div>
+
+        {/* Impact Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-20"
+        >
+          {copy.stats.map((stat, i) => (
+            <div
+              key={i}
+              className="bg-card border border-border/60 rounded-2xl p-6 text-center hover:border-accent/40 transition-colors"
+            >
+              <p className="text-3xl md:text-4xl font-serif font-extrabold text-primary mb-1">{stat.value}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider leading-snug">{stat.label}</p>
+            </div>
+          ))}
+        </motion.div>
 
         <motion.div
           variants={container}

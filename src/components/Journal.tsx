@@ -19,14 +19,30 @@ export default function Journal({ articles }: JournalProps) {
           title: "Restructuring Journal",
           subtitle: "Clinical insights, practical tools, and reflections on modern mental health.",
           all: "View all articles",
-          read: "Read article"
+          read: "Read article",
+          banner1Badge: "New Release",
+          banner1Title: "The Way Out Is Within",
+          banner1Desc: "Yes, you need structure. Yes, you need community. But you can also reclaim your life with fire, with ice, with energy and purpose. Discover the new manifesto by Fer Núñez.",
+          banner1Cta: "Read Full Manifesto",
+          banner2Badge: "Exclusive New eBook",
+          banner2Title: "Nobody Taught You How to Help",
+          banner2Desc: "This eBook is for you. For those who love with everything but don't know how to help without sinking. A direct and urgent guide for parents and families.",
+          banner2Cta: "Read the Full Guide",
         }
       : {
           label: "Blog",
           title: "Diario de Reestructuración",
           subtitle: "Pensamientos clínicos, herramientas prácticas y reflexiones sobre la salud mental moderna.",
           all: "Ver todos los artículos",
-          read: "Leer artículo"
+          read: "Leer artículo",
+          banner1Badge: "Nuevo Lanzamiento",
+          banner1Title: "La salida es hacia adentro",
+          banner1Desc: "Sí, necesitas estructura. Sí, necesitas grupo. Pero también puedes recuperar tu vida con fuego, con hielo, con energía y propósito. Descubre el nuevo manifiesto de Fer Núñez.",
+          banner1Cta: "Ver Manifiesto Completo",
+          banner2Badge: "Nuevo Ebook Exclusivo",
+          banner2Title: "Nadie Te Enseñó A Ayudar",
+          banner2Desc: "Este eBook es para ti. Para los que aman con todo pero no saben cómo ayudar sin hundirse. Una guía directa y urgente para padres y familiares.",
+          banner2Cta: "Ver Guía Completa",
         };
 
   return (
@@ -41,14 +57,14 @@ export default function Journal({ articles }: JournalProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-transparent" />
             
             <div className="relative z-10 max-w-2xl">
-              <span className="text-accent font-medium tracking-widest uppercase text-sm mb-3 block">Nuevo Lanzamiento</span>
-              <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">La salida es hacia adentro</h3>
+              <span className="text-accent font-medium tracking-widest uppercase text-sm mb-3 block">{copy.banner1Badge}</span>
+              <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">{copy.banner1Title}</h3>
               <p className="text-white/80 text-lg mb-8 max-w-xl">
-                Sí, necesitas estructura. Sí, necesitas grupo. Pero también puedes recuperar tu vida con fuego, con hielo, con energía y propósito. Descubre el nuevo manifiesto de Fer Núñez.
+                {copy.banner1Desc}
               </p>
               <Link href={`/${lang}/ebook/la-salida`} className="inline-flex items-center gap-2 bg-accent text-white px-8 py-4 rounded-full font-bold hover:bg-accent/90 transition-transform hover:scale-105 active:scale-95 shadow-xl">
                 <BookOpen className="w-5 h-5" />
-                Ver Manifiesto Completo
+                {copy.banner1Cta}
               </Link>
             </div>
             
@@ -63,14 +79,14 @@ export default function Journal({ articles }: JournalProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-stone-900 via-stone-900/90 to-transparent" />
             
             <div className="relative z-10 max-w-2xl">
-              <span className="text-stone-400 font-medium tracking-widest uppercase text-sm mb-3 block">Nuevo Ebook Exclusivo</span>
-              <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">Nadie Te Enseñó A Ayudar</h3>
+              <span className="text-stone-400 font-medium tracking-widest uppercase text-sm mb-3 block">{copy.banner2Badge}</span>
+              <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">{copy.banner2Title}</h3>
               <p className="text-white/80 text-lg mb-8 max-w-xl">
-                Este eBook es para ti. Para los que aman con todo pero no saben cómo ayudar sin hundirse. Una guía directa y urgente para padres y familiares.
+                {copy.banner2Desc}
               </p>
               <Link href={`/${lang}/ebook/nadie-te-enseno`} className="inline-flex items-center gap-2 bg-stone-700 text-white px-8 py-4 rounded-full font-bold hover:bg-stone-600 transition-transform hover:scale-105 active:scale-95 shadow-xl border border-stone-500">
                 <BookOpen className="w-5 h-5" />
-                Ver Guía Completa
+                {copy.banner2Cta}
               </Link>
             </div>
             

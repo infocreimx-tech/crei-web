@@ -19,30 +19,24 @@ export default function Navbar() {
   const navLinks =
     lang === "en"
       ? [
-          { name: "About", href: `/${lang}/#nosotros` },
-          { name: "Services", href: `/${lang}/#servicios` },
-          { name: "Method", href: `/${lang}/#metodo` },
+          { name: "About", href: `/${lang}/nosotros` },
+          { name: "Services", href: `/${lang}/servicios` },
+          { name: "Method", href: `/${lang}/metodo` },
           { name: "Technology", href: `/${lang}/tecnologia` },
           { name: "Blog", href: `/${lang}/blog` },
-          { name: "Clinics", href: `/${lang}/clinicas` },
-          { name: "Team", href: `/${lang}/#equipo` },
-          { name: "Contact", href: `/${lang}/#contacto` }
+          { name: "Contact", href: `/${lang}/#contacto` },
         ]
       : [
-          { name: "Quiénes Somos", href: `/${lang}/#nosotros` },
-          { name: "Servicios", href: `/${lang}/#servicios` },
-          { name: "Método", href: `/${lang}/#metodo` },
-          { name: "Tecnología e Innovación", href: `/${lang}/tecnologia` },
+          { name: "Quiénes Somos", href: `/${lang}/nosotros` },
+          { name: "Servicios", href: `/${lang}/servicios` },
+          { name: "Método", href: `/${lang}/metodo` },
+          { name: "Tecnología", href: `/${lang}/tecnologia` },
           { name: "Blog", href: `/${lang}/blog` },
-          { name: "Clínicas", href: `/${lang}/clinicas` },
-          { name: "Equipo", href: `/${lang}/#equipo` },
-          { name: "Contacto", href: `/${lang}/#contacto` }
+          { name: "Contacto", href: `/${lang}/#contacto` },
         ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -50,177 +44,114 @@ export default function Navbar() {
   return (
     <nav
       role="navigation"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || mobileMenuOpen
-          ? "bg-background/80 backdrop-blur-md shadow-sm py-4"
-          : "bg-transparent py-6"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-background/90 backdrop-blur-md shadow-md ${
+        isScrolled || mobileMenuOpen ? "py-3" : "py-5"
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href={`/${lang}`} className="flex items-center gap-2">
-          <div className="relative w-12 h-12 md:w-16 md:h-16">
-            <Image 
-              src="/logo-header.png" 
-              alt="CREI Logo" 
+        {/* Logo */}
+        <Link href={`/${lang}`} className="flex items-center gap-2 flex-shrink-0">
+          <div className="relative w-12 h-12 md:w-14 md:h-14">
+            <Image
+              src="/logo-header.png"
+              alt="CREI Logo"
               fill
               className="object-contain"
               priority
               unoptimized
             />
           </div>
-          <span className="text-xl md:text-2xl font-serif font-bold text-primary tracking-wide md:hidden">CREI</span>
         </Link>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop Nav — only visible on large screens */}
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-primary/80 hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md"
+              className="text-sm font-medium text-primary/80 hover:text-primary transition-colors whitespace-nowrap"
             >
               {link.name}
             </Link>
           ))}
-          
-          <div className="h-4 w-px bg-primary/20 mx-2" />
+        </div>
 
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-primary/70">
+        {/* Right side actions */}
+        <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
+          {/* Language switcher */}
+          <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-primary/70">
             {lang === "es" ? (
-              <span className="text-primary">ES</span>
+              <span className="font-bold text-primary">ES</span>
             ) : (
-              <Link href={otherHref} className="hover:text-primary transition-colors">
-                ES
-              </Link>
+              <Link href={otherHref} className="hover:text-primary transition-colors">ES</Link>
             )}
-            <span className="text-primary/30">|</span>
+            <span className="text-primary/30 px-0.5">|</span>
             {lang === "en" ? (
-              <span className="text-primary">EN</span>
+              <span className="font-bold text-primary">EN</span>
             ) : (
-              <Link href={otherHref} className="hover:text-primary transition-colors">
-                EN
-              </Link>
+              <Link href={otherHref} className="hover:text-primary transition-colors">EN</Link>
             )}
           </div>
-          
-          <Link
-            href={`/${lang}/portal`}
-            className="text-xs font-bold tracking-widest uppercase text-primary border border-primary/20 px-3 py-1.5 rounded-md hover:bg-primary hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {lang === "en" ? "Patient Portal" : "Portal del Paciente"}
-          </Link>
-
-          <Link
-            href={`/${lang}/portal-terapeutas`}
-            className="text-xs font-bold tracking-widest uppercase text-emerald-600 border border-emerald-600/20 px-3 py-1.5 rounded-md hover:bg-emerald-600 hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {lang === "en" ? "Therapist Access" : "Acceso a Terapeuta"}
-          </Link>
 
           <Link
             href={`/${lang}/portal-pago`}
-            className="text-xs font-bold tracking-widest uppercase text-accent border border-accent/40 bg-accent/5 px-3 py-1.5 rounded-md hover:bg-accent hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="text-xs font-bold tracking-widest uppercase text-accent border border-accent/40 bg-accent/5 px-3 py-1.5 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
           >
             {lang === "en" ? "Payment Portal" : "Portal de Pagos"}
           </Link>
-
-          <Link
-            href={`/${lang}/#contacto`}
-            aria-label={lang === "en" ? "Go to contact to schedule an evaluation" : "Ir a contacto para agendar evaluación"}
-            className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {lang === "en" ? "Schedule your evaluation" : "Agenda tu evaluación"}
-          </Link>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Hamburger — visible below lg */}
         <button
-          className="md:hidden text-primary"
+          className="lg:hidden text-primary p-1"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Dropdown */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-t border-border overflow-hidden"
+            className="lg:hidden bg-background border-t border-border overflow-hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-lg font-medium text-primary py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+                  className="text-lg font-medium text-primary py-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}
                 </Link>
               ))}
 
-              <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-wider text-primary/70 border-t border-border mt-2 pt-4">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-primary/70 border-t border-border pt-4 mt-2">
                 {lang === "es" ? (
-                  <span className="text-primary">ES</span>
+                  <span className="font-bold text-primary">ES</span>
                 ) : (
-                  <Link
-                    href={otherHref}
-                    className="hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    ES
-                  </Link>
+                  <Link href={otherHref} onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors">ES</Link>
                 )}
                 <span className="text-primary/30">|</span>
                 {lang === "en" ? (
-                  <span className="text-primary">EN</span>
+                  <span className="font-bold text-primary">EN</span>
                 ) : (
-                  <Link
-                    href={otherHref}
-                    className="hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    EN
-                  </Link>
+                  <Link href={otherHref} onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors">EN</Link>
                 )}
               </div>
-              
-              <Link
-                href={`/${lang}/portal`}
-                className="text-sm font-light uppercase tracking-wider text-primary/70 py-2 border-t border-border mt-2 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {lang === "en" ? "Patient Portal" : "Portal del Paciente"}
-              </Link>
-
-              <Link
-                href={`/${lang}/portal-terapeutas`}
-                className="text-sm font-bold uppercase tracking-wider text-emerald-600 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {lang === "en" ? "Therapist Access" : "Acceso a Terapeuta"}
-              </Link>
 
               <Link
                 href={`/${lang}/portal-pago`}
-                className="text-sm font-bold uppercase tracking-wider text-accent py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+                className="text-sm font-bold uppercase tracking-wider text-accent"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {lang === "en" ? "Payment Portal" : "Portal de Pagos"}
-              </Link>
-
-              <Link
-                href={`/${lang}/#contacto`}
-                aria-label={lang === "en" ? "Go to contact to schedule an evaluation" : "Ir a contacto para agendar evaluación"}
-                className="w-full text-center px-5 py-3 bg-primary text-primary-foreground text-base font-medium rounded-full hover:bg-primary/90 transition-colors mt-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {lang === "en" ? "Schedule your evaluation" : "Agenda tu evaluación"}
               </Link>
             </div>
           </motion.div>

@@ -65,11 +65,6 @@ function buildAnswer(
       parts.push(`- ${it.item}: ${it.desc}`);
     }
   }
-  parts.push(
-    lang === "en"
-      ? "\nDo you want to schedule an initial evaluation? I can take you to WhatsApp for immediate support."
-      : "\n¿Quieres agendar una evaluación inicial? Puedo llevarte a WhatsApp para atención inmediata."
-  );
   return parts.join("\n");
 }
 
