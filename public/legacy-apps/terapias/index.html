@@ -157,7 +157,7 @@
                 </div>
                 <div class="field file">
                     <label for="comprobante">Comprobante</label>
-                    <input id="comprobante" name="comprobante" type="file" accept="image/*,.pdf" required>
+                    <input id="comprobante" name="comprobante" type="file" accept="image/*,.pdf">
                 </div>
 
                 <!-- Distribución general de porcentajes -->
@@ -495,31 +495,34 @@ async function handleRegistro(e) {
     const terPct  = 100 - creiPct;
 
     const fileInput = document.getElementById("comprobante");
-    if (!fileInput.files?.length) { alert("Sube el comprobante primero"); return; }
-    const file = fileInput.files[0];
+    let fileUrl = "N/A"; // Fallback URL
 
     const btn = document.querySelector("#registroForm button[type='submit']");
-    btn.textContent = "Subiendo…"; btn.disabled = true;
+    btn.textContent = "Guardando…"; btn.disabled = true;
 
     try {
         // Obtener ID del terapeuta
         const { data: tRow } = await sb.from("usuarios").select("id").eq("username", terapeuta).single();
         if (!tRow) throw new Error("Terapeuta no encontrado en la BD");
 
-        // Upload Storage
-        const ext = file.name.split(".").pop();
-        const path = `${Date.now()}_${terapeuta.replace(/\s/g,"")}.${ext}`;
-        const { error: upErr } = await sb.storage.from("comprobantes_terapias").upload(path, file);
-        if (upErr) throw new Error("Error subiendo imagen: " + upErr.message);
+        // Upload Storage (Solo si hay archivo)
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const ext = file.name.split(".").pop();
+            const path = `${Date.now()}_${terapeuta.replace(/\\s/g,"")}.${ext}`;
+            const { error: upErr } = await sb.storage.from("comprobantes_terapias").upload(path, file);
+            if (upErr) throw new Error("Error subiendo imagen: " + upErr.message);
 
-        const { data: urlData } = sb.storage.from("comprobantes_terapias").getPublicUrl(path);
+            const { data: urlData } = sb.storage.from("comprobantes_terapias").getPublicUrl(path);
+            fileUrl = urlData.publicUrl;
+        }
 
         const { error: insErr } = await sb.from("terapias").insert({
             fecha, semana_code: getIsoWeekCode(fecha),
             terapeuta_id: tRow.id, tipo_pago: tipo, monto,
             crei_pct: creiPct, ter_pct: terPct,
             crei_monto: monto * creiPct / 100, ter_monto: monto * terPct / 100,
-            comprobante_url: urlData.publicUrl
+            comprobante_url: fileUrl
         });
         if (insErr) throw new Error("Error guardando registro: " + insErr.message);
 
