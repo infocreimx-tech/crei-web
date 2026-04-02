@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Search, RefreshCw, Sun, Video, Calendar, ArrowDown } from "lucide-react";
+import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export default function Method() {
@@ -22,29 +23,32 @@ export default function Method() {
           titleA: "The CREI Method:",
           titleB: "From Addiction to Reconstruction",
           subtitle:
-            "A step-by-step clinical system developed from over 15 years of frontline experience with addiction — combining psychotherapy, psychiatry, and lived wisdom to move patients from chaos to clarity.",
+            "A step-by-step clinical system developed from over 15 years of frontline experience with addiction",
           cta: "Ready for step 1?",
           steps: [
             {
               id: 1,
-              title: "Structural Assessment",
-              description:
-                "We do not simply diagnose a substance. We map the entire emotional architecture of the person: their history, environment, relational bonds, and the neurological patterns that sustain the addiction cycle.",
+              title: "Substance Addiction",
+              description: "Alcohol, prescription medications, stimulants, and other chemical dependencies that have taken control of daily life.",
               icon: Search
             },
             {
               id: 2,
-              title: "Emotional Clearing",
-              description:
-                "We work through the accumulated trauma, deeply-rooted beliefs, and emotional blocks that are fueling addictive behavior. This phase requires courage — and we walk every step of it alongside the patient.",
+              title: "Behavioral Disorders",
+              description: "Compulsive gambling, technology addiction, and destructive behavioral loops that isolated the individual.",
               icon: RefreshCw
             },
             {
               id: 3,
-              title: "Rebuild & Sustainable Design",
-              description:
-                "We co-create a new life structure with the patient — habits, tools, support networks, and a clear personal purpose. Recovery is not a destination; it is a daily, conscious construction.",
+              title: "Family Codependency",
+              description: "For parents, partners, and children who are suffering the collateral damage of a loved one's addiction and need tools to set boundaries.",
               icon: Sun
+            },
+            {
+              id: 4,
+              title: "Dual Diagnosis",
+              description: "Addiction co-occurring with deep depression, severe anxiety, or unresolved psychological trauma.",
+              icon: Search
             }
           ],
           zoomTitle: "Weekly Zoom Sessions — Every Thursday",
@@ -59,29 +63,32 @@ export default function Method() {
           titleA: "El Método CREI:",
           titleB: "De la Adicción a la Reconstrucción",
           subtitle:
-            "Un sistema clínico paso a paso desarrollado con más de 15 años de experiencia en primera línea con las adicciones — combinando psicoterapia, psiquiatría y sabiduría vivencial para llevar al paciente del caos a la claridad.",
+            "Un sistema clínico paso a paso desarrollado con más de 15 años de experiencia en primera línea con las adicciones",
           cta: "¿Listo para el paso 1?",
           steps: [
             {
               id: 1,
-              title: "Diagnóstico Estructural",
-              description:
-                "No diagnosticamos solo una sustancia. Mapeamos la arquitectura emocional completa de la persona: su historia, entorno, vínculos relacionales y los patrones neurológicos que sostienen el ciclo de la adicción.",
+              title: "Adicción a Sustancias",
+              description: "Alcohol, medicamentos recetados, estimulantes y otras dependencias químicas que han tomado el control de la vida diaria.",
               icon: Search
             },
             {
               id: 2,
-              title: "Limpieza Emocional",
-              description:
-                "Trabajamos el trauma acumulado, las creencias profundamente arraigadas y los bloqueos emocionales que alimentan la conducta adictiva. Esta fase requiere valentía — y acompañamos cada paso a su lado.",
+              title: "Trastornos Conductuales",
+              description: "Juego compulsivo, adicción a la tecnología y ciclos de comportamiento destructivo que aíslan a la persona.",
               icon: RefreshCw
             },
             {
               id: 3,
-              title: "Reconstrucción y Diseño Sostenible",
-              description:
-                "Co-creamos con el paciente una nueva estructura de vida: hábitos, herramientas, redes de apoyo y un propósito personal claro. La recuperación no es un destino; es una construcción diaria y consciente.",
+              title: "Codependencia Familiar",
+              description: "Para padres, parejas e hijos que están sufriendo el daño colateral de la adicción de un ser querido y necesitan herramientas para poner límites.",
               icon: Sun
+            },
+            {
+              id: 4,
+              title: "Diagnóstico Dual",
+              description: "Adicción que coexiste con depresión profunda, ansiedad severa o trauma psicológico no resuelto.",
+              icon: Search
             }
           ],
           zoomTitle: "Sesiones Zoom Semanales — Todos los Jueves",
@@ -134,6 +141,11 @@ export default function Method() {
           >
             {copy.subtitle}
           </motion.p>
+
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="relative w-full aspect-[21/9] mt-16 rounded-[2rem] overflow-hidden shadow-2xl border border-border/50">
+            <Image src="/method-hero.png" alt="Method Steps" fill className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+          </motion.div>
         </div>
 
         {/* Steps Timeline */}
@@ -168,9 +180,11 @@ export default function Method() {
                     <h3 className="text-3xl font-serif font-bold text-primary mb-4">
                       {step.title}
                     </h3>
-                    <p className="text-muted-foreground text-lg leading-relaxed">
-                      {step.description}
-                    </p>
+                    {step.description && (
+                      <p className="text-muted-foreground text-lg leading-relaxed">
+                        {step.description}
+                      </p>
+                    )}
                   </div>
 
                   {/* Central Node */}

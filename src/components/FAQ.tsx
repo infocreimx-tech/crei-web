@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
+import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export default function FAQ() {
@@ -86,7 +87,7 @@ export default function FAQ() {
           </motion.h2>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 mb-16">
           {copy.faqs.map((faq, i) => (
             <motion.div
               key={i}
@@ -120,6 +121,11 @@ export default function FAQ() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative w-full h-[300px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-2xl border border-border/50">
+          <Image src="/method-faq.png" alt="FAQ" fill className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+        </motion.div>
       </div>
     </section>
   );

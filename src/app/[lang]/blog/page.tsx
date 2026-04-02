@@ -3,6 +3,8 @@ import Journal from "@/components/Journal";
 import Navbar from "@/components/Navbar";
 import Newsletter from "@/components/Newsletter";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ChatBot from "@/components/ChatBot";
+import BackToTop from "@/components/BackToTop";
 import { getPosts } from "@/lib/blog";
 
 export default async function BlogPage({
@@ -21,6 +23,8 @@ export default async function BlogPage({
             <Newsletter lang={resolvedParams.lang} />
             <Footer />
             <WhatsAppButton />
+            <ChatBot />
+            <BackToTop />
         </main>
     );
 }

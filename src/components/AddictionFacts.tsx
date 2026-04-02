@@ -23,7 +23,7 @@ export default function AddictionFacts() {
         imageAlt: "Recovery and hope",
         imageCaption: "Every number is a life. Every life deserves a real chance.",
         recovery: "Recovery Is Possible",
-        recoveryText: "With the right clinical guidance, personalized support, and a structured method, over 60% of people who enter structured addiction treatment achieve stable, sustained recovery. At CREI, that number is our daily goal."
+        recoveryText: "With proper counseling, personalized support, and a structured method, over 60% of people who enter structured addiction treatment achieve stable, sustained recovery. At CREI, that number is our daily goal."
       }
     : {
         label: "Datos Globales",
@@ -40,7 +40,7 @@ export default function AddictionFacts() {
         imageAlt: "Recuperación y esperanza",
         imageCaption: "Cada número es una vida. Cada vida merece una oportunidad real.",
         recovery: "La Recuperación Es Posible",
-        recoveryText: "Con orientación clínica adecuada, apoyo personalizado y un método estructurado, más del 60% de las personas que ingresan a tratamiento especializado logran una recuperación estable y sostenida. En CREI, ese número es nuestra meta diaria."
+        recoveryText: "Con asesoria adecuada, apoyo personalizado y un método estructurado, más del 60% de las personas que ingresan a tratamiento especializado logran una recuperación estable y sostenida. En CREI, ese número es nuestra meta diaria."
       };
 
   return (
@@ -107,7 +107,7 @@ export default function AddictionFacts() {
             className="relative rounded-3xl overflow-hidden aspect-[4/3] shadow-xl"
           >
             <Image
-              src="https://images.unsplash.com/photo-1573497161161-c3e73707e25c?q=80&w=1200&auto=format&fit=crop"
+              src="/method-addiction.png"
               alt={copy.imageAlt}
               fill
               className="object-cover"

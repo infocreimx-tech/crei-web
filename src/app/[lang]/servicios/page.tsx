@@ -1,9 +1,9 @@
 import Services from "@/components/Services";
-import AddictionFacts from "@/components/AddictionFacts";
 import BackToTop from "@/components/BackToTop";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import ChatBot from "@/components/ChatBot";
 
 export default function ServiciosPage() {
   return (
@@ -11,10 +11,10 @@ export default function ServiciosPage() {
       <Navbar />
       <div className="pt-24">
         <Services />
-        <AddictionFacts />
       </div>
       <Footer />
       <WhatsAppButton />
+      <ChatBot />
       <BackToTop />
     </main>
   );
