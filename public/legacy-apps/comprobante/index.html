@@ -4,6 +4,7 @@
     <script src="/legacy-apps/injectSSO.js"></script>
     <link rel="stylesheet" href="/legacy-apps/crei-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Comprobantes — CREI</title>
@@ -39,7 +40,11 @@
         <h1 class="mt-3 text-3xl md:text-4xl font-black tracking-tight text-slate-900">Archivero Financiero</h1>
         <p class="text-slate-500 mt-2 font-medium">Registra tus gastos, edita el historial operativo y consulta la bóveda en tiempo real.</p>
       </div>
-      <div>
+      <div class="flex items-center gap-3">
+         <button id="btnExportarExcel" onclick="openExcelModal()" class="hidden shadow-sm border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-bold items-center gap-2 px-4 py-2 rounded-xl transition cursor-pointer">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+           Descargar Excel
+         </button>
          <button onclick="loadGastos()" class="shadow-sm border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold flex items-center gap-2 px-4 py-2 rounded-xl transition cursor-pointer">
            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
            Sincronizar Bóveda
@@ -81,6 +86,23 @@
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 font-bold">$</span>
               <input id="importe" type="number" step="0.01" min="0" placeholder="0.00" required class="w-full pl-8 rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2.5 px-4 text-sm font-bold outline-none transition text-slate-800">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Fecha de Compra <span class="text-rose-500">*</span></label>
+            <input id="fecha_compra" type="date" required class="w-full rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2.5 px-4 text-sm font-bold outline-none transition text-slate-800 bg-white">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Origen del Pago <span class="text-rose-500">*</span></label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center justify-center gap-1 rounded-xl border border-slate-200 p-2.5 hover:border-slate-300 cursor-pointer transition text-xs font-bold bg-slate-50">
+                <input type="radio" name="origen_pago" value="Fondo de la casa" checked class="text-brand-600 accent-brand-600 w-3 h-3" required> <span class="text-slate-700">Fondo de la Casa</span>
+              </label>
+              <label class="flex items-center justify-center gap-1 rounded-xl border border-slate-200 p-2.5 hover:border-slate-300 cursor-pointer transition text-xs font-bold bg-slate-50">
+                <input type="radio" name="origen_pago" value="Bolsillo propio" class="text-brand-600 accent-brand-600 w-3 h-3" required> <span class="text-slate-700">Bolsillo Propio</span>
+              </label>
             </div>
           </div>
 
@@ -172,6 +194,20 @@
               </select>
             </div>
           </div>
+
+          <div class="grid grid-cols-2 gap-4 mt-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Fecha de Compra</label>
+              <input type="date" id="edit-fecha" class="w-full rounded-xl border border-slate-200 focus:border-brand-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition" required>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Origen del Pago</label>
+              <select id="edit-origen" class="w-full rounded-xl border border-slate-200 focus:border-brand-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition" required>
+                <option value="Fondo de la casa">Fondo de la Casa</option>
+                <option value="Bolsillo propio">Bolsillo Propio</option>
+              </select>
+            </div>
+          </div>
           
           <button type="button" onclick="salvarEdicion()" id="btnSaveEdit" class="w-full bg-brand-600 text-white font-bold rounded-xl px-4 py-3 hover:bg-brand-700 transition shadow-md shadow-brand-500/20 active:scale-[0.98] flex justify-center items-center mt-2">
             Sobreescribir Valores
@@ -188,6 +224,37 @@
             <!-- Renderizado dinámico -->
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <!-- MODAL EXCEL EXPORT -->
+  <div id="excelModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col scale-95 transition-transform duration-300" id="excelModalPanel">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-emerald-50 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-emerald-100/50 to-transparent"></div>
+        <h3 class="text-lg font-black text-emerald-800 flex items-center gap-2 relative z-10">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Exportación de Base
+        </h3>
+        <button onclick="closeExcelModal()" class="text-emerald-600 hover:text-emerald-900 transition-colors bg-emerald-100/50 rounded-full p-2 hover:bg-emerald-200 relative z-10">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <p class="text-xs font-semibold text-slate-500 mb-5 tracking-wide leading-relaxed">Selecciona el intervalo de fechas de compra para organizar los datos contables y generar el <strong class="text-emerald-700">documento .XLSX</strong> maestro.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Desde el Día</label>
+            <input type="date" id="excel-fecha-inicio" class="w-full rounded-xl border border-slate-200 focus:border-emerald-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition" required>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hasta el Día</label>
+            <input type="date" id="excel-fecha-fin" class="w-full rounded-xl border border-slate-200 focus:border-emerald-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition" required>
+          </div>
+        </div>
+        <button type="button" onclick="generarExcel()" class="w-full bg-emerald-600 text-white font-bold rounded-xl px-4 py-3.5 hover:bg-emerald-700 transition shadow-md shadow-emerald-500/20 active:scale-[0.98] flex justify-center items-center mt-6">
+          Procesar y Descargar Archivo
+        </button>
       </div>
     </div>
   </div>
@@ -210,6 +277,52 @@ function updateName(){if(fi.files.length){fn.textContent=fi.files[0].name;fn.cla
 // --- LÓGICA CORE ---
 let currentUser = "Desconocido";
 let gastosCache = [];
+let radioManuallyModified = false;
+
+const keywordsBolsillo = [
+    // 1. Higiene Personal Especializada y Cuidado Físico
+    "corte", "pelo", "peluquero", "peluquería", "barbería", "barbero", "tinte", "gel", "cera", "shampoo", "acondicionador", "tratamiento", "crema para peinar", "ligas", "pasadores", "peine", "cepillo",
+    "crema", "jabón", "jabon", "exfoliante", "esponja", "rastrillo", "rasuradora", "crema de afeitar", "espuma", "loción", "perfume", "desodorante", "antitranspirante", "protector solar", "bloqueador", "talco",
+    "uñas", "unas", "cortaúñas", "gelish", "manicura", "pedicura", "pinzas", "cotonetes", "hisopos",
+    "cepillo de dientes", "pasta dental", "enjuague bucal", "hilo dental", "toallas sanitarias", "tampones", "protectores",
+    
+    // 2. Antojos, Snacks y "Comida Chatarra" (Tienda de Conveniencia)
+    "oxxo", "7eleven", "7-eleven", "extra", "supercito", "maquinita",
+    "chocolates", "gansito", "pingüinos", "chocorrol", "galletas", "chicles", "pastillas", "mentas", "paleta", "gomitas", "panditas", "mazapán", "nutella", "helado", "michoacana", "nutrisa",
+    "papas", "sabritas", "ruffles", "doritos", "cheetos", "takis", "tostitos", "cacahuates", "churros",
+    "refresco", "coca", "cocacola", "pepsi", "sprite", "fanta", "agua mineral", "topochico", "jugo", "valle", "jumex", "gatorade", "electrolit", "frappé", "frappe",
+    "café", "cafe", "starbucks", "andatti", "cielito", "punta del cielo",
+
+    // 3. Comida a Domicilio y Restaurantes Pierde-Peso
+    "uber eats", "didi food", "rappi",
+    "pizza", "domino", "little caesars", "hut", "hamburguesa", "mcdonalds", "burger king", "carl's jr", "alitas", "kfc", "kentucky", "sushi", "tacos", "tortas", "tamales", "elote", "esquite",
+
+    // 4. Ropa, Calzado y Textiles Personales
+    "camisa", "playera", "pantalón", "pantalon", "short", "bermuda", "suéter", "sueter", "chamarra", "sudadera", "pants", "pijama",
+    "tenis", "zapatos", "botas", "sandalias", "chanclas", "pantuflas",
+    "calcetines", "calcetas", "tines", "ropa interior", "calzones", "brasier", "faja", "cinto", "cinturón", "cinturon", "gorra", "bufanda",
+    "sastre", "tintorería", "planchado", "reparación de calzado",
+
+    // 5. Vicios Permitidos y Accesorios
+    "cigarros", "cajetilla", "tabaco", "marlboro", "camel", "pall mall", "benson", "faros",
+    "encendedor", "bic", "cerillos",
+    "vape", "vaper", "maskking", "esencias", "líquido vapeo", "liquido", "iqos", "heets", "resistencia",
+
+    // 6. Tecnología, Recargas y Entretenimiento
+    "recarga", "saldo", "telcel", "at&t", "movistar", "unefon", "chip", "megas", "paquete",
+    "audífonos", "audifonos", "cargador", "cable", "funda", "mica", "usb", "pila", "batería", "bateria",
+    "netflix", "spotify", "youtube premium", "amazon prime", "disney", "hbo", "max", "apple music",
+    "xbox", "playstation", "nintendo", "tarjeta de regalo", "google play",
+
+    // 7. Farmacia Personal y Suplementos Exclusivos
+    "proteína", "proteina", "gym", "creatina", "pre-entreno", "vitaminas", "omega 3",
+    "advil", "aspirina", "paracetamol", "ibuprofeno", "pastillas para la garganta", "gotas para los ojos"
+];
+
+// Reemplazar tildes para búsqueda flexible
+const normalize = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+// REMOVED \b boundaries to allow aggressive substring matching (e.g., 'pizza' matches 'Pizzas')
+const regexBolsillo = new RegExp(`(${keywordsBolsillo.map(normalize).join('|')})`, 'i');
 
 document.addEventListener("DOMContentLoaded", () => {
     try {
@@ -219,6 +332,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     } catch(e) { console.warn("SSO Parsing skipped:", e); }
     
+    // Auto-detección
+    const conceptoInput = document.getElementById("concepto");
+    const radiosOrigen = document.querySelectorAll('input[name="origen_pago"]');
+    
+    radiosOrigen.forEach(r => r.addEventListener('change', () => radioManuallyModified = true));
+    
+    if(conceptoInput) {
+        conceptoInput.addEventListener('input', (e) => {
+            if(radioManuallyModified) return;
+            const val = normalize(e.target.value.toLowerCase());
+            if(regexBolsillo.test(val)) {
+                document.querySelector('input[name="origen_pago"][value="Bolsillo propio"]').checked = true;
+            } else {
+                document.querySelector('input[name="origen_pago"][value="Fondo de la casa"]').checked = true;
+            }
+        });
+    }
+
+    // Privilegios de Admin
+    if(currentUser === 'Admin') {
+        const btnExcel = document.getElementById("btnExportarExcel");
+        if(btnExcel) {
+            btnExcel.classList.remove('hidden');
+            btnExcel.classList.add('flex');
+        }
+    }
+
     const usSoInput = document.getElementById("usuario_sso");
     if(usSoInput) usSoInput.value = currentUser;
     
@@ -288,29 +428,37 @@ async function loadGastos() {
             const hasHistory = historyObj.length > 0;
             const historyBadge = hasHistory ? `<span class="ml-2 inline-block px-1.5 py-0.5 bg-brand-100 text-brand-700 text-[8px] font-black rounded uppercase tracking-wider tooltip">MODIFICADO</span>` : '';
             
+            const isBolsillo = g.origen_pago === 'Bolsillo propio' || regexBolsillo.test(normalize((g.concepto || '').toLowerCase()));
+            const trClass = isBolsillo ? "bg-rose-50/70 hover:bg-rose-100 transition-colors group" : "hover:bg-slate-50/50 transition-colors group";
+            const rowColor = isBolsillo ? "text-rose-900" : "text-slate-800";
+            const amountColor = isBolsillo ? "text-rose-700" : "text-slate-900";
+            const badgeClass = isBolsillo ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-amber-50 text-amber-700 border-amber-200";
+
             const tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-50/50 transition-colors group";
+            tr.className = trClass;
             tr.innerHTML = `
               <td class="px-6 py-4">
-                <div class="text-slate-800 font-black mb-1 flex items-center gap-1">
-                   <span class="w-1.5 h-1.5 rounded-full ${g.tipo==='Factura' ? 'bg-sky-500' : (g.tipo==='Ticket' ? 'bg-emerald-500' : 'bg-purple-500')}"></span>
+                <div class="${rowColor} font-black mb-1 flex items-center gap-1">
+                   <span class="w-1.5 h-1.5 rounded-full ${isBolsillo ? 'bg-rose-600' : (g.tipo==='Factura' ? 'bg-sky-500' : (g.tipo==='Ticket' ? 'bg-emerald-500' : 'bg-purple-500'))}"></span>
                    ${g.concepto} ${historyBadge}
                 </div>
-                <div class="text-slate-500 text-xs font-semibold flex items-center gap-2">
-                  <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                  ${g.usuario} &bull; ${dateStr}
+                <div class="${isBolsillo ? 'text-rose-600/80': 'text-slate-500'} text-xs font-semibold flex flex-wrap items-center gap-2 mt-1.5">
+                  <span class="flex items-center gap-1"><svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> ${g.usuario}</span>
+                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${isBolsillo ? 'bg-rose-100 text-rose-700 border-rose-200':'bg-slate-100 text-slate-500 border-slate-200'} border">Registrado: ${dateStr}</span>
+                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${isBolsillo ? 'bg-rose-600 text-white border-transparent' : 'bg-brand-50 text-brand-700 border border-brand-200'}">Compra: <strong class="font-bold">${g.fecha_compra || 'N/A'}</strong></span>
+                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${badgeClass} border font-bold">${g.origen_pago || 'Casa'}</span>
                 </div>
               </td>
               <td class="px-6 py-4">
-                <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-black uppercase text-slate-600">${g.tipo}</span>
+                <span class="px-2.5 py-1 ${isBolsillo ? 'bg-rose-200/50 border-rose-200 text-rose-800' : 'bg-slate-100 border-slate-200 text-slate-600'} border rounded text-[10px] font-black uppercase">${g.tipo}</span>
               </td>
-              <td class="px-6 py-4 text-right font-black text-slate-900 tabular-nums tracking-tight">
+              <td class="px-6 py-4 text-right font-black ${amountColor} tabular-nums tracking-tight">
                 ${amount}
               </td>
               <td class="px-6 py-4 text-center">
                 <div class="flex items-center justify-center gap-2">
                   ${fileLink}
-                  <button onclick="openModal(${g.id})" class="text-slate-400 hover:text-slate-900 bg-white border border-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm hover:shadow">
+                  <button onclick="openModal(${g.id})" class="${isBolsillo ? 'text-rose-400 hover:text-rose-900 border-rose-200' : 'text-slate-400 hover:text-slate-900 border-slate-200'} bg-white border rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm hover:shadow">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                   </button>
                 </div>
@@ -360,6 +508,8 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             concepto: document.getElementById('concepto').value,
             importe: parseFloat(document.getElementById('importe').value).toFixed(2),
             tipo: document.querySelector('input[name="tipo"]:checked').value,
+            fecha_compra: document.getElementById('fecha_compra').value,
+            origen_pago: document.querySelector('input[name="origen_pago"]:checked').value,
             archivo_path: `comprobantes/${secureFileName}`,
             archivo_mime: file.type,
             historial: []
@@ -370,6 +520,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         
         // Limpiar form
         document.getElementById('uploadForm').reset();
+        radioManuallyModified = false;
         fn.classList.add('hidden');
         const usSoInput2 = document.getElementById("usuario_sso");
         if(usSoInput2) usSoInput2.value = currentUser;
@@ -396,6 +547,8 @@ function openModal(id) {
     document.getElementById('edit-concepto').value = gasto.concepto;
     document.getElementById('edit-importe').value = parseFloat(gasto.importe).toFixed(2);
     document.getElementById('edit-tipo').value = gasto.tipo;
+    document.getElementById('edit-fecha').value = gasto.fecha_compra || '';
+    document.getElementById('edit-origen').value = gasto.origen_pago || 'Fondo de la casa';
     
     const historias = typeof gasto.historial === 'string' ? JSON.parse(gasto.historial||'[]') : (gasto.historial||[]);
     renderHistorial(historias);
@@ -450,8 +603,10 @@ async function salvarEdicion() {
     const concepto = document.getElementById('edit-concepto').value.trim();
     const importe = document.getElementById('edit-importe').value;
     const tipo = document.getElementById('edit-tipo').value;
+    const fecha_compra = document.getElementById('edit-fecha').value;
+    const origen_pago = document.getElementById('edit-origen').value;
     
-    if(!concepto || !importe || !tipo) return alertMsg('Propiedades vacías', true);
+    if(!concepto || !importe || !tipo || !fecha_compra) return alertMsg('Propiedades vacías', true);
     
     const btn = document.getElementById('btnSaveEdit');
     const oldText = btn.innerText;
@@ -465,8 +620,10 @@ async function salvarEdicion() {
         
         let cambios = [];
         if(gasto.concepto !== concepto) cambios.push(`Concepto: '${gasto.concepto}' → '${concepto}'`);
-        if(parseFloat(gasto.importe).toFixed(2) !== parseFloat(importe).toFixed(2)) cambios.push(`Monto Efectivo: $${parseFloat(gasto.importe).toFixed(2)} → $${parseFloat(importe).toFixed(2)}`);
+        if(parseFloat(gasto.importe).toFixed(2) !== parseFloat(importe).toFixed(2)) cambios.push(`Monto: $${parseFloat(gasto.importe).toFixed(2)} → $${parseFloat(importe).toFixed(2)}`);
         if(gasto.tipo !== tipo) cambios.push(`Clase: '${gasto.tipo}' → '${tipo}'`);
+        if((gasto.fecha_compra || '') !== fecha_compra) cambios.push(`Fecha: '${gasto.fecha_compra}' → '${fecha_compra}'`);
+        if((gasto.origen_pago || '') !== origen_pago) cambios.push(`Fondo: '${gasto.origen_pago}' → '${origen_pago}'`);
         
         if(cambios.length === 0) {
             closeModal();
@@ -483,6 +640,8 @@ async function salvarEdicion() {
             concepto,
             importe: parseFloat(importe).toFixed(2),
             tipo,
+            fecha_compra,
+            origen_pago,
             historial: historiasAnteriores
         };
 
@@ -499,6 +658,68 @@ async function salvarEdicion() {
         btn.innerText = oldText;
         btn.disabled = false;
     }
+}
+
+// --- LÓGICA DE EXCEL (ADMIN) ---
+function openExcelModal() {
+    const modal = document.getElementById('excelModal');
+    const panel = document.getElementById('excelModalPanel');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    setTimeout(() => { modal.classList.remove('opacity-0'); panel.classList.remove('scale-95'); }, 10);
+}
+
+function closeExcelModal() {
+    const modal = document.getElementById('excelModal');
+    const panel = document.getElementById('excelModalPanel');
+    modal.classList.add('opacity-0');
+    panel.classList.add('scale-95');
+    setTimeout(() => { modal.classList.add('hidden'); modal.style.display = 'none'; }, 300);
+}
+
+function generarExcel() {
+    const fInicio = document.getElementById('excel-fecha-inicio').value;
+    const fFin = document.getElementById('excel-fecha-fin').value;
+    if(!fInicio || !fFin) return alertMsg('Por favor selecciona ambas fechas', true);
+
+    const inicio = new Date(fInicio + 'T00:00:00');
+    const fin = new Date(fFin + 'T23:59:59');
+
+    const extract = gastosCache.filter(g => {
+        const compDateObj = new Date(g.fecha_compra ? (g.fecha_compra + 'T12:00:00') : g.creado_en);
+        return compDateObj >= inicio && compDateObj <= fin;
+    }).map(g => {
+        const textMatch = regexBolsillo.test(normalize((g.concepto || '').toLowerCase()));
+        const isBolsillo = g.origen_pago === 'Bolsillo propio' || textMatch;
+        return {
+            "ID Comprobante": g.id,
+            "Fecha Efectiva": g.fecha_compra || new Date(g.creado_en).toLocaleDateString(),
+            "Concepto del Gasto": g.concepto,
+            "Documento": g.tipo,
+            "Importe MXN": parseFloat(g.importe),
+            "Fondo Destino": isBolsillo ? "Bolsillo Propio" : "Fondo de la Casa",
+            "Cargado por (Terapeuta)": g.usuario,
+            "Fecha Auditoría (Nube)": new Date(g.creado_en).toLocaleString()
+        };
+    });
+
+    if(extract.length === 0) {
+        alertMsg('No hay gastos en este rango exacto de fechas seleccionadas', true);
+        return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(extract);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Gastos_Finanzas");
+    
+    // Auto-size columns slightly
+    ws['!cols'] = [
+        {wch: 15}, {wch: 15}, {wch: 45}, {wch: 15}, {wch: 15}, {wch: 22}, {wch: 25}, {wch: 25}
+    ];
+
+    XLSX.writeFile(wb, `CREI_Reporte_${fInicio}_a_${fFin}.xlsx`);
+    closeExcelModal();
+    alertMsg(`Reporte desencriptado exitosamente (${extract.length} transacciones).`);
 }
 </script>
 </body>

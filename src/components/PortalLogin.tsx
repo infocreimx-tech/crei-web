@@ -7,22 +7,44 @@ import Image from "next/image";
 import { Eye, EyeOff, Lock, User, ArrowLeft } from "lucide-react";
 import type { Locale } from "@/i18n/messages";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useRouter } from "next/navigation";
+import { getSupabase } from "@/lib/supabase";
 
 export default function PortalLogin({ lang }: { lang: Locale }) {
   const { t } = useI18n();
+  const router = useRouter();
+  const supabase = getSupabase();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        router.push(`/${lang}/portal/dashboard`);
+      }
+    } catch (err: any) {
+      setErrorMessage("Ocurrió un error al intentar iniciar sesión.");
+    } finally {
       setIsLoading(false);
-      alert(t("portal.loginSimulated"));
-    }, 1500);
+    }
   };
 
   const homeHref = `/${lang}`;
+  const registroHref = `/${lang}/portal/registro`;
   const contactHref = `/${lang}/#contacto`;
 
   return (
@@ -80,8 +102,10 @@ export default function PortalLogin({ lang }: { lang: Locale }) {
                 </div>
                 <input
                   id="email"
-                  type="text"
+                  type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-muted/30 border border-border rounded-lg pl-10 pr-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   placeholder={t("portal.emailPlaceholder")}
                 />
@@ -105,6 +129,8 @@ export default function PortalLogin({ lang }: { lang: Locale }) {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-muted/30 border border-border rounded-lg pl-10 pr-12 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   placeholder="••••••••"
                 />
@@ -119,6 +145,12 @@ export default function PortalLogin({ lang }: { lang: Locale }) {
               </div>
             </div>
 
+            {errorMessage && (
+              <div className="text-sm font-medium text-red-500 bg-red-50 p-3 rounded-lg">
+                {errorMessage}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
@@ -132,13 +164,12 @@ export default function PortalLogin({ lang }: { lang: Locale }) {
             </button>
           </form>
 
-          <div className="pt-6 text-center border-t border-border">
+          <div className="pt-6 text-center border-t border-border mt-6">
             <p className="text-sm text-muted-foreground">
-              {t("portal.firstTime")}{" "}
-              <Link href={contactHref} className="text-primary font-medium hover:underline">
-                {t("portal.contactAdmin")}
-              </Link>{" "}
-              {t("portal.toActivate")}
+              ¿Es tu primera vez?{" "}
+              <Link href={registroHref} className="text-primary font-medium hover:underline">
+                Crear una cuenta
+              </Link>
             </p>
           </div>
         </motion.div>

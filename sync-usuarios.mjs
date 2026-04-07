@@ -13,6 +13,8 @@ const USERS = [
   { username: "Sergio",  password: "Sergio123",  role: "therapist" },
   { username: "CREI",    password: "Fercrei*",   role: "therapist" },
   { username: "Arturo",  password: "Arturo123",  role: "therapist" },
+  { username: "Roberto", password: "Roberto123", role: "therapist" },
+  { username: "Diego",   password: "Diego123",   role: "therapist" },
 ];
 
 async function patchUser(user) {
@@ -23,17 +25,15 @@ async function patchUser(user) {
       apikey: API_KEY,
       Authorization: `Bearer ${API_KEY}`,
       "Content-Type": "application/json",
-      "Prefer": "return=minimal"
+      "Prefer": "return=representation"
     },
     body: JSON.stringify({ password_hash: hash, role: user.role })
   });
 
   if (res.ok) {
-    console.log(`✅ Updated ${user.username} → hash:${hash.substring(0,12)}... role:${user.role}`);
-  } else {
-    const txt = await res.text();
-    // If PATCH failed because user doesn't exist (0 rows matched), insert
-    if (txt.includes("0 rows")) {
+    const updatedRows = await res.json();
+    if (updatedRows.length === 0) {
+      // 0 rows updated, perform insert
       const insRes = await fetch(`${SUPABASE_URL}/rest/v1/usuarios`, {
         method: "POST",
         headers: {
@@ -47,8 +47,10 @@ async function patchUser(user) {
       if (insRes.ok) console.log(`✅ Inserted ${user.username}`);
       else console.error(`❌ Failed inserting ${user.username}:`, await insRes.text());
     } else {
-      console.error(`❌ Failed updating ${user.username}:`, txt);
+      console.log(`✅ Updated ${user.username} → hash:${hash.substring(0,12)}... role:${user.role}`);
     }
+  } else {
+    console.error(`❌ Failed updating ${user.username}:`, await res.text());
   }
 }
 
