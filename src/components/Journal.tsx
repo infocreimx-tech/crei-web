@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 
 interface JournalProps {
@@ -12,6 +13,45 @@ interface JournalProps {
 
 export default function Journal({ articles }: JournalProps) {
   const { lang } = useI18n();
+  const [reactions, setReactions] = useState<Record<string, string>>({});
+  const [dbStats, setDbStats] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    fetch('/api/reactions')
+      .then(res => res.json())
+      .then(data => {
+        if (data.data) setDbStats(data.data);
+      })
+      .catch(err => console.error("Error fetching exact reactions:", err));
+  }, []);
+
+  const toggleReaction = async (slug: string, emoji: string, e: React.MouseEvent) => {
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    
+    // Si ya le dio a este mismo, solo lo quitamos visualmente
+    if (reactions[slug] === emoji) {
+       setReactions((prev) => { const n = {...prev}; delete n[slug]; return n; });
+       return;
+    }
+
+    setReactions((prev) => ({ ...prev, [slug]: emoji }));
+
+    try {
+      await fetch('/api/reactions', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ slug, emoji })
+      });
+      // Volver a jalar para tener el recuento exacto actualizado
+      const res = await fetch('/api/reactions');
+      const data = await res.json();
+      if (data.data) setDbStats(data.data);
+    } catch(err) {
+      console.error("No se pudo guardar la reacción", err);
+    }
+  };
+
   const copy =
     lang === "en"
       ? {
@@ -142,6 +182,30 @@ export default function Journal({ articles }: JournalProps) {
               {articles.map((article, index) => {
                 const isSent = index % 2 !== 0;
 
+                // Contabilidad de Base de Datos
+                const stats = dbStats[article.slug] || { reaction_love: 0, reaction_like: 0, reaction_laugh: 0 };
+                const userLocal = reactions[article.slug];
+                
+                // Determinar el emoji más popular de este artículo conteo exacto
+                let maxEmoji = '❤️';
+                let maxCount = stats.reaction_love || 0;
+                
+                if ((stats.reaction_like || 0) > maxCount) {
+                   maxCount = stats.reaction_like;
+                   maxEmoji = '👍';
+                }
+                if ((stats.reaction_laugh || 0) > maxCount) {
+                   maxCount = stats.reaction_laugh;
+                   maxEmoji = '😂';
+                }
+
+                // Override visual optimista
+                let activeEmoji = userLocal || (maxCount > 0 ? maxEmoji : '❤️');
+                let displayCount = maxCount;
+                if (userLocal && maxCount === 0) displayCount = 1;
+
+                const shoulDisplayCounter = displayCount > 0;
+
                 return (
                   <motion.div
                     key={article.slug}
@@ -152,7 +216,7 @@ export default function Journal({ articles }: JournalProps) {
                     className={`flex ${isSent ? 'justify-end' : 'justify-start'}`}
                   >
                     <div 
-                      className={`relative w-[90%] sm:w-[75%] p-2 rounded-2xl ${
+                      className={`relative w-[90%] sm:w-[75%] p-2 rounded-2xl group/bubble ${
                         isSent 
                           ? 'bg-[#005c4b] rounded-tr-sm text-white' 
                           : 'bg-[#202c33] rounded-tl-sm text-[#e9edef]'
@@ -203,6 +267,29 @@ export default function Journal({ articles }: JournalProps) {
                           <div className="clear-both"></div>
                         </div>
                       </Link>
+
+                      {/* Interactive Reactions Menu */}
+                      <div className={`absolute -bottom-3 ${isSent ? 'left-4' : 'right-4'} flex flex-row-reverse gap-1 bg-[#182229] border border-white/10 rounded-full px-2 py-0.5 shadow-sm opacity-0 group-hover/bubble:opacity-100 transition-opacity z-20`}>
+                        {['😂', '👍', '❤️'].map(emoji => (
+                          <button 
+                            key={emoji}
+                            onClick={(e) => toggleReaction(article.slug, emoji, e)}
+                            className={`text-sm hover:scale-125 transition-transform ${reactions[article.slug] === emoji ? 'bg-white/20 rounded-full scale-110' : ''}`}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Active Reaction Exact Display - Solo si > 0 */}
+                      {shoulDisplayCounter && (
+                        <div className={`absolute -bottom-3 ${isSent ? 'left-2' : 'right-2'} bg-[#202c33] border border-white/10 rounded-full px-1.5 py-0.5 shadow-md text-[11px] z-10 flex items-center gap-1 group/reaction`}>
+                          <span className="leading-none">{activeEmoji}</span>
+                          <span className={`font-semibold leading-none ${userLocal ? 'text-[#00a884]' : 'text-[#8696a0]'}`}>
+                             {displayCount}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 );
