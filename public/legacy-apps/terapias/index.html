@@ -35,6 +35,7 @@
         .btn-admin { background: linear-gradient(135deg,#7c5cbf,#9f86c0); color: #fff; border: none; border-radius: 9999px; padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
         .btn-admin:hover { opacity: .88; }
         #adminMsg { margin-top: 12px; font-size: 14px; min-height: 20px; }
+        option { background-color: #1e293b; color: #ffffff; }
     </style>
   <script src="/legacy-apps/duplicate-validator.js" defer></script>
 </head>
@@ -136,6 +137,11 @@
                     <input id="fecha" name="fecha" type="date" required>
                 </div>
                 <div class="field">
+                    <label for="paciente">Paciente</label>
+                    <input id="paciente" name="paciente" type="text" list="pacientesList" placeholder="Escribe o selecciona..." required autocomplete="off">
+                    <datalist id="pacientesList"></datalist>
+                </div>
+                <div class="field">
                     <label for="terapeuta">Terapeuta</label>
                     <select id="terapeuta" name="terapeuta" required>
                         <option value="">Cargando…</option>
@@ -219,6 +225,7 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Semana</th>
+                            <th>Paciente</th>
                             <th>Terapeuta</th>
                             <th>Tipo Pago</th>
                             <!-- Las siguientes columnas solo las ve Admin -->
@@ -485,6 +492,7 @@ async function handleRegistro(e) {
     const fecha   = document.getElementById("fecha").value;
     const tipo    = document.getElementById("tipoPago").value;
     const monto   = parseFloat(document.getElementById("monto").value) || 0;
+    const pacienteStr = document.getElementById("paciente").value;
     const tName = String(terapeuta).toUpperCase();
     let creiPct = 50;
     if (tName === "CREI") {
@@ -522,7 +530,8 @@ async function handleRegistro(e) {
             terapeuta_id: tRow.id, tipo_pago: tipo, monto,
             crei_pct: creiPct, ter_pct: terPct,
             crei_monto: monto * creiPct / 100, ter_monto: monto * terPct / 100,
-            comprobante_url: fileUrl
+            comprobante_url: fileUrl,
+            paciente: pacienteStr
         });
         if (insErr) throw new Error("Error guardando registro: " + insErr.message);
 
@@ -593,6 +602,7 @@ async function cargarRegistros() {
         tr.innerHTML = `
             <td>${r.fecha}</td>
             <td><span class="badge" style="background:#334155;">${r.semana_code || "-"}</span></td>
+            <td style="font-weight:600; color:#60a5fa;">${r.paciente || "-"}</td>
             <td style="font-weight:600;">${tName}</td>
             <td>${r.tipo_pago}</td>
             ${adminCols}
@@ -607,11 +617,22 @@ async function cargarRegistros() {
 // CARGAR PACIENTES
 // ============================================================
 async function cargarPacientes() {
-    const { data } = await sb.from("pacientes").select("*").order("created_at", { ascending: false }).limit(20);
+    const { data } = await sb.from("pacientes").select("*").order("created_at", { ascending: false });
     const tbody = document.querySelector("#tablaPacientes tbody");
+    const datalist = document.getElementById("pacientesList");
+
+    if (datalist && data) {
+        datalist.innerHTML = "";
+        data.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.nombre + (p.apellido ? " " + p.apellido : "");
+            datalist.appendChild(opt);
+        });
+    }
+
     if (!tbody || !data) return;
     tbody.innerHTML = "";
-    data.forEach(p => {
+    data.slice(0, 20).forEach(p => {
         tbody.innerHTML += `<tr><td>${p.nombre}</td><td>${p.apellido||""}</td><td>${p.fecha_alta||""}</td><td style="color:#10b981;font-weight:bold;">☁️ Activo</td></tr>`;
     });
 }
@@ -684,11 +705,12 @@ async function descargarZip() {
         if (!regs?.length) throw new Error("No hay registros en ese rango.");
 
         const zip = new JSZip();
-        let csv = "ID,Fecha,Semana,Terapeuta,Tipo,Monto,CREI%,Ter%,CREI$,Ter$,URL\n";
+        let csv = "ID,Fecha,Semana,Paciente,Terapeuta,Tipo,Monto,CREI%,Ter%,CREI$,Ter$,URL\n";
 
         for (const r of regs) {
             const tName = r.usuarios?.username || "?";
-            csv += [r.id, r.fecha, r.semana_code, tName, r.tipo_pago, r.monto, r.crei_pct, r.ter_pct, r.crei_monto, r.ter_monto, r.comprobante_url].join(",") + "\n";
+            const pacName = r.paciente ? r.paciente.replace(/,/g, "") : "-";
+            csv += [r.id, r.fecha, r.semana_code, pacName, tName, r.tipo_pago, r.monto, r.crei_pct, r.ter_pct, r.crei_monto, r.ter_monto, r.comprobante_url].join(",") + "\n";
             if (r.comprobante_url) {
                 try {
                     const res = await fetch(r.comprobante_url);

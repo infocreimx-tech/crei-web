@@ -23,7 +23,7 @@ export default function Navbar() {
           { name: "Services", href: `/${lang}/servicios` },
           { name: "Method", href: `/${lang}/metodo` },
           { name: "Technology", href: `/${lang}/tecnologia` },
-          { name: "Blog", href: `/${lang}/blog` },
+          { name: "Community", href: `/${lang}/comunidad` },
           { name: "Contact", href: `/${lang}/#contacto` },
         ]
       : [
@@ -31,7 +31,7 @@ export default function Navbar() {
           { name: "Servicios", href: `/${lang}/servicios` },
           { name: "Método", href: `/${lang}/metodo` },
           { name: "Tecnología", href: `/${lang}/tecnologia` },
-          { name: "Blog", href: `/${lang}/blog` },
+          { name: "Comunidad", href: `/${lang}/comunidad` },
           { name: "Contacto", href: `/${lang}/#contacto` },
         ];
 

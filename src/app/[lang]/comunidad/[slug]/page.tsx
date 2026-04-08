@@ -97,11 +97,11 @@ export default async function BlogPostPage({
         <div className="container mx-auto px-6 max-w-4xl">
           {/* Back button */}
           <Link
-            href={`/${resolvedParams.lang}/blog`}
+            href={`/${resolvedParams.lang}/comunidad`}
             className="inline-flex items-center gap-2 text-primary/60 hover:text-primary transition-colors mb-12 hover:-translate-x-1 duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
-            {resolvedParams.lang === "en" ? "Back to blog" : "Volver al blog"}
+            {resolvedParams.lang === "en" ? "Back to community" : "Volver a la comunidad"}
           </Link>
 
           {/* Content */}

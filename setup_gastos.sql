@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS gastos (
     tipo TEXT NOT NULL,
     archivo_path TEXT,
     archivo_mime TEXT,
+    numero_ticket TEXT,
+    numero_factura TEXT,
+    iva NUMERIC(10,2),
     creado_en TIMESTAMPTZ DEFAULT NOW(),
     historial JSONB DEFAULT '[]'::jsonb
 );
