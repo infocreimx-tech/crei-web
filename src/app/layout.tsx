@@ -85,9 +85,9 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
-        <link rel="icon" href="/logo.png?v=3" sizes="32x32" type="image/png" />
-        <link rel="icon" href="/logo.png?v=3" sizes="48x48" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo.png?v=3" />
+        <link rel="icon" href="/app-logo.png?v=4" sizes="32x32" type="image/png" />
+        <link rel="icon" href="/app-logo.png?v=4" sizes="48x48" type="image/png" />
+        <link rel="apple-touch-icon" href="/app-logo.png?v=4" />
       </head>
       <body
         className={`${playfair.variable} ${inter.variable} antialiased bg-background text-foreground font-sans relative`}
