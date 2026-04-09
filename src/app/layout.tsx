@@ -1,4 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  themeColor: "#050505",
+};
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import StarfallOverlay from "@/components/StarfallOverlay";
