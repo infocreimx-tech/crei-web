@@ -6,7 +6,8 @@ import Image from "next/image";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import type { Locale } from "@/i18n/messages";
 
-export default function ConfirmadoPage({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function ConfirmadoPage({ params }: { params: Promise<{ lang: Locale }> }) {
+  const { lang } = await params;
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Ambience */}
