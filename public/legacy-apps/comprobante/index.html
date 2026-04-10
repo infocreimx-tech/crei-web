@@ -557,6 +557,19 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         fn.classList.add('hidden');
         const usSoInput2 = document.getElementById("usuario_sso");
         if(usSoInput2) usSoInput2.value = currentUser;
+
+        // 🔔 Enviar Notificación Push
+        try {
+            fetch('/api/notifications/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    title: '🧾 Nuevo Comprobante', 
+                    body: \`El usuario \${currentUser} ha anexado un comprobante de $\${payload.importe}.\`, 
+                    url: '/es/portal-terapeutas/app/comprobante' 
+                })
+            });
+        } catch (e) { console.error("Push Error", e); }
         
         alertMsg("¡Bloque de recibo guardado en la arquitectura Serverless!");
         loadGastos();

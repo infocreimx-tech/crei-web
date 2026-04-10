@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -110,6 +110,17 @@ export default function About() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const activeFaqs = faqs[lang] ?? faqs.es;
 
+  const [peopleCount, setPeopleCount] = useState("25,180+");
+  
+  useEffect(() => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const diffTime = Math.abs(now.getTime() - startOfYear.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const currentCount = 6380 + (diffDays * 188);
+    setPeopleCount(currentCount.toLocaleString('en-US') + "+");
+  }, []);
+
   const copy = lang === "en"
     ? {
         heroLabel: "CREI Foundation",
@@ -132,7 +143,7 @@ export default function About() {
         missionTitle: "Help people.",
         missionDesc: "CREI was born from a conviction: the quality of your recovery should never depend on your economic capacity. We operate as a foundation to ensure that every person — regardless of their resources — has access to real clinical guidance.",
         missionStats: [
-          { value: "25,000+", label: "People supported annually" },
+          { value: peopleCount, label: "People supported annually" },
           { value: "100%", label: "Free services" },
           { value: "2+", label: "Years of experience" },
           { value: "0", label: "Cost for guidance" },
@@ -159,7 +170,7 @@ export default function About() {
         timeline: [
           { year: "2024", title: "The First Steps", desc: "Fernando begins helping families face-to-face, guiding those desperately looking for a way out by combining science and lived experience." },
           { year: "2024", title: "A Clear Need", desc: "Demand grows. It becomes evident that thousands need deep clinical and psychological guidance but simply cannot afford it." },
-          { year: "2024", title: "The Foundation is Born", desc: "What started as individual help becomes a formal institution. CREI Foundation is created to democratize mental health access, making it 100% free." },
+          { year: "2024", title: "The Foundation is Born", desc: "What started as individual help becomes a formal institution. CREI Foundation is created to democratize mental health access." },
           { year: "2024", title: "Digital Expansion", desc: "The foundation's vision breaks physical borders through virtual platforms and digital content, extending real help across the region." },
           { year: "2025", title: "A Comprehensive Ecosystem", desc: "CREI consolidates, uniting cutting-edge technology and a multidisciplinary team to support thousands without losing its free, human essence." },
         ],
@@ -198,7 +209,7 @@ export default function About() {
         missionTitle: "Ayudar a las personas.",
         missionDesc: "CREI nació de una convicción: la calidad de tu recuperación nunca debe depender de tu capacidad económica. Operamos como fundación para garantizar que cada persona — sin importar sus recursos — acceda a orientación clínica real.",
         missionStats: [
-          { value: "25,000+", label: "Personas acompañadas al año" },
+          { value: peopleCount, label: "Personas acompañadas al año" },
           { value: "100%", label: "Servicios gratuitos" },
           { value: "2+", label: "Años de experiencia" },
           { value: "0", label: "Costo de orientación" },
@@ -225,7 +236,7 @@ export default function About() {
         timeline: [
           { year: "2024", title: "Los Primeros Pasos", desc: "Fernando comienza a ayudar de forma personal y directa a las primeras familias que buscan desesperadamente una salida, compartiendo ciencia y experiencia vivida." },
           { year: "2024", title: "La Necesidad Es Clara", desc: "La demanda crece. Se vuelve evidente que miles de personas necesitan orientación clínica y psicológica profunda, pero no tienen cómo pagarla." },
-          { year: "2024", title: "Nace la Fundación", desc: "Lo que empezó como ayuda individual se formaliza. Se crea la Fundación CREI para democratizar el acceso a la salud mental y ofrecer apoyo 100% gratuito." },
+          { year: "2024", title: "Nace la Fundación", desc: "Lo que empezó como ayuda individual se formaliza. Se crea la Fundación CREI para democratizar el acceso a la salud mental." },
           { year: "2024", title: "Expansión Digital", desc: "La visión de la fundación rompe fronteras. A través de plataformas virtuales y contenido digital, la ayuda llega a toda Latinoamérica." },
           { year: "2025", title: "Un Ecosistema Integral", desc: "CREI se consolida, integrando tecnología de vanguardia y un equipo multidisciplinario para acompañar a miles sin perder su esencia humana y gratuita." },
         ],

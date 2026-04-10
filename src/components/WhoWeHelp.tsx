@@ -25,14 +25,14 @@ export default function WhoWeHelp() {
           {
             icon: Users,
             title: "Families in Crisis",
-            desc: "Addiction is a family disease. We work with partners, parents and siblings to set boundaries, understand enabling, and build recovery around the patient.",
+            desc: '"There isn\'t an addict in the family, there is a sick family." We work with partners, parents and siblings to set boundaries, understand enabling, and build recovery around the patient.',
             image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
             color: "from-violet-900/60"
           },
           {
             icon: HeartHandshake,
-            title: "People Leaving Rehabilitation",
-            desc: "The hardest phase begins after treatment. We provide relapse prevention tools, social reintegration support, and ongoing coaching for sustained sobriety.",
+            title: "Life Project",
+            desc: "The hardest phase begins upon leaving inpatient care. We provide relapse prevention tools, social reintegration support, and ongoing coaching for sustained sobriety.",
             image: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?q=80&w=800&auto=format&fit=crop",
             color: "from-black/90"
           },
@@ -63,14 +63,14 @@ export default function WhoWeHelp() {
           {
             icon: Users,
             title: "Familias en Crisis",
-            desc: "La adicción es una enfermedad familiar. Trabajamos con parejas, padres y hermanos para fijar límites, entender la co-dependencia y construir una red de apoyo real.",
+            desc: '"No hay un adicto en la familia, hay una familia enferma". Trabajamos con parejas, padres y hermanos para fijar límites, entender la co-dependencia y construir una red de apoyo real.',
             image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
             color: "from-violet-900/60"
           },
           {
             icon: HeartHandshake,
-            title: "Personas que Salen de Rehabilitación",
-            desc: "La etapa más difícil comienza después del tratamiento. Proveemos herramientas de prevención de recaídas, soporte de reinserción social y coaching de sobriedad.",
+            title: "Proyecto de Vida",
+            desc: "La etapa más difícil comienza al salir del internamiento. Proveemos herramientas de prevención de recaídas, soporte de reinserción social y coaching de sobriedad.",
             image: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?q=80&w=800&auto=format&fit=crop",
             color: "from-black/90"
           },

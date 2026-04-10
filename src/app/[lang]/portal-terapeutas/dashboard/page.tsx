@@ -9,6 +9,7 @@ import {
   FolderOpen, FileText, Activity, LogOut, ShieldCheck, ArrowRight
 } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
+import PushNotificationManager from "@/components/PushNotificationManager";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
@@ -98,6 +99,8 @@ export default function EcosystemDashboard() {
             </div>
 
             <div className="w-px h-5" style={{ background: "rgba(159, 134, 192, 0.25)" }} />
+
+            <PushNotificationManager />
 
             <button
               onClick={handleLogout}

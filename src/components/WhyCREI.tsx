@@ -17,13 +17,13 @@ export default function WhyCREI() {
           {
             icon: Shield,
             title: "Strict Clinical Ethics",
-            desc: "CREI operates under strict clinical ethics. No unnecessary hospitalizations. No hidden fees. We match each patient with the setting that truly serves them — not the most profitable one.",
+            desc: "CREI operates under strict clinical ethics. No unnecessary hospitalizations. We match each patient with the setting that truly serves them — not the most profitable one.",
             image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=900&auto=format&fit=crop"
           },
           {
             icon: FlaskConical,
             title: "Evidence + Experience",
-            desc: "We combine evidence-based methodologies (CBT, motivational interviewing, trauma-informed care) with the lived insight of a director who has walked the path of addiction and recovery himself.",
+            desc: "We combine evidence-based methodologies with the lived insight of a director who has walked the path of addiction and recovery himself.",
             image: "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=900&auto=format&fit=crop"
           },
           {
@@ -34,7 +34,8 @@ export default function WhyCREI() {
           }
         ],
         cta: "Read Our Full Approach",
-        ctaHref: `/${lang}/metodo`
+        ctaHref: `/${lang}/metodo`,
+        quote: '— "If the family knows what to do, the addict recovers"'
       }
     : {
         label: "Por Qué CREI",
@@ -44,13 +45,13 @@ export default function WhyCREI() {
           {
             icon: Shield,
             title: "Ética Clínica Estricta",
-            desc: "CREI opera bajo estricta ética clínica. Sin internaciones innecesarias. Sin costos ocultos. Conectamos a cada paciente con el entorno que realmente le sirve — no el más rentable.",
+            desc: "CREI opera bajo estricta ética clínica. Sin internaciones innecesarias. Conectamos a cada paciente con el entorno que realmente le sirve — no el más rentable.",
             image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=900&auto=format&fit=crop"
           },
           {
             icon: FlaskConical,
             title: "Evidencia + Experiencia Vivida",
-            desc: "Combinamos metodologías con respaldo científico (TCC, entrevista motivacional, atención informada en trauma) con la sabiduría vivencial de un director que ha recorrido el camino de la adicción y la recuperación.",
+            desc: "Combinamos metodologías con respaldo científico con la sabiduría vivencial de un director que ha recorrido el camino de la adicción y la recuperación.",
             image: "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=900&auto=format&fit=crop"
           },
           {
@@ -61,7 +62,8 @@ export default function WhyCREI() {
           }
         ],
         cta: "Conoce Nuestro Enfoque Completo",
-        ctaHref: `/${lang}/metodo`
+        ctaHref: `/${lang}/metodo`,
+        quote: '— "Si la familia sabe qué hacer, el adicto se recupera"'
       };
 
   return (
@@ -118,6 +120,17 @@ export default function WhyCREI() {
             );
           })}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-24 max-w-5xl mx-auto text-center px-4"
+        >
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-accent italic leading-tight">
+            {copy.quote}
+          </h3>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}

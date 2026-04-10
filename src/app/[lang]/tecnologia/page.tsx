@@ -3,6 +3,7 @@ import Tech4DChair from "@/components/Tech4DChair";
 import TechBioWell from "@/components/TechBioWell";
 import TechVR from "@/components/TechVR";
 import TechHolistic from "@/components/TechHolistic";
+import TechHighImpact from "@/components/TechHighImpact";
 import TechPillars from "@/components/TechPillars";
 import TechFAQ from "@/components/TechFAQ";
 import Footer from "@/components/Footer";
@@ -21,6 +22,7 @@ export default function TechnologyPage() {
         <TechBioWell />
         <TechVR />
         <TechHolistic />
+        <TechHighImpact />
         <TechPillars />
         <TechFAQ />
       </div>

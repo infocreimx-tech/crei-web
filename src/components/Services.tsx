@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Minus } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import Link from "next/link";
@@ -70,6 +70,17 @@ export default function Services() {
   const { lang } = useI18n();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  const [peopleCount, setPeopleCount] = useState("25,180+");
+  
+  useEffect(() => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const diffTime = Math.abs(now.getTime() - startOfYear.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const currentCount = 6380 + (diffDays * 188);
+    setPeopleCount(currentCount.toLocaleString('en-US') + "+");
+  }, []);
+
   const copy = lang === "en" ? {
     heroLabel: "Our Services",
     heroTitle: "What We Do at CREI",
@@ -79,7 +90,7 @@ export default function Services() {
     statsTitle: "Numbers That Tell a Real Story",
     statsDesc: "Every statistic represents a person, a family, a second chance.",
     stats: [
-      { value: "25,000+", label: "People guided annually" },
+      { value: peopleCount, label: "People guided annually" },
       { value: "2+", label: "Years of clinical experience" },
       { value: "180°", label: "Comprehensive intervention model" },
       { value: "100%", label: "Personalized & free treatment" },
@@ -137,7 +148,7 @@ export default function Services() {
       {
         icon: "🙋",
         title: "For You",
-        desc: "If you're struggling with addiction, anxiety, depression, or any emotional crisis — CREI is here with no cost, no judgment.",
+        desc: "If you're struggling with addiction, anxiety, depression, or any emotional crisis — CREI is here with no judgment.",
         points: ["Individual therapy", "Crisis intervention", "Personalized clinical plan"],
       },
       {
@@ -195,11 +206,10 @@ export default function Services() {
     faqLabel: "FAQ",
     faqTitle: "Frequently Asked Questions",
     faqs: [
-      { q: "Are all services really free?", a: "Yes. Every service provided by CREI is completely free. We believe no one should be denied recovery because of their financial situation." },
       { q: "Who can attend therapy at CREI?", a: "Anyone dealing with addiction, mental health challenges, or family crises. We don't distinguish by age, background, or history." },
       { q: "How do I start?", a: "You can fill out our contact form, message us on WhatsApp, or call us directly. A team member will reach out within 24 hours." },
       { q: "How long does the process take?", a: "Every case is different. Some people need 3 months; others maintain ongoing support. The pace is set by your process, not a clock." },
-      { q: "Can I bring a family member?", a: "Absolutely. Family involvement is often key to sustained recovery. We offer family sessions as part of our approach." },
+      { q: "Can I bring a family member?", a: "Absolutely. Family involvement is often key to sustained recovery. We offer family sessions as part of our approach. - If your family member doesn't want to: don't worry, the family can still attend." },
       { q: "Is online therapy available?", a: "Yes. We offer remote sessions via video call for people who cannot attend in person. The quality and privacy standards are the same." },
     ],
 
@@ -217,7 +227,7 @@ export default function Services() {
     statsTitle: "Números Que Cuentan una Historia Real",
     statsDesc: "Cada estadística es una persona, una familia, una segunda oportunidad.",
     stats: [
-      { value: "25,000+", label: "Personas asesoradas anualmente" },
+      { value: peopleCount, label: "Personas asesoradas anualmente" },
       { value: "2+", label: "Años de experiencia clínica" },
       { value: "180°", label: "Modelo de intervención integral" },
       { value: "100%", label: "Tratamiento personalizado y gratuito" },
@@ -275,7 +285,7 @@ export default function Services() {
       {
         icon: "🙋",
         title: "Para Ti",
-        desc: "Si estás luchando con adicciones, ansiedad, depresión o cualquier crisis emocional — CREI está aquí, sin costo y sin juicio.",
+        desc: "Si estás luchando con adicciones, ansiedad, depresión o cualquier crisis emocional — CREI está aquí, sin juicio.",
         points: ["Terapia individual", "Intervención en crisis", "Plan clínico personalizado"],
       },
       {
@@ -333,11 +343,10 @@ export default function Services() {
     faqLabel: "FAQ",
     faqTitle: "Preguntas Frecuentes",
     faqs: [
-      { q: "¿Todos los servicios son realmente gratuitos?", a: "Sí. Todos los servicios del CREI son completamente gratuitos. Creemos que nadie debe ser negado de recuperarse por su situación económica." },
       { q: "¿Quién puede asistir a terapia en el CREI?", a: "Cualquier persona que esté enfrentando adicciones, problemas de salud mental o crisis familiares. No distinguimos por edad, contexto o historial." },
       { q: "¿Cómo empiezo?", a: "Puedes llenar nuestro formulario de contacto, escribirnos por WhatsApp o llamarnos directamente. Un miembro del equipo se comunicará contigo en menos de 24 horas." },
       { q: "¿Cuánto dura el proceso?", a: "Cada caso es diferente. Algunas personas necesitan 3 meses; otras mantienen asesoramiento continuo. El ritmo lo marca tu proceso, no un reloj." },
-      { q: "¿Puedo llevar a un familiar?", a: "Absolutamente. La participación familiar suele ser clave para una recuperación sostenida. Ofrecemos sesiones familiares como parte de nuestro enfoque." },
+      { q: "¿Puedo llevar a un familiar?", a: "Absolutamente. La participación familiar suele ser clave para una recuperación sostenida. Ofrecemos sesiones familiares como parte de nuestro enfoque. - Si mi familiar no quiere: no te preocupes, la familia puede asistir." },
       { q: "¿Está disponible la terapia en línea?", a: "Sí. Ofrecemos sesiones remotas por videollamada para personas que no pueden asistir en persona. Los estándares de calidad y privacidad son los mismos." },
     ],
 

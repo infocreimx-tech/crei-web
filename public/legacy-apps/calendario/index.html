@@ -5,8 +5,34 @@
     <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CREI (Centro de Reestructuración Emocional Integral)</title>
-    <script type="module" crossorigin src="./assets/index-TxYNRmCT-v2.js"></script>
+    <script type="module" crossorigin src="./assets/index-DorDl8V--v2.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-By0E4cWJ-v2.css">
+    
+    <!-- 🔔 Web Push Interceptor para Supabase Calendario -->
+    <script>
+      const originalFetch = window.fetch;
+      window.fetch = async function(...args) {
+        const response = await originalFetch.apply(this, args);
+        try {
+          const url = (args[0] instanceof Request) ? args[0].url : args[0];
+          const method = (args[1] && args[1].method) ? args[1].method.toUpperCase() : ((args[0] instanceof Request) ? args[0].method.toUpperCase() : 'GET');
+          
+          // Detectar POST a la tabla 'calendario'
+          if (url.includes('supabase.co/rest/v1/calendario') && method === 'POST' && response.ok) {
+            originalFetch('/api/notifications/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                title: '🗓 Nueva Cita', 
+                body: 'Se ha agendado una nueva sesión en tu calendario.', 
+                url: '/es/portal-terapeutas/app/calendario' 
+              })
+            });
+          }
+        } catch (e) { console.error('Push Interceptor Error', e); }
+        return response;
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>

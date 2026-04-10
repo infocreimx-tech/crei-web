@@ -50,7 +50,7 @@ export default function BlogCarousel({ articles }: BlogCarouselProps) {
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
           {articles.map((article, index) => (
             <div key={article.slug} className="snap-center shrink-0 w-[85vw] md:w-[400px]">
-              <Link href={`/${lang}/comunidad/${article.slug}`} className="group cursor-pointer flex flex-col h-full">
+              <Link href={`/${lang}/blog/${article.slug}`} className="group cursor-pointer flex flex-col h-full">
                 <motion.article
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}

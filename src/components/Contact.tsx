@@ -170,7 +170,7 @@ export default function Contact() {
                 className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-border shadow-sm rounded-xl text-primary font-bold tracking-wide uppercase hover:border-primary/50 transition-all hover:-translate-y-1 group"
               >
                 <UserRound className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
-                {lang === "en" ? "Patient Access" : "Portal de Pacientes"}
+                {lang === "en" ? "Beneficiary" : "Beneficiario"}
               </Link>
               <Link
                 href={`/${lang}/portal-terapeutas`}

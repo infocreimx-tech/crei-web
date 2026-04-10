@@ -84,11 +84,6 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for(let registration of registrations) { registration.unregister(); } }); }`
-          }}
-        />
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
         <link rel="icon" href="/app-logo.png?v=4" sizes="32x32" type="image/png" />
         <link rel="icon" href="/app-logo.png?v=4" sizes="48x48" type="image/png" />

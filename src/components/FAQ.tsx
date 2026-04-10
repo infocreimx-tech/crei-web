@@ -13,7 +13,7 @@ export default function FAQ() {
   const copy = lang === "en"
     ? {
         label: "Common Questions",
-        title: "You deserve honest answers.",
+        title: "We are a foundation, you deserve honest answers.",
         faqs: [
           {
             q: "Does my family member have to want help to get treatment?",
@@ -25,7 +25,7 @@ export default function FAQ() {
           },
           {
             q: "Is treatment confidential?",
-            a: "Absolutely. All of our clinical processes are protected by medical confidentiality. We never share information with employers, family members not involved in treatment, or third parties without explicit written consent."
+            a: "Absolutely. We work with hospitals, clinics, and halfway houses in a strictly confidential manner. All of our clinical processes are protected by medical confidentiality. We never share information with employers, family members not involved in treatment, or third parties without explicit written consent."
           },
           {
             q: "How long does recovery take?",
@@ -39,7 +39,7 @@ export default function FAQ() {
       }
     : {
         label: "Preguntas Frecuentes",
-        title: "Te mereces respuestas honestas.",
+        title: "Somos una fundación, te mereces respuestas honestas.",
         faqs: [
           {
             q: "¿Mi familiar tiene que querer ayuda para iniciar un tratamiento?",
@@ -51,7 +51,7 @@ export default function FAQ() {
           },
           {
             q: "¿El tratamiento es confidencial?",
-            a: "Absolutamente. Todos nuestros procesos clínicos están protegidos por el secreto médico. Nunca compartimos información con empleadores, familiares no involucrados en el tratamiento ni terceros sin consentimiento escrito explícito."
+            a: "Absolutamente. Trabajamos con hospitales, clínicas y casas de medio camino de manera confidencial. Todos nuestros procesos clínicos están protegidos por el secreto médico. Nunca compartimos información con empleadores, familiares no involucrados en el tratamiento ni terceros sin consentimiento escrito explícito."
           },
           {
             q: "¿Cuánto tiempo toma la recuperación?",
