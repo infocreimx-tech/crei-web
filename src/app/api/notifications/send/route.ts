@@ -6,17 +6,18 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY!;
 
-webpush.setVapidDetails(
-  'mailto:infocreimx@gmail.com',
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
 
 export async function POST(req: Request) {
   try {
+    const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
+    const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY!;
+
+    webpush.setVapidDetails(
+      'mailto:infocreimx@gmail.com',
+      VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY
+    );
     const { title, body, url } = await req.json();
 
     // Obtener todas las suscripciones de Supabase
