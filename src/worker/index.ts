@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference lib="webworker" />
 
-declare let self: ServiceWorkerGlobalScope;
+export {};
+declare const self: ServiceWorkerGlobalScope;
 
 self.addEventListener('push', (event) => {
   if (event.data) {
