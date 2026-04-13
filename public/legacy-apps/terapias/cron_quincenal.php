@@ -9,9 +9,19 @@ use PHPMailer\PHPMailer\Exception;
 $supabase_url = "https://uywihjppwzrrfjkguvot.supabase.co/rest/v1/terapias";
 $supabase_key = "sb_publishable_oW-4o2d_roO8yYzTwHdIww_gjO0hL1S"; 
 
-// Determinar el rango de los últimos 15 días exactos.
-$hasta = date("Y-m-d"); 
-$desde = date("Y-m-d", strtotime("-15 days"));
+// Determinar la quincena actual basado en el día de ejecución
+$diaActual = (int)date("d");
+$mesActual = date("Y-m");
+
+if ($diaActual <= 15) {
+    // Si corre el día 15 (o antes), es la primera quincena
+    $desde = $mesActual . "-01";
+    $hasta = $mesActual . "-15";
+} else {
+    // Si corre a fin de mes (día 28, 30, 31), es la segunda quincena
+    $desde = $mesActual . "-16";
+    $hasta = date("Y-m-t"); // 't' da el último día del mes actual
+}
 
 // Consulta a Supabase vía API REST (Monto, CREI $, Terapeuta $) en ese rango.
 $url = $supabase_url . "?fecha=gte." . $desde . "&fecha=lte." . $hasta . "&select=monto,crei_monto,ter_monto";
@@ -41,7 +51,7 @@ if(is_array($terapias)) {
 }
 
 // Configuración Fija de Prueba
-$to_emails = ["lulu@crei.mx", "mel@crei.mx"];
+$to_emails = ["lulu@crei.mx", "karen@crei.mx"];
 $subject = "Corte Quincenal Automático de Terapias ($desde a $hasta)";
 
 $totalF = "$" . number_format($total, 2);
