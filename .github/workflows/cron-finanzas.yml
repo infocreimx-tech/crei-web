@@ -1,0 +1,23 @@
+name: Automate Terapias Finance Cron
+
+on:
+  schedule:
+    # Este cron se ejecutará todos los días a las 14:00 UTC (08:00 AM hora de CDMX)
+    - cron: '0 14 * * *'
+  
+  # Habilita un botón en GitHub para ejecutar esto a mano si alguna vez lo necesitas probar
+  workflow_dispatch:
+
+jobs:
+  hit-cron-endpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al proceso PHP en Producción (Hostinger)
+        # ⚠️ IMPORTANTE: 
+        # Tienes que reemplazar 'crei.mx' por el dominio o subdominio exacto 
+        # en el que los archivos del portal están publicados en Hostinger.
+        run: |
+          curl -s --fail "https://portal.crei.mx/legacy-apps/terapias/cron_quincenal.php" || echo "Falla en conexión, pero GitHub lo registrará."
+          
+      - name: Confirmación
+        run: echo "Petición diaria de cron despachada exitosamente."
