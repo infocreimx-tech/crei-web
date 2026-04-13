@@ -42,13 +42,32 @@ export default function IframeAppContainer() {
     if (!tk && !cs) {
       router.push(`/${lang}/portal-terapeutas`);
     }
+
+    // Broker de sesión: responder solicitudes postMessage de los iframes legacy
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === "CREI_REQUEST_SESSION") {
+        const raw = localStorage.getItem("crei_session");
+        if (raw && event.source) {
+          try {
+            const parsed = JSON.parse(raw);
+            const user = parsed.user || parsed.username || parsed.email || "Desconocido";
+            (event.source as Window).postMessage(
+              { type: "CREI_SESSION_RESPONSE", user, raw },
+              event.origin || "*"
+            );
+          } catch (e) {}
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [router, lang]);
 
   if (!appId || !appNames[appId]) {
     return <div className="p-10 text-center" style={{ color: "#7c5cbf" }}>App no encontrada.</div>;
   }
 
-  const appStaticUrl = `/legacy-apps/${appId}/index.html`;
+  const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260413-1`;
   const accent = appAccents[appId] || "#7c5cbf";
 
   return (

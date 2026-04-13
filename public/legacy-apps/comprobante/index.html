@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <script src="/legacy-apps/injectSSO.js"></script>
+    <script src="/legacy-apps/injectSSO.js?v=20260413"></script>
     <link rel="stylesheet" href="/legacy-apps/crei-theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -312,35 +312,29 @@ const keywordsBolsillo = [
     "crema", "jabón", "jabon", "exfoliante", "esponja", "rastrillo", "rasuradora", "crema de afeitar", "espuma", "loción", "perfume", "desodorante", "antitranspirante", "protector solar", "bloqueador", "talco",
     "uñas", "unas", "cortaúñas", "gelish", "manicura", "pedicura", "pinzas", "cotonetes", "hisopos",
     "cepillo de dientes", "pasta dental", "enjuague bucal", "hilo dental", "toallas sanitarias", "tampones", "protectores",
-    
-    // 2. Antojos, Snacks y "Comida Chatarra" (Tienda de Conveniencia)
+    // 2. Antojos, Snacks y "Comida Chatarra"
     "oxxo", "7eleven", "7-eleven", "extra", "supercito", "maquinita",
     "chocolates", "gansito", "pingüinos", "chocorrol", "galletas", "chicles", "pastillas", "mentas", "paleta", "gomitas", "panditas", "mazapán", "nutella", "helado", "michoacana", "nutrisa",
     "papas", "sabritas", "ruffles", "doritos", "cheetos", "takis", "tostitos", "cacahuates", "churros",
     "refresco", "coca", "cocacola", "pepsi", "sprite", "fanta", "agua mineral", "topochico", "jugo", "valle", "jumex", "gatorade", "electrolit", "frappé", "frappe",
     "café", "cafe", "starbucks", "andatti", "cielito", "punta del cielo",
-
-    // 3. Comida a Domicilio y Restaurantes Pierde-Peso
+    // 3. Comida a Domicilio
     "uber eats", "didi food", "rappi",
     "pizza", "domino", "little caesars", "hut", "hamburguesa", "mcdonalds", "burger king", "carl's jr", "alitas", "kfc", "kentucky", "sushi", "tacos", "tortas", "tamales", "elote", "esquite",
-
     // 4. Ropa, Calzado y Textiles Personales
     "camisa", "playera", "pantalón", "pantalon", "short", "bermuda", "suéter", "sueter", "chamarra", "sudadera", "pants", "pijama",
     "tenis", "zapatos", "botas", "sandalias", "chanclas", "pantuflas",
     "calcetines", "calcetas", "tines", "ropa interior", "calzones", "brasier", "faja", "cinto", "cinturón", "cinturon", "gorra", "bufanda",
     "sastre", "tintorería", "planchado", "reparación de calzado",
-
     // 5. Vicios Permitidos y Accesorios
     "cigarros", "cajetilla", "tabaco", "marlboro", "camel", "pall mall", "benson", "faros",
     "encendedor", "bic", "cerillos",
     "vape", "vaper", "maskking", "esencias", "líquido vapeo", "liquido", "iqos", "heets", "resistencia",
-
     // 6. Tecnología, Recargas y Entretenimiento
     "recarga", "saldo", "telcel", "at&t", "movistar", "unefon", "chip", "megas", "paquete",
     "audífonos", "audifonos", "cargador", "cable", "funda", "mica", "usb", "pila", "batería", "bateria",
     "netflix", "spotify", "youtube premium", "amazon prime", "disney", "hbo", "max", "apple music",
     "xbox", "playstation", "nintendo", "tarjeta de regalo", "google play",
-
     // 7. Farmacia Personal y Suplementos Exclusivos
     "proteína", "proteina", "gym", "creatina", "pre-entreno", "vitaminas", "omega 3",
     "advil", "aspirina", "paracetamol", "ibuprofeno", "pastillas para la garganta", "gotas para los ojos"
@@ -348,23 +342,97 @@ const keywordsBolsillo = [
 
 // Reemplazar tildes para búsqueda flexible
 const normalize = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-// REMOVED \b boundaries to allow aggressive substring matching (e.g., 'pizza' matches 'Pizzas')
 const regexBolsillo = new RegExp(`(${keywordsBolsillo.map(normalize).join('|')})`, 'i');
 
-document.addEventListener("DOMContentLoaded", () => {
-    try {
-        const sessionStr = localStorage.getItem("crei_session");
-        if(sessionStr) {
-            const parsed = JSON.parse(sessionStr); if(parsed.user) currentUser = parsed.user.trim();
-        }
-    } catch(e) { console.warn("SSO Parsing skipped:", e); }
+// Función robusta para leer el usuario de la sesión
+function resolveCurrentUser() {
+  const parseSafe = (val) => {
+    if (!val) return null;
+    if (typeof val === 'string') return val.trim();
+    if (typeof val === 'object') {
+      if (val.username) return String(val.username).trim();
+      if (val.email) return String(val.email).trim();
+    }
+    return String(val).trim();
+  };
+
+  // 1. Prioridad: variable global inyectada por injectSSO.js
+  if (window.CREI_USER && window.CREI_USER !== 'undefined') {
+    const safeUser = parseSafe(window.CREI_USER);
+    if (safeUser) return safeUser;
+  }
+  // 2. Fallback: leer directamente del localStorage
+  try {
+    const raw = localStorage.getItem("crei_session");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const u = parsed.user || parsed.username || parsed.email || null;
+      const safeU = parseSafe(u);
+      if (safeU) return safeU;
+    }
+  } catch(e) { console.warn("SSO LocalStorage parse error:", e); }
+  // 3. Fallback: Revisar si hay sesión en base64 (Next.js auth context)
+  return "Desconocido";
+}
+
+// Actualizar el campo SSO en la UI
+function actualizarCampoSSO(usuario) {
+  try {
+    const safeUsuario = typeof usuario === 'string' ? usuario : 'Desconocido';
+    currentUser = safeUsuario;
     
-    // Auto-detección
+    const el = document.getElementById("usuario_sso");
+    if (el) {
+      el.value = safeUsuario;
+      el.placeholder = safeUsuario;
+    }
+    
+    const correoEl = document.getElementById("correo");
+    if (correoEl && correoEl.value === '' && safeUsuario.toLowerCase() !== 'desconocido') {
+      correoEl.value = `${safeUsuario.toLowerCase()}@crei.mx`;
+    }
+    
+    // Privilegios de Admin
+    if (safeUsuario === 'Admin' || safeUsuario === 'admin') {
+      const btnExcel = document.getElementById("btnExportarExcel");
+      if (btnExcel) { btnExcel.classList.remove('hidden'); btnExcel.classList.add('flex'); }
+    }
+  } catch (error) {
+    console.error("Error setting SSO field", error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Resolver usuario inmediatamente
+    currentUser = resolveCurrentUser();
+    actualizarCampoSSO(currentUser);
+
+    // Si todavía es Desconocido, intentar via postMessage al parent (por si el iframe no lee localStorage)
+    if (currentUser === 'Desconocido' && window.self !== window.top) {
+      const handler = function(event) {
+        if (event.data && event.data.type === "CREI_SESSION_RESPONSE") {
+          const u = event.data.user;
+          if (u && u !== 'Desconocido') {
+            // Actualizar también el localStorage local
+            if (event.data.raw) { try { localStorage.setItem("crei_session", event.data.raw); } catch(e) {} }
+            actualizarCampoSSO(u);
+            loadGastos(); // Recargar con el usuario correcto
+          }
+          window.removeEventListener("message", handler);
+        }
+      };
+      window.addEventListener("message", handler);
+      // Pedir la sesión al parent
+      try { window.parent.postMessage({ type: "CREI_REQUEST_SESSION" }, "*"); } catch(e) {}
+      // Timeout de seguridad: si en 3s no llega respuesta, cancelar
+      setTimeout(() => window.removeEventListener("message", handler), 3000);
+    }
+
+
+    // Auto-detección de origen del pago por keywords
     const conceptoInput = document.getElementById("concepto");
     const radiosOrigen = document.querySelectorAll('input[name="origen_pago"]');
-    
     radiosOrigen.forEach(r => r.addEventListener('change', () => radioManuallyModified = true));
-    
     if(conceptoInput) {
         conceptoInput.addEventListener('input', (e) => {
             if(radioManuallyModified) return;
@@ -377,25 +445,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Privilegios de Admin
-    if(currentUser === 'Admin') {
-        const btnExcel = document.getElementById("btnExportarExcel");
-        if(btnExcel) {
-            btnExcel.classList.remove('hidden');
-            btnExcel.classList.add('flex');
-        }
-    }
-
-    const usSoInput = document.getElementById("usuario_sso");
-    if(usSoInput) usSoInput.value = currentUser;
-    
-    if(currentUser.toLowerCase() !== 'desconocido') {
-      const correoInput = document.getElementById("correo");
-      if(correoInput) correoInput.value = `${currentUser.toLowerCase()}@crei.mx`;
-    }
-
     loadGastos();
 });
+
 
 function alertMsg(msg, isError = false) {
     const box = document.getElementById('alertBox');
@@ -565,7 +617,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     title: '🧾 Nuevo Comprobante', 
-                    body: \`El usuario \${currentUser} ha anexado un comprobante de $\${payload.importe}.\`, 
+                    body: `El usuario ${currentUser} ha anexado un comprobante de $${payload.importe}.`, 
                     url: '/es/portal-terapeutas/app/comprobante' 
                 })
             });
