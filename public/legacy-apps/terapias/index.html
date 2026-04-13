@@ -363,7 +363,7 @@ async function initApp() {
     } else {
         const terSelect = document.getElementById("terapeuta");
         if(terSelect) {
-            terSelect.innerHTML = `<option value="${sess.user}">${sess.user}</option>`;
+            terSelect.innerHTML = `<option value="${sess.user}">🔒 ${sess.user} (Bloqueado)</option>`;
             terSelect.value = sess.user;
             terSelect.disabled = true;
         }
@@ -546,7 +546,7 @@ async function handleRegistro(e) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     title: '💰 Nuevo Gasto Registrado', 
-                    body: \`El terapeuta \${tName} registró un pago de $\${monto.toFixed(2)}.\`, 
+                    body: `El terapeuta ${tName} registró un pago de $${monto.toFixed(2)}.`, 
                     url: '/es/portal-terapeutas/app/terapias' 
                 })
             });

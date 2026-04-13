@@ -102,6 +102,24 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(124,92,191,0.15) !important;
 }
 
+input:disabled, select:disabled, textarea:disabled {
+  background: var(--crei-muted) !important;
+  color: var(--crei-fg) !important;
+  -webkit-text-fill-color: var(--crei-fg) !important;
+  cursor: not-allowed !important;
+}
+
+/* ── Form Labels ── */
+label, .field label, .dist-label, .summary-label {
+  color: var(--crei-fg) !important;
+  font-weight: 700 !important;
+}
+
+.dist-value, .summary-value {
+  color: var(--crei-primary-dark) !important;
+}
+
+
 /* ── Tables (Extremely legible) ── */
 table {
   border-collapse: collapse;
