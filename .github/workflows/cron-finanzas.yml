@@ -13,11 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Llamar al proceso PHP en Producción (Hostinger)
-        # ⚠️ IMPORTANTE: 
-        # Tienes que reemplazar 'crei.mx' por el dominio o subdominio exacto 
-        # en el que los archivos del portal están publicados en Hostinger.
         run: |
-          curl -s --fail "https://portal.crei.mx/legacy-apps/terapias/cron_quincenal.php" || echo "Falla en conexión, pero GitHub lo registrará."
+          curl -s --fail "https://crei.mx/legacy-apps/terapias/cron_quincenal.php" || echo "Falla en conexión, pero GitHub lo registrará."
           
       - name: Confirmación
         run: echo "Petición diaria de cron despachada exitosamente."
