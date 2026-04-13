@@ -12,15 +12,21 @@ $supabase_key = "sb_publishable_oW-4o2d_roO8yYzTwHdIww_gjO0hL1S";
 // Determinar la quincena actual basado en el día de ejecución
 $diaActual = (int)date("d");
 $mesActual = date("Y-m");
+$ultimoDiaDelMes = (int)date("t");
 
-if ($diaActual <= 15) {
-    // Si corre el día 15 (o antes), es la primera quincena
+// REGLA DE SEGURIDAD: Solo enviar si es EXACTAMENTE el día 15 o el Último día del mes.
+if ($diaActual != 15 && $diaActual != $ultimoDiaDelMes) {
+    die("INFO: Hoy es día $diaActual. El cron automatizado de CREI solo envía correos los días 15 o $ultimoDiaDelMes. No se hace nada hoy.\n");
+}
+
+if ($diaActual == 15) {
+    // Primera quincena
     $desde = $mesActual . "-01";
     $hasta = $mesActual . "-15";
 } else {
-    // Si corre a fin de mes (día 28, 30, 31), es la segunda quincena
+    // Segunda quincena (último día del mes)
     $desde = $mesActual . "-16";
-    $hasta = date("Y-m-t"); // 't' da el último día del mes actual
+    $hasta = date("Y-m-t"); 
 }
 
 // Consulta a Supabase vía API REST (Monto, CREI $, Terapeuta $) en ese rango.
