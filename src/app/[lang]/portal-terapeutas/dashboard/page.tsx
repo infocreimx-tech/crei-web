@@ -149,11 +149,9 @@ export default function EcosystemDashboard() {
 
         {/* App Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-          {apps
-            .filter(app => !app.restricted || ["Alberto", "Gilberto", "Mauricio", "Vilchis", "Admin", "admin"].includes(user))
-            .map((app) => (
+          {apps.map((app) => (
             <Link
-              href={app.id === "valoraciones" ? `/es/portal-terapeutas/app/valoraciones` : `/es/portal-terapeutas/app/${app.id}`}
+              href={`/es/portal-terapeutas/app/${app.id}`}
               key={app.id}
               className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
               style={{
