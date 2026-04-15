@@ -165,6 +165,10 @@
                     <label for="comprobante">Comprobante</label>
                     <input id="comprobante" name="comprobante" type="file" accept="image/*,.pdf">
                 </div>
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="notas">Notas / Comentarios</label>
+                    <textarea id="notas" name="notas" rows="2" placeholder="Opcional: Detalles adicionales..." style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#e2e8f0;font-size:14px;font-family:inherit;"></textarea>
+                </div>
 
                 <!-- Distribución general de porcentajes -->
                 <div class="distribution" id="distBlock">
@@ -235,6 +239,7 @@
                             <th class="admin-only col-admin">CREI $</th>
                             <th class="admin-only col-admin">Ter $</th>
                             <th>Comprobante</th>
+                            <th>Notas</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -493,6 +498,7 @@ async function handleRegistro(e) {
     const tipo    = document.getElementById("tipoPago").value;
     const monto   = parseFloat(document.getElementById("monto").value) || 0;
     const pacienteStr = document.getElementById("paciente").value;
+    const notasStr = document.getElementById("notas") ? document.getElementById("notas").value.trim() : null;
     const tName = String(terapeuta).toUpperCase();
     let creiPct = 50;
     if (tName === "CREI") {
@@ -531,7 +537,8 @@ async function handleRegistro(e) {
             crei_pct: creiPct, ter_pct: terPct,
             crei_monto: monto * creiPct / 100, ter_monto: monto * terPct / 100,
             comprobante_url: fileUrl,
-            paciente: pacienteStr
+            paciente: pacienteStr,
+            notas: notasStr
         });
         if (insErr) throw new Error("Error guardando registro: " + insErr.message);
 
@@ -621,6 +628,7 @@ async function cargarRegistros() {
             <td>${r.tipo_pago}</td>
             ${adminCols}
             <td>${r.comprobante_url ? `<a href="${r.comprobante_url}" target="_blank" style="color:#60a5fa;">🏞️ Ver</a>` : "N/A"}</td>
+            <td style="font-size:13px; max-width: 150px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" title="${r.notas || ''}">${r.notas || "-"}</td>
             <td><span style="color:#10b981;">✔️</span></td>
         `;
         tbody.appendChild(tr);
@@ -719,12 +727,13 @@ async function descargarZip() {
         if (!regs?.length) throw new Error("No hay registros en ese rango.");
 
         const zip = new JSZip();
-        let csv = "ID,Fecha,Semana,Paciente,Terapeuta,Tipo,Monto,CREI%,Ter%,CREI$,Ter$,URL\n";
+        let csv = "ID,Fecha,Semana,Paciente,Terapeuta,Tipo,Monto,CREI%,Ter%,CREI$,Ter$,URL,Notas\n";
 
         for (const r of regs) {
             const tName = r.usuarios?.username || "?";
             const pacName = r.paciente ? r.paciente.replace(/,/g, "") : "-";
-            csv += [r.id, r.fecha, r.semana_code, pacName, tName, r.tipo_pago, r.monto, r.crei_pct, r.ter_pct, r.crei_monto, r.ter_monto, r.comprobante_url].join(",") + "\n";
+            const notasCsv = r.notas ? r.notas.replace(/[\n,]/g, " ") : "-";
+            csv += [r.id, r.fecha, r.semana_code, pacName, tName, r.tipo_pago, r.monto, r.crei_pct, r.ter_pct, r.crei_monto, r.ter_monto, r.comprobante_url, notasCsv].join(",") + "\n";
             if (r.comprobante_url) {
                 try {
                     const res = await fetch(r.comprobante_url);

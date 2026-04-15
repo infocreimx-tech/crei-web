@@ -82,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
         <link rel="icon" href="/app-logo.png?v=4" sizes="32x32" type="image/png" />

@@ -7,14 +7,17 @@ const sha256 = (str) => crypto.createHash("sha256").update(str).digest("hex");
 
 // username → { password, role }
 const USERS = [
-  { username: "Admin",   password: "Admin123",   role: "admin"     },
-  { username: "Alberto", password: "Alberto123", role: "therapist" },
-  { username: "Hector",  password: "Hector123",  role: "therapist" },
-  { username: "Sergio",  password: "Sergio123",  role: "therapist" },
-  { username: "CREI",    password: "Fercrei*",   role: "therapist" },
-  { username: "Arturo",  password: "Arturo123",  role: "therapist" },
-  { username: "Roberto", password: "Roberto123", role: "therapist" },
-  { username: "Diego",   password: "Diego123",   role: "therapist" },
+  { username: "Admin",    password: "Admin123",    role: "admin"     },
+  { username: "Alberto",  password: "Alberto123",  role: "therapist" },
+  { username: "Hector",   password: "Hector123",   role: "therapist" },
+  { username: "Sergio",   password: "Sergio123",   role: "therapist" },
+  { username: "CREI",     password: "Fercrei*",    role: "therapist" },
+  { username: "Arturo",   password: "Arturo123",   role: "therapist" },
+  { username: "Roberto",  password: "Roberto123",  role: "therapist" },
+  { username: "Diego",    password: "Diego123",    role: "therapist" },
+  { username: "Vilchis",  password: "Vilchis123",  role: "therapist" },
+  { username: "Gilberto", password: "Gilberto123", role: "therapist" },
+  { username: "Mauricio", password: "Mauricio123", role: "therapist" },
 ];
 
 async function patchUser(user) {
