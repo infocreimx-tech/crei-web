@@ -211,25 +211,91 @@ export default function EcosystemDashboard() {
 
           {/* Tarjeta de Usuarios — solo visible para admin */}
           {role === "admin" && (
-            <Link
-              href={`/es/portal-terapeutas/usuarios`}
-              className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
-              style={{
-                background: "rgba(30, 15, 45, 0.85)",
-                border: "1px solid rgba(225, 29, 72, 0.25)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                backdropFilter: "blur(16px)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  `0 20px 40px rgba(0,0,0,0.7), 0 0 20px #e11d4840 inset`;
-                (e.currentTarget as HTMLElement).style.borderColor = `#e11d4880`;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(225, 29, 72, 0.25)";
-              }}
-            >
+            <>
+              <Link
+                href={`/es/portal-terapeutas/app/fondo`}
+                className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
+                style={{
+                  background: "rgba(30, 15, 45, 0.85)",
+                  border: "1px solid rgba(124, 92, 191, 0.25)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                  backdropFilter: "blur(16px)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    `0 20px 40px rgba(0,0,0,0.7), 0 0 20px #7c5cbf40 inset`;
+                  (e.currentTarget as HTMLElement).style.borderColor = `#7c5cbf80`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(159, 134, 192, 0.25)";
+                }}
+              >
+                {/* Blob hover */}
+                <div
+                  className="absolute top-[-20px] right-[-20px] w-32 h-32 rounded-full transition-all duration-500 opacity-20 filter blur-2xl group-hover:opacity-60 group-hover:scale-150"
+                  style={{ background: "#7c5cbf" }}
+                />
+
+                {/* Badge admin exclusivo */}
+                <div className="absolute top-4 right-4 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(124,142,255,0.15)", border: "1px solid rgba(124,142,255,0.4)", color: "#a5b4fc" }}
+                >
+                  <ShieldCheck className="w-3 h-3" />
+                  Solo Admin
+                </div>
+
+                {/* Icon */}
+                <div
+                  className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
+                  style={{ background: `linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))`, backdropFilter: "blur(10px)" }}
+                >
+                  <Database className="w-6 h-6 transition-transform group-hover:scale-110" style={{ color: "#7c5cbf" }} />
+                </div>
+
+                {/* Text */}
+                <div className="relative z-10 flex-1 mt-2">
+                  <h3
+                    className="text-xl font-serif font-bold mb-2 transition-colors drop-shadow-md"
+                    style={{ color: "#fbfaff" }}
+                  >
+                    Fondo
+                  </h3>
+                  <p className="text-sm leading-relaxed font-medium" style={{ color: "#a78bfa" }}>
+                    Gestión de saldos y prepagos de pacientes.
+                  </p>
+                </div>
+
+                {/* Arrow */}
+                <div className="relative z-10 flex items-center justify-end mt-4">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 border border-white/5"
+                    style={{ background: "rgba(255,255,255,0.05)" }}
+                  >
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ color: "#7c5cbf" }} />
+                  </div>
+                </div>
+              </Link>
+
+              <Link
+                href={`/es/portal-terapeutas/usuarios`}
+                className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
+                style={{
+                  background: "rgba(30, 15, 45, 0.85)",
+                  border: "1px solid rgba(225, 29, 72, 0.25)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                  backdropFilter: "blur(16px)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    `0 20px 40px rgba(0,0,0,0.7), 0 0 20px #e11d4840 inset`;
+                  (e.currentTarget as HTMLElement).style.borderColor = `#e11d4880`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(225, 29, 72, 0.25)";
+                }}
+              >
               {/* Blob hover */}
               <div
                 className="absolute top-[-20px] right-[-20px] w-32 h-32 rounded-full transition-all duration-500 opacity-20 filter blur-2xl group-hover:opacity-60 group-hover:scale-150"
@@ -274,7 +340,8 @@ export default function EcosystemDashboard() {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ color: "#e11d48" }} />
                 </div>
               </div>
-            </Link>
+              </Link>
+            </>
           )}
         </div>
       </main>
