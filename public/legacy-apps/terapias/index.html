@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* -------- Admin-only sections hidden by default -------- */
         .admin-only { display: none; }
@@ -58,74 +59,8 @@
     </header>
 
     <main class="app-grid" id="mainContent" style="display:none">
-
-        <!-- ================================================
-             PANEL ADMIN — Solo visible para el usuario Admin
-             ================================================ -->
-        <section id="adminPanel" class="admin-only" style="grid-column: span 12;">
-
-            <!-- Sub-panel 1: Cambiar contraseña -->
-            <h2>🔐 Cambiar Contraseña de Terapeuta</h2>
-            <form id="adminPassForm" class="admin-form-row">
-                <div class="field">
-                    <label>Selecciona Terapeuta</label>
-                    <select id="adminUser" required>
-                        <option value="">Cargando lista…</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Nueva Contraseña</label>
-                    <input id="adminPass1" type="password" placeholder="Nueva contraseña" required>
-                </div>
-                <div class="field">
-                    <label>Confirmar Contraseña</label>
-                    <input id="adminPass2" type="password" placeholder="Repite la contraseña" required>
-                </div>
-                <button type="submit" class="btn-admin">Actualizar Contraseña</button>
-            </form>
-            <div id="adminMsg"></div>
-
-            <hr style="border-color:#4338ca;margin:28px 0;">
-
-            <!-- Sub-panel 2: Gestionar terapeutas -->
-            <h2>👥 Gestionar Terapeutas</h2>
-            <div class="admin-form-row" style="align-items:flex-start;gap:40px;flex-wrap:wrap;">
-
-                <!-- Agregar -->
-                <div style="flex:1;min-width:260px;">
-                    <div style="color:#a5b4fc;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Agregar nuevo terapeuta</div>
-                    <form id="agregarTerForm">
-                        <div class="field" style="margin-bottom:12px;">
-                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Nombre de usuario</label>
-                            <input id="nuevoTerNombre" type="text" placeholder="Ej. Mario" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
-                        </div>
-                        <div class="field" style="margin-bottom:16px;">
-                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Contraseña inicial</label>
-                            <input id="nuevoTerPass" type="password" placeholder="Contraseña" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
-                        </div>
-                        <button type="submit" class="btn-admin" style="background:linear-gradient(135deg,#059669,#10b981);">+ Agregar Terapeuta</button>
-                    </form>
-                    <div id="agregarMsg" style="margin-top:10px;font-size:14px;"></div>
-                </div>
-
-                <!-- Eliminar -->
-                <div style="flex:1;min-width:260px;">
-                    <div style="color:#fca5a5;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Eliminar terapeuta</div>
-                    <form id="eliminarTerForm">
-                        <div class="field" style="margin-bottom:16px;">
-                            <label style="display:block;margin-bottom:6px;color:#a5b4fc;font-size:13px;">Selecciona terapeuta</label>
-                            <select id="eliminarTerSel" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #991b1b;background:#1e1b4b;color:#e2e8f0;font-size:15px;">
-                                <option value="">Cargando lista…</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-admin" style="background:linear-gradient(135deg,#b91c1c,#ef4444);">✕ Eliminar Terapeuta</button>
-                    </form>
-                    <div id="eliminarMsg" style="margin-top:10px;font-size:14px;"></div>
-                </div>
-
-            </div>
-        </section>
-
+        <!-- El panel de administración de terapeutas fue removido a petición -->
+        
         <!-- ================================================
              FORMULARIO DE NUEVO REGISTRO
              ================================================ -->
@@ -186,14 +121,29 @@
         </section>
 
         <!-- Resumen financiero — solo Admin -->
-        <section class="card admin-only" id="resumenCard">
-            <h2>Resumen Financiero</h2>
-            <div class="summary">
-                <div class="summary-item"><div class="summary-label">Semana ISO</div><div id="resSemana" class="summary-value">-</div></div>
-                <div class="summary-item"><div class="summary-label">Total General</div><div id="resTotal" class="summary-value">$0.00</div></div>
-                <div class="summary-item"><div class="summary-label">CREI Ganado</div><div id="resCrei" class="summary-value">$0.00</div></div>
-                <div class="summary-item"><div class="summary-label">Terapeuta Ganado</div><div id="resTer" class="summary-value">$0.00</div></div>
+        <section class="card admin-only" id="resumenCard" style="grid-column: span 12;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <h2 style="margin: 0; color: #1e293b;">Resumen Financiero</h2>
+                <div style="display: flex; gap: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <label style="color:#475569; font-size:13px; font-weight:bold;">Rango de fechas:</label>
+                    <input type="date" id="resFiltroDesde2" class="admin-only" title="Desde" style="padding:8px;border-radius:8px;background:#ffffff;color:#1e293b;border:1px solid #cbd5e1;font-size:13px;">
+                    <span style="color:#475569; font-size:13px;">al</span>
+                    <input type="date" id="resFiltroHasta2" class="admin-only" title="Hasta" style="padding:8px;border-radius:8px;background:#ffffff;color:#1e293b;border:1px solid #cbd5e1;font-size:13px;">
+                    <button id="btnLimpiarResumen" class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; border: 1px solid #cbd5e1; color: #475569; background: #ffffff;">Limpiar</button>
+                </div>
             </div>
+            <div class="summary">
+                <div class="summary-item"><div class="summary-label">Periodo</div><div id="resSemana" class="summary-value" style="color: #4c1d95;">-</div></div>
+                <div class="summary-item"><div class="summary-label">Total General</div><div id="resTotal" class="summary-value" style="color: #4c1d95;">$0.00</div></div>
+                <div class="summary-item"><div class="summary-label">CREI Ganado</div><div id="resCrei" class="summary-value" style="color: #4c1d95;">$0.00</div></div>
+                <div class="summary-item"><div class="summary-label">Terapeuta Ganado</div><div id="resTer" class="summary-value" style="color: #4c1d95;">$0.00</div></div>
+            </div>
+            
+            <!-- Gráfica Comparativa -->
+            <div style="margin-top: 30px; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                <canvas id="finanzasChart" height="80"></canvas>
+            </div>
+
             <button id="btnEnviarCorreo" class="btn btn-primary" type="button" style="margin-top: 24px; width: 100%; background: linear-gradient(135deg, #10b981, #059669); font-weight: 800; font-size: 15px; box-shadow: 0 4px 15px rgba(16,185,129,0.3); border:none; transition: all 0.2s ease; cursor: pointer;">
                 <span id="btnEnviarText">✉️ Enviar a mi correo el Resumen Financiero</span>
             </button>
@@ -380,11 +330,17 @@ async function initApp() {
     document.getElementById("filtroTerapeuta")?.addEventListener("change", cargarRegistros);
     document.getElementById("filtroDesde")?.addEventListener("change", cargarRegistros);
     document.getElementById("filtroHasta")?.addEventListener("change", cargarRegistros);
+    
+    document.getElementById("resFiltroDesde2")?.addEventListener("change", actualizarGraficosResumen);
+    document.getElementById("resFiltroHasta2")?.addEventListener("change", actualizarGraficosResumen);
+    document.getElementById("btnLimpiarResumen")?.addEventListener("click", () => { document.getElementById("resFiltroDesde2").value = ""; document.getElementById("resFiltroHasta2").value = ""; actualizarGraficosResumen(); });
+    
     document.getElementById("terapeuta")?.addEventListener("change", actualizarPrevia);
 
     cargarRegistros();
     cargarPacientes();
     actualizarPrevia();
+    if(userIsAdmin) actualizarGraficosResumen();
 }
 
 // ============================================================
@@ -545,6 +501,7 @@ async function handleRegistro(e) {
         e.target.reset();
         actualizarPrevia();
         cargarRegistros();
+        if (isAdmin(sess)) actualizarGraficosResumen();
 
         // 🔔 Enviar Notificación Push (Web PWA)
         try {
@@ -593,15 +550,7 @@ async function cargarRegistros() {
     const { data, error } = await q;
     if (error) { console.error(error); return; }
 
-    // Resumen admin
-    if (isAdmin(sess)) {
-        let tot = 0, cTot = 0, tTot = 0;
-        data.forEach(r => { tot += +r.monto; cTot += +r.crei_monto; tTot += +r.ter_monto; });
-        document.getElementById("resTotal").textContent = "$" + tot.toFixed(2);
-        document.getElementById("resCrei").textContent  = "$" + cTot.toFixed(2);
-        document.getElementById("resTer").textContent   = "$" + tTot.toFixed(2);
-        if (data.length) document.getElementById("resSemana").textContent = data[0].semana_code || "-";
-    }
+    // El resumen y las tarjetas del admin se manejan ahora en actualizarGraficosResumen()
 
     const tbody = document.querySelector("#tablaRegistros tbody");
     tbody.innerHTML = "";
@@ -753,6 +702,104 @@ async function descargarZip() {
     } finally {
         btn.textContent = "Exportar ZIP"; btn.disabled = false;
     }
+}
+
+// ============================================================
+// GRÁFICOS Y RESUMEN AVANZADO (ADMIN)
+// ============================================================
+let finanzasChartInst = null;
+async function actualizarGraficosResumen() {
+    const sess = getSession();
+    if (!isAdmin(sess)) return;
+
+    const desde = document.getElementById("resFiltroDesde2").value;
+    const hasta = document.getElementById("resFiltroHasta2").value;
+
+    let q = sb.from("terapias").select("*").order("fecha", { ascending: true });
+    
+    const { data, error } = await q;
+    if (error) { console.error("Error cargando datos de resumen:", error); return; }
+
+    let datosFiltrados = data;
+    let tituloPeriodo = "Todos los tiempos";
+
+    if (desde || hasta) {
+        if (desde && hasta) {
+            datosFiltrados = data.filter(d => d.fecha >= desde && d.fecha <= hasta);
+            tituloPeriodo = `Del ${desde} al ${hasta}`;
+        } else if (desde) {
+            datosFiltrados = data.filter(d => d.fecha >= desde);
+            tituloPeriodo = `Desde ${desde}`;
+        } else if (hasta) {
+            datosFiltrados = data.filter(d => d.fecha <= hasta);
+            tituloPeriodo = `Hasta ${hasta}`;
+        }
+    }
+
+    // Actualizar Tarjetas de Resumen
+    let tot = 0, cTot = 0, tTot = 0;
+    datosFiltrados.forEach(r => { tot += +r.monto; cTot += +r.crei_monto; tTot += +r.ter_monto; });
+    document.getElementById("resTotal").textContent = "$" + tot.toFixed(2);
+    document.getElementById("resCrei").textContent  = "$" + cTot.toFixed(2);
+    document.getElementById("resTer").textContent   = "$" + tTot.toFixed(2);
+    document.getElementById("resSemana").textContent = tituloPeriodo;
+
+    // Agrupar para la Gráfica Comparativa Histórica
+    const agrupado = {};
+    const groupKey = (desde || hasta) ? (d) => d.fecha : (d) => d.semana_code;
+    
+    // Si hay un filtro, mostramos en la gráfica solo ese rango. Si no, mostramos el histórico por semanas.
+    const dataGraficar = (desde || hasta) ? datosFiltrados : data;
+    
+    dataGraficar.forEach(r => {
+        const k = groupKey(r) || "Desconocido";
+        if (!agrupado[k]) agrupado[k] = { total: 0, crei: 0, ter: 0 };
+        agrupado[k].total += +r.monto;
+        agrupado[k].crei += +r.crei_monto;
+        agrupado[k].ter += +r.ter_monto;
+    });
+
+    const labels = Object.keys(agrupado).sort();
+    const recientesLabels = labels.slice(-15); // Mostrar los últimos 15 periodos en la gráfica
+    
+    const dataCrei = recientesLabels.map(l => agrupado[l].crei);
+    const dataTer = recientesLabels.map(l => agrupado[l].ter);
+
+    const ctx = document.getElementById('finanzasChart').getContext('2d');
+    if (finanzasChartInst) finanzasChartInst.destroy();
+    
+    Chart.defaults.color = '#475569';
+    finanzasChartInst = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: recientesLabels,
+            datasets: [
+                {
+                    label: 'CREI Ganado ($)',
+                    data: dataCrei,
+                    backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Terapeuta Ganado ($)',
+                    data: dataTer,
+                    backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Evolución de Ingresos (Últimos 15 periodos)', color: '#1e293b', font: { size: 14, weight: 'bold' } }
+            },
+            scales: {
+                x: { stacked: true, grid: { color: 'rgba(0, 0, 0, 0.05)' } },
+                y: { stacked: true, grid: { color: 'rgba(0, 0, 0, 0.05)' }, beginAtZero: true }
+            }
+        }
+    });
 }
 
 // ============================================================

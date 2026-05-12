@@ -123,7 +123,7 @@ export default function FAQ() {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative w-full h-[300px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-2xl border border-border/50">
-          <Image src="/method-faq.png" alt="FAQ" fill className="object-cover" />
+          <Image src="/method-faq.jpg" alt="FAQ" fill className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
         </motion.div>
       </div>
