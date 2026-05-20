@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Search, CalendarDays, Receipt, ClipboardList,
-  FolderOpen, FileText, Activity, LogOut, ShieldCheck, ArrowRight, Users, Database
+  FolderOpen, FileText, Activity, LogOut, ShieldCheck, ArrowRight, Users, Database,
+  TrendingUp, TrendingDown, User, Mic, BarChart3, DollarSign
 } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import PushNotificationManager from "@/components/PushNotificationManager";
@@ -146,6 +147,49 @@ export default function EcosystemDashboard() {
             Selecciona el módulo con el que deseas trabajar. Tu sesión y permisos se sincronizarán automáticamente.
           </p>
         </div>
+
+        {/* Tarjeta especial para Alberto — solo su usuario */}
+        {user.toLowerCase() === "alberto" && role !== "admin" && (
+          <div className="relative z-10 mb-8">
+            <Link
+              href="/es/portal-terapeutas/finanzas/terapias-alberto"
+              className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2 max-w-sm"
+              style={{
+                background: "rgba(30, 15, 45, 0.85)",
+                border: "1px solid rgba(59,130,246,0.35)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                backdropFilter: "blur(16px)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 40px rgba(0,0,0,0.7), 0 0 20px #3b82f640 inset";
+                (e.currentTarget as HTMLElement).style.borderColor = "#3b82f680";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(59,130,246,0.35)";
+              }}
+            >
+              <div className="absolute top-[-20px] right-[-20px] w-32 h-32 rounded-full transition-all duration-500 opacity-20 filter blur-2xl group-hover:opacity-60 group-hover:scale-150"
+                style={{ background: "#3b82f6" }} />
+              <div className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
+                style={{ background: "rgba(59,130,246,0.15)" }}>
+                <User className="w-6 h-6" style={{ color: "#3b82f6" }} />
+              </div>
+              <div className="relative z-10 flex-1 mt-2">
+                <h3 className="text-xl font-serif font-bold mb-2" style={{ color: "#fbfaff" }}>Mis Terapias</h3>
+                <p className="text-sm leading-relaxed font-medium" style={{ color: "rgba(196,181,253,0.7)" }}>
+                  Registro de tus sesiones y montos generados.
+                </p>
+              </div>
+              <div className="relative z-10 flex items-center justify-end mt-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 border border-white/5"
+                  style={{ background: "rgba(59,130,246,0.15)" }}>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ color: "#3b82f6" }} />
+                </div>
+              </div>
+            </Link>
+          </div>
+        )}
 
         {/* App Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
@@ -344,6 +388,72 @@ export default function EcosystemDashboard() {
             </>
           )}
         </div>
+
+        {/* ── Módulos Financieros Admin ── */}
+        {role === "admin" && (
+          <div className="relative z-10 mt-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-px flex-1" style={{ background: "rgba(159,134,192,0.15)" }} />
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full"
+                style={{ background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)" }}>
+                <DollarSign className="w-3.5 h-3.5 text-purple-400" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-purple-400">Módulos Financieros</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              </div>
+              <div className="h-px flex-1" style={{ background: "rgba(159,134,192,0.15)" }} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { href: "/es/portal-terapeutas/finanzas/ingresos", name: "Ingresos", desc: "Total de ingresos por terapias y otros.", icon: TrendingUp, accent: "#10b981" },
+                { href: "/es/portal-terapeutas/finanzas/terapias-alberto", name: "Terapias Alberto", desc: "Registro completo de sesiones de Alberto.", icon: User, accent: "#3b82f6" },
+                { href: "/es/portal-terapeutas/finanzas/conferencias", name: "Conferencias y Otros", desc: "Ingresos por conferencias, eventos y donaciones.", icon: Mic, accent: "#f59e0b" },
+                { href: "/es/portal-terapeutas/finanzas/egresos", name: "Egresos", desc: "Nómina y gastos adicionales con comprobantes.", icon: TrendingDown, accent: "#ef4444" },
+                { href: "/es/portal-terapeutas/finanzas/utilidad-neta", name: "Utilidad Neta", desc: "Balance financiero mensual y análisis de rentabilidad.", icon: BarChart3, accent: "#a855f7" },
+              ].map((mod) => (
+                <Link
+                  key={mod.name}
+                  href={mod.href}
+                  className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
+                  style={{
+                    background: "rgba(30, 15, 45, 0.85)",
+                    border: `1px solid ${mod.accent}30`,
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    backdropFilter: "blur(16px)",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = `0 20px 40px rgba(0,0,0,0.7), 0 0 20px ${mod.accent}40 inset`;
+                    (e.currentTarget as HTMLElement).style.borderColor = `${mod.accent}70`;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+                    (e.currentTarget as HTMLElement).style.borderColor = `${mod.accent}30`;
+                  }}
+                >
+                  <div className="absolute top-[-20px] right-[-20px] w-32 h-32 rounded-full transition-all duration-500 opacity-20 filter blur-2xl group-hover:opacity-60 group-hover:scale-150"
+                    style={{ background: mod.accent }} />
+                  <div className="absolute top-4 right-4 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+                    style={{ background: `${mod.accent}20`, border: `1px solid ${mod.accent}50`, color: mod.accent }}>
+                    <ShieldCheck className="w-3 h-3" /> Solo Admin
+                  </div>
+                  <div className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
+                    style={{ background: `${mod.accent}15`, backdropFilter: "blur(10px)" }}>
+                    <mod.icon className="w-6 h-6 transition-transform group-hover:scale-110" style={{ color: mod.accent }} />
+                  </div>
+                  <div className="relative z-10 flex-1 mt-2">
+                    <h3 className="text-xl font-serif font-bold mb-2" style={{ color: "#fbfaff" }}>{mod.name}</h3>
+                    <p className="text-sm leading-relaxed font-medium" style={{ color: "rgba(196,181,253,0.7)" }}>{mod.desc}</p>
+                  </div>
+                  <div className="relative z-10 flex items-center justify-end mt-4">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 border border-white/5"
+                      style={{ background: `${mod.accent}15` }}>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ color: mod.accent }} />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer line */}
