@@ -110,23 +110,29 @@ function DateCell({ value, onChange, placeholder = "DD/MM/AAAA" }: {
     : "";
 
   return (
-    // <label> activa el input nativo directamente sin necesitar showPicker() —
-    // funciona en Safari, Chrome y Firefox sin restricciones de gesto
-    <label className="relative w-full h-full cursor-pointer block">
-      {/* Texto visible limpio */}
-      <div className="px-2 py-1.5 text-xs w-full h-full flex items-center pointer-events-none"
+    // El input invisible cubre toda la celda — al hacer clic el usuario
+    // toca DIRECTAMENTE el input (gesto real), funciona en todos los
+    // browsers y en producción sin necesitar showPicker() ni label tricks.
+    <div className="relative w-full cursor-pointer" style={{ minHeight: 28 }}>
+      {/* Texto visible limpio — pointer-events:none para que los clics pasen al input */}
+      <div className="px-2 py-1.5 text-xs flex items-center select-none"
         style={{ color: display ? "#fbfaff" : "rgba(251,250,255,0.25)" }}>
         {display || placeholder}
       </div>
-      {/* Input nativo invisible — se activa al hacer clic en el label */}
+      {/* Input nativo cubriendo toda la celda — opacity 0 pero clickeable */}
       <input
         type="date"
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        style={{ colorScheme: "dark" }}
+        style={{
+          position: "absolute", inset: 0,
+          width: "100%", height: "100%",
+          opacity: 0, cursor: "pointer",
+          colorScheme: "dark",
+          zIndex: 1,
+        }}
       />
-    </label>
+    </div>
   );
 }
 
