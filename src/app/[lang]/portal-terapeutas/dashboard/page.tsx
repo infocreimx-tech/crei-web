@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Search, CalendarDays, Receipt, ClipboardList,
   FolderOpen, FileText, Activity, LogOut, ShieldCheck, ArrowRight, Users, Database,
-  TrendingUp, TrendingDown, User, Mic, BarChart3, DollarSign
+  TrendingUp, TrendingDown, User, Mic, BarChart3, DollarSign, Home
 } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import PushNotificationManager from "@/components/PushNotificationManager";
@@ -408,6 +408,7 @@ export default function EcosystemDashboard() {
                 { href: "/es/portal-terapeutas/finanzas/terapias-alberto", name: "Terapias Alberto", desc: "Registro completo de sesiones de Alberto.", icon: User, accent: "#3b82f6" },
                 { href: "/es/portal-terapeutas/finanzas/conferencias", name: "Conferencias y Otros", desc: "Ingresos por conferencias, eventos y donaciones.", icon: Mic, accent: "#f59e0b" },
                 { href: "/es/portal-terapeutas/finanzas/egresos", name: "Egresos", desc: "Nómina y gastos adicionales con comprobantes.", icon: TrendingDown, accent: "#ef4444" },
+                { href: "/es/portal-terapeutas/finanzas/medio-camino", name: "Casa de Medio Camino", desc: "Pagos y gastos operativos de la casa.", icon: Home, accent: "#06b6d4" },
                 { href: "/es/portal-terapeutas/finanzas/utilidad-neta", name: "Utilidad Neta", desc: "Balance financiero mensual y análisis de rentabilidad.", icon: BarChart3, accent: "#a855f7" },
               ].map((mod) => (
                 <Link
@@ -453,6 +454,50 @@ export default function EcosystemDashboard() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* ── Sección Casa de Medio Camino (admin + cmc) ── */}
+        {(role === "admin" || role === "cmc" || ["fernando","lulu","sergio"].includes(user?.toLowerCase() || "")) && (
+          <section className="mt-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px flex-1" style={{ background: "rgba(6,182,212,0.3)" }} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">Casa de Medio Camino</span>
+              <div className="h-px flex-1" style={{ background: "rgba(6,182,212,0.3)" }} />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 max-w-sm">
+              <a href="/es/portal-terapeutas/finanzas/medio-camino"
+                className="relative group rounded-3xl p-6 overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 block"
+                style={{
+                  background: "rgba(6,182,212,0.05)",
+                  border: "1px solid rgba(6,182,212,0.2)",
+                  boxShadow: "0 4px 30px rgba(6,182,212,0.08)",
+                }}>
+                {/* Blob */}
+                <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500"
+                  style={{ background: "#06b6d4", filter: "blur(20px)" }} />
+                {/* Badge */}
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full"
+                    style={{ background: "rgba(6,182,212,0.2)", color: "#67e8f9", border: "1px solid rgba(6,182,212,0.3)" }}>
+                    CMC
+                  </span>
+                </div>
+                {/* Icon */}
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                  style={{ background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.2)" }}>
+                  <span className="text-2xl">🏠</span>
+                </div>
+                {/* Text */}
+                <h3 className="font-serif font-bold text-lg mb-1 group-hover:text-cyan-300 transition-colors" style={{ color: "#fbfaff" }}>
+                  Casa de Medio Camino
+                </h3>
+                <p className="text-xs leading-relaxed opacity-60" style={{ color: "#fbfaff" }}>
+                  Registro de residentes, terapias y gastos operativos.
+                </p>
+              </a>
+            </div>
+          </section>
         )}
       </main>
 

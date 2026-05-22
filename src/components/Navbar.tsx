@@ -25,15 +25,17 @@ export default function Navbar() {
           { name: "Technology", href: `/${lang}/tecnologia` },
           { name: "Blog", href: `/${lang}/blog` },
           { name: "APP", href: `/${lang}/app` },
+          { name: "Love Wall", href: `/${lang}/agradecimientos` },
           { name: "Contact", href: `/${lang}/#contacto` },
         ]
       : [
-          { name: "Quiénes Somos", href: `/${lang}/nosotros` },
+          { name: "Nosotros", href: `/${lang}/nosotros` },
           { name: "Servicios", href: `/${lang}/servicios` },
           { name: "Método", href: `/${lang}/metodo` },
           { name: "Tecnología", href: `/${lang}/tecnologia` },
           { name: "Blog", href: `/${lang}/blog` },
           { name: "APP", href: `/${lang}/app` },
+          { name: "Amor", href: `/${lang}/agradecimientos` },
           { name: "Contacto", href: `/${lang}/#contacto` },
         ];
 
@@ -66,12 +68,12 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav — only visible on large screens */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-primary/80 hover:text-primary transition-colors whitespace-nowrap"
+              className="text-xs font-semibold tracking-wide text-primary/80 hover:text-primary transition-colors whitespace-nowrap uppercase"
             >
               {link.name}
             </Link>

@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft, ShieldCheck, BarChart3, Loader2,
+  ArrowLeft, ShieldCheck, BarChart3, Loader2, FileSpreadsheet,
   TrendingUp, TrendingDown, DollarSign, Percent, Calendar
 } from "lucide-react";
+import { exportToExcel, fmtMXN } from "@/utils/exportToExcel";
 import { motion } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -94,6 +95,42 @@ export default function UtilidadNetaPage() {
 
   const maxVal = useMemo(() => Math.max(...historial.map(h => Math.max(h.total_ingresos, h.total_egresos)), 1), [historial]);
 
+  const handleExcelExport = () => {
+    const label = `${MESES_FULL[month - 1]} ${year}`;
+    exportToExcel(
+      [
+        {
+          sheetName: "Histórico 6 Meses",
+          rows: [...historial].reverse().map((h) => ({
+            Mes: h.mes,
+            "Ingresos Terapias": fmtMXN(h.ingresos_terapias),
+            "Ingresos Manuales": fmtMXN(h.ingresos_manuales),
+            "Total Ingresos": fmtMXN(h.total_ingresos),
+            "Nómina": fmtMXN(h.nomina),
+            "Gastos Adicionales": fmtMXN(h.gastos),
+            "Total Egresos": fmtMXN(h.total_egresos),
+            "Utilidad Neta": fmtMXN(h.utilidad),
+            "Margen %": `${h.margen.toFixed(1)}%`,
+          })),
+        },
+        {
+          sheetName: "Mes Actual",
+          rows: currentData ? [
+            { Concepto: "Ingresos Terapias", Monto: fmtMXN(currentData.ingresos_terapias) },
+            { Concepto: "Ingresos Manuales", Monto: fmtMXN(currentData.ingresos_manuales) },
+            { Concepto: "TOTAL INGRESOS", Monto: fmtMXN(currentData.total_ingresos) },
+            { Concepto: "Nómina Terapeutas", Monto: fmtMXN(currentData.nomina) },
+            { Concepto: "Gastos Adicionales", Monto: fmtMXN(currentData.gastos) },
+            { Concepto: "TOTAL EGRESOS", Monto: fmtMXN(currentData.total_egresos) },
+            { Concepto: "UTILIDAD NETA", Monto: fmtMXN(currentData.utilidad) },
+            { Concepto: "MARGEN %", Monto: `${currentData.margen.toFixed(1)}%` },
+          ] : [],
+        },
+      ],
+      `CREI_UtilidadNeta_${label.replace(" ", "_")}`
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#150b24" }}>
       {/* Header */}
@@ -117,6 +154,11 @@ export default function UtilidadNetaPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           </div>
         </div>
+        <button onClick={handleExcelExport}
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+          style={{ background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.4)", color: "#d8b4fe" }}>
+          <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+        </button>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">

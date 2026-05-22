@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft, ShieldCheck, TrendingDown, Plus, Loader2,
+  ArrowLeft, ShieldCheck, TrendingDown, Plus, Loader2, FileSpreadsheet,
   X, CheckCircle2, Calendar, Paperclip, ExternalLink, Receipt
 } from "lucide-react";
+import { exportToExcel, fmtFecha, fmtMXN } from "@/utils/exportToExcel";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -69,6 +70,42 @@ export default function EgresosPage() {
   const totalGastos = useMemo(() => egresos.reduce((s, r) => s + +(r.monto || 0), 0), [egresos]);
   const totalEgresos = totalNomina + totalGastos;
 
+  const handleExcelExport = () => {
+    const label = `${MESES[month - 1]} ${year}`;
+    exportToExcel(
+      [
+        {
+          sheetName: "Nómina",
+          rows: nomina.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            Terapeuta: r.usuarios?.username || "",
+            "Nómina": fmtMXN(r.ter_monto),
+          })),
+        },
+        {
+          sheetName: "Gastos Adicionales",
+          rows: egresos.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            Concepto: r.concepto,
+            Categoría: r.categoria,
+            Proveedor: r.proveedor || "",
+            Monto: fmtMXN(r.monto),
+            Comprobante: r.comprobante_url || "",
+          })),
+        },
+        {
+          sheetName: "Resumen",
+          rows: [
+            { Concepto: "Nómina Terapeutas", Monto: fmtMXN(totalNomina) },
+            { Concepto: "Gastos Adicionales", Monto: fmtMXN(totalGastos) },
+            { Concepto: "TOTAL EGRESOS", Monto: fmtMXN(totalEgresos) },
+          ],
+        },
+      ],
+      `CREI_Egresos_${label.replace(" ", "_")}`
+    );
+  };
+
   const uploadComprobante = async (file: File): Promise<string> => {
     setUploadProgress("Subiendo comprobante...");
     const filename = `${Date.now()}-${file.name.replace(/\s/g, "_")}`;
@@ -120,11 +157,18 @@ export default function EgresosPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           </div>
         </div>
-        <button onClick={() => { setTab("gastos"); setShowModal(true); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
-          style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)", color: "#fff", boxShadow: "0 4px 15px rgba(239,68,68,0.3)" }}>
-          <Plus className="w-3.5 h-3.5" /> Registrar Egreso
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExcelExport}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#fca5a5" }}>
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+          </button>
+          <button onClick={() => { setTab("gastos"); setShowModal(true); }}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)", color: "#fff", boxShadow: "0 4px 15px rgba(239,68,68,0.3)" }}>
+            <Plus className="w-3.5 h-3.5" /> Registrar Egreso
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">

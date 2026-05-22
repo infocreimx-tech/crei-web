@@ -11,11 +11,15 @@ import CookieConsent from "@/components/CookieConsent";
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
+  preload: false,
+  display: 'swap',
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  preload: false,
+  display: 'swap',
 });
 
 export const metadata: Metadata = {

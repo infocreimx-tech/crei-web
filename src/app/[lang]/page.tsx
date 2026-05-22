@@ -5,6 +5,7 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
+import SeccionAgradecimientos from "@/components/SeccionAgradecimientos";
 import Testimonials from "@/components/Testimonials";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import WhoWeHelp from "@/components/WhoWeHelp";
@@ -35,7 +36,12 @@ export default function Home() {
         <Testimonials />
       </div>
 
-      {/* BLOCK 5 — FAQ: Clean dark card background */}
+      {/* BLOCK 5 — Agradecimientos: mensajes de la comunidad */}
+      <div className="w-full bg-[#150b24] border-b-4 border-accent/20">
+        <SeccionAgradecimientos />
+      </div>
+
+      {/* BLOCK 6 — FAQ: Clean dark card background */}
       <div className="min-h-screen w-full bg-[#1a0f2e] flex flex-col justify-center border-b-4 border-accent/20">
         <FAQ />
       </div>

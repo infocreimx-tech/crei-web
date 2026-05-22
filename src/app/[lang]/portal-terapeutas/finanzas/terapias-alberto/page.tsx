@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft, ShieldCheck, User, Loader2,
+  ArrowLeft, ShieldCheck, User, Loader2, FileSpreadsheet,
   Activity, DollarSign, Calendar, TrendingUp, TrendingDown
 } from "lucide-react";
+import { exportToExcel, fmtFecha, fmtMXN } from "@/utils/exportToExcel";
 import { motion } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -65,6 +66,33 @@ export default function TerapiasAlbertoPage() {
   const totalCrei = useMemo(() => terapias.reduce((s, r) => s + +(r.crei_monto || 0), 0), [terapias]);
   const totalAlberto = useMemo(() => terapias.reduce((s, r) => s + +(r.ter_monto || 0), 0), [terapias]);
 
+  const handleExcelExport = () => {
+    const label = `${MESES[month - 1]} ${year}`;
+    exportToExcel(
+      [
+        {
+          sheetName: "Sesiones Alberto",
+          rows: terapias.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            "Monto Total": fmtMXN(r.monto),
+            "Ingreso CREI": fmtMXN(r.crei_monto),
+            "Nómina Alberto": fmtMXN(r.ter_monto),
+          })),
+        },
+        {
+          sheetName: "Resumen",
+          rows: [
+            { Concepto: "Total Sesiones", Valor: totalSesiones },
+            { Concepto: "Total Cobrado", Valor: fmtMXN(totalMonto) },
+            { Concepto: "Ingreso CREI", Valor: fmtMXN(totalCrei) },
+            { Concepto: "Nómina Alberto", Valor: fmtMXN(totalAlberto) },
+          ],
+        },
+      ],
+      `CREI_TerapiasAlberto_${label.replace(" ", "_")}`
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#150b24" }}>
       {/* Header */}
@@ -88,6 +116,11 @@ export default function TerapiasAlbertoPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           </div>
         </div>
+        <button onClick={handleExcelExport}
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+          style={{ background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.4)", color: "#93c5fd" }}>
+          <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+        </button>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">

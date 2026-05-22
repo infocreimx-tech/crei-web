@@ -6,8 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft, ShieldCheck, TrendingUp, Plus, Loader2,
-  Download, X, CheckCircle2, DollarSign, Calendar, FileText
+  FileSpreadsheet, X, CheckCircle2, DollarSign, Calendar, FileText
 } from "lucide-react";
+import { exportToExcel, fmtFecha, fmtMXN } from "@/utils/exportToExcel";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -75,6 +76,43 @@ export default function IngresosPage() {
 
   const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
+  const handleExcelExport = () => {
+    const label = `${meses[month - 1]} ${year}`;
+    exportToExcel(
+      [
+        {
+          sheetName: "Terapias",
+          rows: terapias.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            Terapeuta: r.usuarios?.username || "",
+            "Monto Total": fmtMXN(r.monto),
+            "Ingreso CREI": fmtMXN(r.crei_monto),
+            "Nómina Terapeuta": fmtMXN(r.ter_monto),
+          })),
+        },
+        {
+          sheetName: "Ingresos Manuales",
+          rows: manuales.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            Concepto: r.concepto,
+            Tipo: r.tipo,
+            Monto: fmtMXN(r.monto),
+            Descripción: r.descripcion || "",
+          })),
+        },
+        {
+          sheetName: "Resumen",
+          rows: [
+            { Concepto: "Ingresos Terapias", Monto: fmtMXN(totalTerapias) },
+            { Concepto: "Ingresos Manuales", Monto: fmtMXN(totalManuales) },
+            { Concepto: "GRAN TOTAL", Monto: fmtMXN(granTotal) },
+          ],
+        },
+      ],
+      `CREI_Ingresos_${label.replace(" ", "_")}`
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#150b24" }}>
       {/* Header */}
@@ -98,11 +136,18 @@ export default function IngresosPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           </div>
         </div>
-        <button onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
-          style={{ background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", boxShadow: "0 4px 15px rgba(16,185,129,0.3)" }}>
-          <Plus className="w-3.5 h-3.5" /> Agregar Ingreso
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExcelExport}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.4)", color: "#6ee7b7" }}>
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+          </button>
+          <button onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", boxShadow: "0 4px 15px rgba(16,185,129,0.3)" }}>
+            <Plus className="w-3.5 h-3.5" /> Agregar Ingreso
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">

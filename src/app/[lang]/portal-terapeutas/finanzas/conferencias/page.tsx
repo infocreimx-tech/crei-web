@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft, ShieldCheck, Mic, Plus, Loader2,
+  ArrowLeft, ShieldCheck, Mic, Plus, Loader2, FileSpreadsheet,
   X, CheckCircle2, Calendar, DollarSign
 } from "lucide-react";
+import { exportToExcel, fmtFecha, fmtMXN } from "@/utils/exportToExcel";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -59,6 +60,32 @@ export default function ConferenciasPage() {
   }, [registros]);
   const granTotal = useMemo(() => registros.reduce((s, r) => s + +(r.monto || 0), 0), [registros]);
 
+  const handleExcelExport = () => {
+    const label = `${MESES[month - 1]} ${year}`;
+    exportToExcel(
+      [
+        {
+          sheetName: "Conferencias y Otros",
+          rows: registros.map((r) => ({
+            Fecha: fmtFecha(r.fecha),
+            Concepto: r.concepto,
+            Tipo: r.tipo,
+            Monto: fmtMXN(r.monto),
+            Descripción: r.descripcion || "",
+          })),
+        },
+        {
+          sheetName: "Resumen por Tipo",
+          rows: [
+            ...TIPOS.map((t) => ({ Tipo: t.charAt(0).toUpperCase() + t.slice(1), Total: fmtMXN(byTipo[t] || 0) })),
+            { Tipo: "GRAN TOTAL", Total: fmtMXN(granTotal) },
+          ],
+        },
+      ],
+      `CREI_Conferencias_${label.replace(" ", "_")}`
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -95,11 +122,18 @@ export default function ConferenciasPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           </div>
         </div>
-        <button onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
-          style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#fff", boxShadow: "0 4px 15px rgba(245,158,11,0.3)" }}>
-          <Plus className="w-3.5 h-3.5" /> Agregar
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleExcelExport}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)", color: "#fde68a" }}>
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+          </button>
+          <button onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#fff", boxShadow: "0 4px 15px rgba(245,158,11,0.3)" }}>
+            <Plus className="w-3.5 h-3.5" /> Agregar
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
