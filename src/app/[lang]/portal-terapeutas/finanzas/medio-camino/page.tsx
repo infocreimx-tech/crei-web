@@ -97,11 +97,12 @@ const emptyGasto = (n: number, periodo: string): GastoRow => ({
   tipo_comprobante: "", datos_comprobante: "", periodo, isDirty: true,
 });
 
-// ── Componente de fecha (oculta el input nativo, muestra texto limpio) ──
+// ── Componente de fecha con botón visible de calendario ──────
 function DateCell({ value, onChange, placeholder = "DD/MM/AAAA" }: {
   value: string; onChange: (v: string) => void; placeholder?: string;
 }) {
-  // Formatear YYYY-MM-DD → DD/MM/AAAA para mostrar
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const display = value
     ? (() => {
         const [y, m, d] = value.split("-");
@@ -110,28 +111,38 @@ function DateCell({ value, onChange, placeholder = "DD/MM/AAAA" }: {
     : "";
 
   return (
-    // El input invisible cubre toda la celda — al hacer clic el usuario
-    // toca DIRECTAMENTE el input (gesto real), funciona en todos los
-    // browsers y en producción sin necesitar showPicker() ni label tricks.
-    <div className="relative w-full cursor-pointer" style={{ minHeight: 28 }}>
-      {/* Texto visible limpio — pointer-events:none para que los clics pasen al input */}
-      <div className="px-2 py-1.5 text-xs flex items-center select-none"
-        style={{ color: display ? "#fbfaff" : "rgba(251,250,255,0.25)" }}>
+    <div className="flex items-center w-full gap-1 px-1">
+      {/* Texto de la fecha */}
+      <span className="text-xs flex-1 select-none"
+        style={{ color: display ? "#fbfaff" : "rgba(251,250,255,0.35)" }}>
         {display || placeholder}
+      </span>
+
+      {/* Botón calendario visible en cian — encima está el input invisible */}
+      <div className="relative shrink-0" style={{ width: 24, height: 24 }}>
+        {/* Ícono visible */}
+        <div className="w-full h-full flex items-center justify-center rounded-md transition-all"
+          style={{
+            background: "rgba(6,182,212,0.15)",
+            border: "1px solid rgba(6,182,212,0.5)",
+          }}>
+          <Calendar style={{ width: 13, height: 13, color: "#06b6d4" }} />
+        </div>
+        {/* Input invisible encima del botón — clic directo = gesto real */}
+        <input
+          ref={inputRef}
+          type="date"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            opacity: 0, cursor: "pointer",
+            colorScheme: "dark",
+            zIndex: 2,
+          }}
+        />
       </div>
-      {/* Input nativo cubriendo toda la celda — opacity 0 pero clickeable */}
-      <input
-        type="date"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        style={{
-          position: "absolute", inset: 0,
-          width: "100%", height: "100%",
-          opacity: 0, cursor: "pointer",
-          colorScheme: "dark",
-          zIndex: 1,
-        }}
-      />
     </div>
   );
 }
