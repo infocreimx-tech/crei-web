@@ -78,6 +78,7 @@ interface GastoRow {
   forma_pago: string;
   tipo_comprobante: string;
   datos_comprobante: string;
+  fecha_ticket: string;
   periodo?: string;
   isDirty?: boolean;
   isSaving?: boolean;
@@ -94,7 +95,7 @@ const emptyTerapia = (n: number, periodo: string): TerapiaRow => ({
 });
 const emptyGasto = (n: number, periodo: string): GastoRow => ({
   num_consecutivo: n, concepto_gasto: "", monto: "", forma_pago: "",
-  tipo_comprobante: "", datos_comprobante: "", periodo, isDirty: true,
+  tipo_comprobante: "", datos_comprobante: "", fecha_ticket: "", periodo, isDirty: true,
 });
 
 // ── Componente de fecha con botón visible de calendario ──────
@@ -345,6 +346,7 @@ export default function MedioCaminoPage() {
         forma_pago: row.forma_pago || "",
         tipo_comprobante: row.tipo_comprobante || "",
         datos_comprobante: row.datos_comprobante || "",
+        fecha_ticket: row.fecha_ticket || "",
         periodo: row.periodo,
         isDirty: false,
       })));
@@ -496,6 +498,7 @@ export default function MedioCaminoPage() {
         forma_pago: row.forma_pago || null,
         tipo_comprobante: row.tipo_comprobante || null,
         datos_comprobante: row.datos_comprobante || null,
+        fecha_ticket: row.fecha_ticket || null,
         registrado_por: currentUser,
         periodo,
       };
@@ -566,6 +569,7 @@ export default function MedioCaminoPage() {
           "Forma de pago": r.forma_pago,
           "Tipo de comprobante": r.tipo_comprobante,
           "Datos del comprobante": r.datos_comprobante,
+          "Fecha del ticket": r.fecha_ticket ? fmtFecha(r.fecha_ticket) : "",
         })),
       },
     ], `CREI_CMC_${label}`);
@@ -955,11 +959,12 @@ export default function MedioCaminoPage() {
                   { label: "Forma de pago", width: "140px" },
                   { label: "Tipo comprobante", width: "200px" },
                   { label: "Datos del comprobante", width: "220px" },
+                  { label: "Fecha del ticket", width: "130px" },
                 ])}
                 <tbody>
                   {gastos.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="px-4 py-16 text-center border-b border-white/10">
+                      <td colSpan={9} className="px-4 py-16 text-center border-b border-white/10">
                         <div className="flex flex-col items-center gap-2 opacity-30">
                           <span className="text-3xl">💸</span>
                           <p className="text-xs">Sin gastos en {MESES_NOMBRES[month-1]} {year}</p>
@@ -991,7 +996,11 @@ export default function MedioCaminoPage() {
                         <input value={row.datos_comprobante} onChange={e => updateGasto(idx, "datos_comprobante", e.target.value)}
                           className={CELL + " w-full"} style={{ color: "#fbfaff" }} placeholder="Folio, número, referencia..." />
                       </td>
+                      <td className="border-r border-b border-white/10 p-0">
+                        <DateCell value={row.fecha_ticket} onChange={v => updateGasto(idx, "fecha_ticket", v)} placeholder="Fecha ticket" />
+                      </td>
                       {actionCell(!!row.isDirty, !!row.isSaving, () => saveGasto(idx), () => deleteGasto(idx))}
+
                     </motion.tr>
                   ))}
                   {gastos.length > 0 && (
