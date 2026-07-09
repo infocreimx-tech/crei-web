@@ -1,19 +1,561 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
-    <!-- Inyeccion Magistral SSO CREI -->
     <script src="/legacy-apps/injectSSO.js"></script>
     <link rel="stylesheet" href="/legacy-apps/crei-theme.css">
-
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>expedientes-app</title>
-    <script type="module" crossorigin src="./assets/index-DXx5a6kC.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CgAFju5y.css">
-    <script src="/legacy-apps/duplicate-validator.js" defer></script>
+    <title>Búsqueda Global CREI</title>
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --ink: #172033;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --brand: #6b5e7c;
+        --brand-dark: #4a4458;
+        --soft: #f1f5f9;
+        --blue: #0369a1;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(107, 94, 124, .16), transparent 34rem),
+          linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+      }
+
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      .legacy-nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        padding: 0 24px;
+        background: rgba(255,255,255,.92);
+        border-bottom: 1px solid var(--line);
+        box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+        backdrop-filter: blur(14px);
+      }
+      .brand-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-weight: 900;
+        text-decoration: none;
+      }
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: var(--brand);
+        color: white;
+        font-weight: 900;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .nav-link {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 9px 12px;
+        background: white;
+        color: var(--brand-dark);
+        font-size: 12px;
+        font-weight: 900;
+        text-decoration: none;
+      }
+      .embedded .legacy-nav { display: none; }
+      .shell { max-width: 1120px; margin: 0 auto; padding: 28px 24px 56px; }
+      .hero {
+        background: rgba(255,255,255,.88);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow: 0 18px 44px rgba(15, 23, 42, .07);
+        margin-bottom: 20px;
+      }
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--brand);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+      }
+      h1 { margin: 0; font-size: clamp(30px, 5vw, 48px); line-height: 1; letter-spacing: 0; }
+      .subtitle { margin: 12px 0 0; color: var(--muted); max-width: 720px; line-height: 1.55; }
+      .searchbar {
+        display: grid;
+        grid-template-columns: 1fr 180px;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      input, select {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 8px;
+        min-height: 48px;
+        padding: 0 14px;
+        color: var(--ink);
+        outline: none;
+      }
+      input:focus, select:focus {
+        border-color: rgba(107, 94, 124, .6);
+        box-shadow: 0 0 0 4px rgba(107, 94, 124, .12);
+      }
+      .btn {
+        border: 0;
+        border-radius: 8px;
+        min-height: 48px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 900;
+        background: var(--brand);
+        color: white;
+        box-shadow: 0 12px 24px rgba(107, 94, 124, .22);
+      }
+
+      .summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 16px 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .grid { display: grid; gap: 14px; }
+      .section-title {
+        margin: 18px 0 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+      .card {
+        background: rgba(255,255,255,.92);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+        box-shadow: 0 14px 34px rgba(15, 23, 42, .06);
+      }
+      .result {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: start;
+      }
+      .folio {
+        display: inline-flex;
+        width: fit-content;
+        border-radius: 6px;
+        background: #e0f2fe;
+        color: #075985;
+        padding: 5px 8px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .04em;
+      }
+      .result h2 { margin: 10px 0 6px; font-size: 24px; line-height: 1.1; }
+      .status {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 5px 10px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: capitalize;
+      }
+      .status.neutral {
+        background: var(--soft);
+        color: var(--brand-dark);
+      }
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px 18px;
+        margin-top: 16px;
+      }
+      .item { min-width: 0; }
+      .item b { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+      .item span { display: block; margin-top: 4px; overflow-wrap: anywhere; }
+      .full { grid-column: 1 / -1; }
+      .empty, .loading, .error {
+        padding: 42px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .error { color: #b91c1c; font-weight: 800; }
+      .open {
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--brand-dark);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-weight: 900;
+      }
+
+      dialog {
+        border: 0;
+        width: min(900px, calc(100vw - 28px));
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0 28px 76px rgba(15,23,42,.34);
+      }
+      dialog::backdrop { background: rgba(15,23,42,.52); backdrop-filter: blur(4px); }
+      .detail-head {
+        padding: 24px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .detail-head h2 { margin: 8px 0 0; font-size: 30px; }
+      .detail-body { padding: 24px; }
+      .close {
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--brand-dark);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-weight: 900;
+        height: fit-content;
+      }
+
+      @media (max-width: 760px) {
+        .legacy-nav { align-items: flex-start; flex-direction: column; padding: 14px 18px; }
+        .nav-links { width: 100%; justify-content: stretch; }
+        .nav-link { flex: 1; text-align: center; }
+        .searchbar, .result, .meta { grid-template-columns: 1fr; }
+        .full { grid-column: auto; }
+        .open, .btn { width: 100%; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <nav class="legacy-nav" aria-label="Navegación CREI">
+      <a class="brand-link" href="/es/portal-terapeutas/dashboard" target="_top">
+        <span class="brand-mark">C</span>
+        <span>CREI</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="/es/portal-terapeutas/dashboard" target="_top">Dashboard</a>
+        <a class="nav-link" href="/es/portal-terapeutas/app/expediente" target="_top">Expediente</a>
+        <a class="nav-link" href="/es/portal-terapeutas/app/calendario" target="_top">Calendario</a>
+      </div>
+    </nav>
+    <div class="shell">
+      <section class="hero">
+        <p class="eyebrow">Búsqueda global</p>
+        <h1>Buscar expedientes</h1>
+        <p class="subtitle">
+          Consulta expedientes por folio, nombre, teléfono, correo, terapeuta, motivo de ingreso o notas clínicas.
+        </p>
+        <form class="searchbar" id="searchForm">
+          <input id="searchInput" type="search" placeholder="Ej. CREI-2026-00001, Paciente, teléfono o terapeuta" autocomplete="off" />
+          <button class="btn" type="submit">Buscar</button>
+        </form>
+      </section>
+
+      <div class="summary">
+        <span id="summaryText">Escribe para buscar en expediente.</span>
+        <select id="statusFilter" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+          <option value="alta">Alta</option>
+        </select>
+      </div>
+
+      <main id="results" class="grid">
+        <div class="card empty">No hay búsqueda activa.</div>
+      </main>
+    </div>
+
+    <dialog id="detailDialog">
+      <div class="detail-head">
+        <div>
+          <span class="folio" id="detailFolio">-</span>
+          <h2 id="detailName">Expediente</h2>
+        </div>
+        <button class="close" id="closeDetail" type="button">Cerrar</button>
+      </div>
+      <div class="detail-body">
+        <div class="meta" id="detailMeta"></div>
+      </div>
+    </dialog>
+
+    <script>
+      if (window.self !== window.top) document.body.classList.add("embedded");
+
+      const SUPABASE_URL = "https://uywihjppwzrrfjkguvot.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
+      const API = `${SUPABASE_URL}/rest/v1`;
+      const headers = {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      };
+
+      const state = { rows: [], citas: [], gastos: [], query: "" };
+      const $ = (id) => document.getElementById(id);
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function formatDate(value) {
+        if (!value) return "No registrado";
+        return new Date(value).toLocaleDateString("es-MX", { timeZone: "UTC" });
+      }
+
+      function formatDateTime(value) {
+        if (!value) return "No registrado";
+        return new Date(value).toLocaleString("es-MX", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        });
+      }
+
+      function item(label, value) {
+        return `<div class="item"><b>${escapeHtml(label)}</b><span>${escapeHtml(value || "No registrado")}</span></div>`;
+      }
+
+      function itemFull(label, value) {
+        return `<div class="item full"><b>${escapeHtml(label)}</b><span>${escapeHtml(value || "No registrado")}</span></div>`;
+      }
+
+      function storageUrl(path) {
+        if (!path) return "";
+        if (path.startsWith("http")) return path;
+        if (path.startsWith("comprobantes/")) {
+          return `${SUPABASE_URL}/storage/v1/object/public/comprobantes/${encodeURIComponent(path.replace("comprobantes/", ""))}`;
+        }
+        return "";
+      }
+
+      async function fetchGastosResults(term) {
+        const baseFields = [
+          `usuario.ilike.${term}`,
+          `correo.ilike.${term}`,
+          `concepto.ilike.${term}`,
+          `tipo.ilike.${term}`,
+          `origen_pago.ilike.${term}`,
+          `numero_ticket.ilike.${term}`,
+          `numero_factura.ilike.${term}`,
+        ];
+        const withFolio = [`expediente_folio.ilike.${term}`, ...baseFields].join(",");
+        const fallback = baseFields.join(",");
+        let response = await fetch(`${API}/gastos?select=*&or=(${withFolio})&order=creado_en.desc&limit=25`, { headers });
+        if (!response.ok) {
+          response = await fetch(`${API}/gastos?select=*&or=(${fallback})&order=creado_en.desc&limit=25`, { headers });
+        }
+        if (!response.ok) throw new Error(await response.text());
+        return response.json();
+      }
+
+      async function fetchRows(query) {
+        const trimmed = query.trim();
+        if (!trimmed) {
+          state.rows = [];
+          state.citas = [];
+          state.gastos = [];
+          render();
+          return;
+        }
+        $("results").innerHTML = '<div class="card loading">Buscando en expediente, calendario y comprobantes...</div>';
+        $("summaryText").textContent = "Buscando...";
+
+        const term = encodeURIComponent(`*${trimmed}*`);
+        const or = [
+          `folio.ilike.${term}`,
+          `nombre_completo.ilike.${term}`,
+          `telefono.ilike.${term}`,
+          `email.ilike.${term}`,
+          `terapeuta_asignado.ilike.${term}`,
+          `motivo_ingreso.ilike.${term}`,
+          `notas_clinicas.ilike.${term}`,
+          `contacto_emergencia_nombre.ilike.${term}`,
+          `contacto_emergencia_telefono.ilike.${term}`,
+        ].join(",");
+        const expedienteUrl = `${API}/expediente?select=*&or=(${or})&order=created_at.desc&limit=50`;
+        const calendarOr = [
+          `patient_id.ilike.${term}`,
+          `therapist_id.ilike.${term}`,
+          `notes.ilike.${term}`,
+          `location.ilike.${term}`,
+          `status.ilike.${term}`,
+        ].join(",");
+        const calendarioUrl = `${API}/calendario?select=*&or=(${calendarOr})&order=start_at.desc&limit=50`;
+
+        try {
+          const [expRes, calRes, gastos] = await Promise.all([
+            fetch(expedienteUrl, { headers }),
+            fetch(calendarioUrl, { headers }),
+            fetchGastosResults(term),
+          ]);
+          if (!expRes.ok) throw new Error(await expRes.text());
+          if (!calRes.ok) throw new Error(await calRes.text());
+          state.rows = await expRes.json();
+          state.citas = await calRes.json();
+          state.gastos = gastos;
+          render();
+        } catch (error) {
+          $("results").innerHTML = `<div class="card error">No se pudo buscar. ${escapeHtml(error.message)}</div>`;
+          $("summaryText").textContent = "Error al buscar.";
+        }
+      }
+
+      function rowMatchesStatus(row) {
+        const status = $("statusFilter").value;
+        return !status || (row.estado || "activo") === status;
+      }
+
+      function render() {
+        const rows = state.rows.filter(rowMatchesStatus);
+        const citas = state.citas || [];
+        const gastos = state.gastos || [];
+        if (!state.query.trim()) {
+          $("summaryText").textContent = "Escribe para buscar en expediente, calendario y comprobantes.";
+          $("results").innerHTML = '<div class="card empty">No hay búsqueda activa.</div>';
+          return;
+        }
+        const total = rows.length + citas.length + gastos.length;
+        $("summaryText").textContent = `${total} resultado${total === 1 ? "" : "s"} para "${state.query}"`;
+        if (total === 0) {
+          $("results").innerHTML = '<div class="card empty">No hay expedientes, citas ni comprobantes con esa búsqueda.</div>';
+          return;
+        }
+        const expedienteHtml = rows.length ? `
+          <div class="section-title">Expedientes</div>
+          ${rows.map((row) => `
+          <article class="card result">
+            <div>
+              <span class="folio">${escapeHtml(row.folio || "Sin folio")}</span>
+              <h2>${escapeHtml(row.nombre_completo || "Sin nombre")}</h2>
+              <span class="status">${escapeHtml(row.estado || "activo")}</span>
+              <div class="meta">
+                ${item("Teléfono", row.telefono)}
+                ${item("Correo", row.email)}
+                ${item("Ingreso", formatDate(row.fecha_ingreso || row.created_at))}
+                ${item("Terapeuta", row.terapeuta_asignado)}
+                ${item("Emergencia", row.contacto_emergencia_nombre)}
+                ${item("Motivo", row.motivo_ingreso)}
+              </div>
+            </div>
+            <button class="open" type="button" data-id="${escapeHtml(row.id)}">Abrir expediente</button>
+          </article>
+          `).join("")}
+        ` : "";
+        const citasHtml = citas.length ? `
+          <div class="section-title">Calendario</div>
+          ${citas.map((cita) => `
+            <article class="card result">
+              <div>
+                <span class="folio">${escapeHtml(cita.patient_id || "Sin folio")}</span>
+                <h2>${escapeHtml(cita.therapist_id || "Cita sin terapeuta")}</h2>
+                <span class="status neutral">${escapeHtml(cita.status || "programada")}</span>
+                <div class="meta">
+                  ${item("Inicio", formatDateTime(cita.start_at))}
+                  ${item("Fin", formatDateTime(cita.end_at))}
+                  ${item("Ubicación", cita.location)}
+                  ${itemFull("Notas", cita.notes)}
+                </div>
+              </div>
+            </article>
+          `).join("")}
+        ` : "";
+        const gastosHtml = gastos.length ? `
+          <div class="section-title">Comprobantes</div>
+          ${gastos.map((gasto) => {
+            const amount = Number(gasto.importe || 0).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+            const fileUrl = storageUrl(gasto.archivo_path || "");
+            return `
+              <article class="card result">
+                <div>
+                  <span class="folio">${escapeHtml(gasto.expediente_folio || gasto.numero_factura || gasto.numero_ticket || "Sin folio")}</span>
+                  <h2>${escapeHtml(gasto.concepto || "Comprobante")}</h2>
+                  <span class="status neutral">${escapeHtml(gasto.tipo || "Comprobante")}</span>
+                  <div class="meta">
+                    ${item("Importe", amount)}
+                    ${item("Compra", formatDate(gasto.fecha_compra || gasto.creado_en))}
+                    ${item("Usuario", gasto.usuario)}
+                    ${item("Origen", gasto.origen_pago)}
+                    ${item("Factura", gasto.numero_factura)}
+                    ${item("Ticket", gasto.numero_ticket)}
+                  </div>
+                </div>
+                ${fileUrl ? `<a class="open" href="${escapeHtml(fileUrl)}" target="_blank" rel="noopener noreferrer">Ver archivo</a>` : ""}
+              </article>
+            `;
+          }).join("")}
+        ` : "";
+        $("results").innerHTML = expedienteHtml + citasHtml + gastosHtml;
+        document.querySelectorAll("[data-id]").forEach((button) => {
+          button.addEventListener("click", () => openDetail(state.rows.find((row) => row.id === button.dataset.id)));
+        });
+      }
+
+      function openDetail(row) {
+        if (!row) return;
+        $("detailFolio").textContent = row.folio || "Sin folio";
+        $("detailName").textContent = row.nombre_completo || "Sin nombre";
+        $("detailMeta").innerHTML = [
+          item("Estado", row.estado || "activo"),
+          item("Teléfono", row.telefono),
+          item("Correo", row.email),
+          item("Nacimiento", formatDate(row.fecha_nacimiento)),
+          item("Ingreso", formatDate(row.fecha_ingreso || row.created_at)),
+          item("Terapeuta", row.terapeuta_asignado),
+          item("Contacto de emergencia", row.contacto_emergencia_nombre),
+          item("Teléfono de emergencia", row.contacto_emergencia_telefono),
+          itemFull("Motivo de ingreso", row.motivo_ingreso),
+          itemFull("Notas clínicas", row.notas_clinicas),
+        ].join("");
+        $("detailDialog").showModal();
+      }
+
+      $("searchForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        state.query = $("searchInput").value;
+        fetchRows(state.query);
+      });
+      $("searchInput").addEventListener("input", (event) => {
+        const value = event.target.value;
+        state.query = value;
+        window.clearTimeout(window.__searchTimer);
+        window.__searchTimer = window.setTimeout(() => fetchRows(value), 280);
+      });
+      $("statusFilter").addEventListener("change", render);
+      $("closeDetail").addEventListener("click", () => $("detailDialog").close());
+    </script>
   </body>
 </html>

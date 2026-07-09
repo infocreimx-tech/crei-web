@@ -10,7 +10,6 @@ import { useI18n } from "@/i18n/I18nProvider";
 const appNames: Record<string, string> = {
   calendario: "Calendario Clínico",
   expediente: "Expediente de Pacientes",
-  preexpediente: "Pre-expedientes",
   terapias: "Gestión Finanzas",
   busqueda: "Buscador Global",
   cuestionario: "Cuestionarios",
@@ -20,7 +19,6 @@ const appNames: Record<string, string> = {
 const appAccents: Record<string, string> = {
   calendario: "#7c5cbf",
   expediente: "#0369a1",
-  preexpediente: "#0f766e",
   terapias: "#9f86c0",
   busqueda: "#6b5e7c",
   cuestionario: "#4a2c5e",
@@ -63,11 +61,22 @@ export default function IframeAppContainer() {
     return () => window.removeEventListener("message", handleMessage);
   }, [router, lang]);
 
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+
+    const timer = window.setTimeout(() => {
+      setIsLoading(false);
+    }, 1800);
+
+    return () => window.clearTimeout(timer);
+  }, [appId]);
+
   if (!appId || !appNames[appId]) {
     return <div className="p-10 text-center" style={{ color: "#7c5cbf" }}>App no encontrada.</div>;
   }
 
-  const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260413-1`;
+  const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260709-core-5`;
   const accent = appAccents[appId] || "#7c5cbf";
 
   return (

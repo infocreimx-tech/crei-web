@@ -21,8 +21,19 @@
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
       ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      .vault-panel { order: 1; }
+      .form-panel { order: 2; }
+      #gastos-tbody td { vertical-align: top; }
+      @media (min-width: 1024px) {
+        .form-panel { order: 1; }
+        .vault-panel { order: 2; }
+      }
+      @media (max-width: 1023px) {
+        .comprobante-grid { gap: 20px; }
+        .vault-panel { min-width: 0; }
+        .form-panel { min-width: 0; }
+      }
     </style>
-  <script src="/legacy-apps/duplicate-validator.js" defer></script>
 </head>
 <body class="relative min-h-screen bg-slate-50">
   <div class="relative overflow-hidden pointer-events-none">
@@ -57,9 +68,9 @@
       <button onclick="document.getElementById('alertBox').style.display='none'"><svg class="w-5 h-5 opacity-60 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div class="comprobante-grid grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <!-- FORMULARIO DE CARGA -->
-      <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40 p-6 sticky top-6">
+      <div class="form-panel lg:col-span-4 bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40 p-6">
         <form id="uploadForm" class="space-y-6">
           <h2 class="text-lg font-black text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
             <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -69,6 +80,14 @@
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Usuario Central (SSO)</label>
             <input id="usuario_sso" name="usuario" type="text" readonly placeholder="Autenticando..." class="w-full bg-slate-100 text-slate-600 rounded-xl border-slate-200 py-3 px-4 font-black cursor-not-allowed">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Expediente vinculado</label>
+            <select id="expediente_folio" class="w-full rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 py-2.5 px-4 text-sm font-bold outline-none transition bg-white text-slate-800">
+              <option value="">Sin expediente</option>
+            </select>
+            <p id="expediente_folio_hint" class="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Carga los folios activos desde expediente.</p>
           </div>
 
           <div>
@@ -151,11 +170,20 @@
       </div>
 
       <!-- TABLA DE GASTOS RECIENTES -->
-      <div class="lg:col-span-8 flex flex-col">
+      <div class="vault-panel lg:col-span-8 flex flex-col">
         <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden flex-1 shadow-xl shadow-slate-200/40">
-          <div class="overflow-x-auto min-h-[600px] max-h-[800px]">
+          <div class="px-6 py-4 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-black text-slate-800">Bóveda de comprobantes</h2>
+              <p id="vaultSummary" class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Sincronizando registros...</p>
+            </div>
+            <button onclick="loadGastos()" class="shadow-sm border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-black flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition cursor-pointer">
+              Sincronizar
+            </button>
+          </div>
+          <div class="overflow-x-auto min-h-[420px] max-h-[720px] overflow-y-auto">
             <table class="w-full text-left border-collapse">
-              <thead class="sticky top-0 bg-slate-50/90 backdrop-blur z-10 border-b border-slate-200">
+              <thead class="bg-slate-50/90 border-b border-slate-200">
                 <tr class="text-slate-500 font-black text-[10px] uppercase tracking-widest">
                   <th class="px-6 py-4">Concepto y Fecha</th>
                   <th class="px-6 py-4">Categoría</th>
@@ -235,6 +263,13 @@
               <input type="number" step="0.01" id="edit-iva" class="w-full rounded-xl border border-slate-200 focus:border-brand-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition">
             </div>
           </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Expediente vinculado</label>
+            <select id="edit-expediente" class="w-full rounded-xl border border-slate-200 focus:border-brand-500 py-2.5 px-3 text-sm font-semibold bg-slate-50 outline-none transition">
+              <option value="">Sin expediente</option>
+            </select>
+          </div>
           
           <button type="button" onclick="salvarEdicion()" id="btnSaveEdit" class="w-full bg-brand-600 text-white font-bold rounded-xl px-4 py-3 hover:bg-brand-700 transition shadow-md shadow-brand-500/20 active:scale-[0.98] flex justify-center items-center mt-2">
             Sobreescribir Valores
@@ -304,6 +339,9 @@ function updateName(){if(fi.files.length){fn.textContent=fi.files[0].name;fn.cla
 // --- LÓGICA CORE ---
 let currentUser = "Desconocido";
 let gastosCache = [];
+let expedientesCache = [];
+let gastosSupportsExpediente = false;
+let gastosLoadedOnce = false;
 let radioManuallyModified = false;
 
 const keywordsBolsillo = [
@@ -343,6 +381,42 @@ const keywordsBolsillo = [
 // Reemplazar tildes para búsqueda flexible
 const normalize = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const regexBolsillo = new RegExp(`(${keywordsBolsillo.map(normalize).join('|')})`, 'i');
+
+function safeJsonArray(value) {
+  if (Array.isArray(value)) return value;
+  if (!value) return [];
+  if (typeof value === 'object') return Array.isArray(value) ? value : [];
+  if (typeof value !== 'string') return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn('Historial inválido en gastos:', error);
+    return [];
+  }
+}
+
+function safeText(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function safeMoney(value) {
+  const amount = Number(value || 0);
+  return Number.isFinite(amount)
+    ? amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+    : '$0.00';
+}
+
+function safeDateTime(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return 'Sin fecha';
+  return date.toLocaleDateString() + ' <span class="text-[10px] text-slate-400 font-semibold ml-1">' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + '</span>';
+}
 
 // Función robusta para leer el usuario de la sesión
 function resolveCurrentUser() {
@@ -402,6 +476,46 @@ function actualizarCampoSSO(usuario) {
   }
 }
 
+async function detectGastosExpedienteColumn() {
+  const { error } = await supabaseClient.from('gastos').select('expediente_folio').limit(1);
+  gastosSupportsExpediente = !error;
+  const hint = document.getElementById('expediente_folio_hint');
+  if (hint) {
+    hint.textContent = gastosSupportsExpediente
+      ? 'El folio se guardará en gastos.expediente_folio.'
+      : 'Pendiente SQL: por ahora el folio se guarda en la bitácora.';
+  }
+}
+
+async function loadExpedientesForComprobantes() {
+  const selects = [document.getElementById('expediente_folio'), document.getElementById('edit-expediente')].filter(Boolean);
+  try {
+    const { data, error } = await supabaseClient
+      .from('expediente')
+      .select('folio,nombre_completo,estado')
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) throw error;
+    expedientesCache = data || [];
+    const options = ['<option value="">Sin expediente</option>'].concat(
+      expedientesCache.map((row) => `<option value="${row.folio}">${row.folio} · ${row.nombre_completo || 'Sin nombre'}</option>`)
+    ).join('');
+    selects.forEach((select) => { select.innerHTML = options; });
+  } catch (error) {
+    console.warn('No se pudieron cargar expedientes', error);
+  }
+}
+
+function resolveGastoFolio(gasto) {
+  if (gasto.expediente_folio) return gasto.expediente_folio;
+  const historias = safeJsonArray(gasto.historial);
+  for (const h of [...historias].reverse()) {
+    const match = (h.cambios || []).join(' ').match(/CREI-\d{4}-\d{5}/);
+    if (match) return match[0];
+  }
+  return '';
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Resolver usuario inmediatamente
     currentUser = resolveCurrentUser();
@@ -445,7 +559,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    loadGastos();
+    loadExpedientesForComprobantes();
+    detectGastosExpedienteColumn();
+    window.setTimeout(() => {
+      if (!gastosLoadedOnce) loadGastos();
+    }, currentUser === 'Desconocido' && window.self !== window.top ? 1200 : 0);
 });
 
 
@@ -460,28 +578,34 @@ function alertMsg(msg, isError = false) {
 // 1. CARGA EN TIEMPO REAL DESDE SUPABASE
 async function loadGastos() {
     const tbody = document.getElementById('gastos-tbody');
+    const summary = document.getElementById('vaultSummary');
+    if (summary) summary.textContent = 'Sincronizando registros...';
     tbody.innerHTML = '<tr><td colspan="4" class="p-16 text-center"><div class="inline-block animate-spin w-6 h-6 border-4 border-brand-500 border-t-transparent rounded-full mb-2"></div><p class="text-slate-400 font-bold text-xs uppercase tracking-widest">Sincronizando Nube...</p></td></tr>';
     
     try {
         let query = supabaseClient.from('gastos').select('*').order('creado_en', { ascending: false });
         
-        // Regla Cero Confianza: Si NO eres el Admin ni el máster de CREI, filtra para ver SOLO CÓDIGOS de tu Usuario.
-        if (currentUser !== 'Admin' && currentUser !== 'CREI') {
+        // Si hay usuario resuelto y no es admin, filtra por usuario. Si la sesión aún no llegó, carga la bóveda para no dejar la UI vacía.
+        if (currentUser && currentUser !== 'Desconocido' && currentUser !== 'Admin' && currentUser !== 'CREI') {
             query = query.eq('usuario', currentUser);
         }
         
         const { data, error } = await query;
             
         if(error) throw error;
-        gastosCache = data;
+        gastosLoadedOnce = true;
+        gastosCache = Array.isArray(data) ? data : [];
         
         if(gastosCache.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-slate-400 font-medium">No existen registros financieros en la base de datos PostgreSQL.</td></tr>';
+            if (summary) summary.textContent = '0 registros encontrados';
             return;
         }
+        if (summary) summary.textContent = `${gastosCache.length} registros cargados`;
         
         tbody.innerHTML = '';
         gastosCache.forEach(g => {
+            try {
             // Resolver enlace estático heredado VS nube S3
             let publicUrl = '';
             if (g.archivo_path) {
@@ -500,12 +624,13 @@ async function loadGastos() {
                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                </a>` : '<span class="text-slate-300">-</span>';
             
-            const d = new Date(g.creado_en);
-            const dateStr = d.toLocaleDateString() + ' <span class="text-[10px] text-slate-400 font-semibold ml-1">' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + '</span>';
-            const amount = parseFloat(g.importe).toLocaleString('es-MX', {style:'currency', currency:'MXN'});
-            const historyObj = typeof g.historial === 'string' ? JSON.parse(g.historial || '[]') : (g.historial || []);
+            const dateStr = safeDateTime(g.creado_en);
+            const amount = safeMoney(g.importe);
+            const historyObj = safeJsonArray(g.historial);
             const hasHistory = historyObj.length > 0;
             const historyBadge = hasHistory ? `<span class="ml-2 inline-block px-1.5 py-0.5 bg-brand-100 text-brand-700 text-[8px] font-black rounded uppercase tracking-wider tooltip">MODIFICADO</span>` : '';
+            const folio = resolveGastoFolio(g);
+            const folioBadge = folio ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-sky-50 text-sky-700 border border-sky-200 font-bold">${safeText(folio)}</span>` : '';
             
             const isBolsillo = g.origen_pago === 'Bolsillo propio' || regexBolsillo.test(normalize((g.concepto || '').toLowerCase()));
             const trClass = isBolsillo ? "bg-rose-50/70 hover:bg-rose-100 transition-colors group" : "hover:bg-slate-50/50 transition-colors group";
@@ -519,20 +644,21 @@ async function loadGastos() {
               <td class="px-6 py-4">
                 <div class="${rowColor} font-black mb-1 flex items-center gap-1">
                    <span class="w-1.5 h-1.5 rounded-full ${isBolsillo ? 'bg-rose-600' : (g.tipo==='Factura' ? 'bg-sky-500' : (g.tipo==='Ticket' ? 'bg-emerald-500' : 'bg-purple-500'))}"></span>
-                   ${g.concepto} ${historyBadge}
+                   ${safeText(g.concepto || 'Sin concepto')} ${historyBadge}
                 </div>
                 <div class="${isBolsillo ? 'text-rose-600/80': 'text-slate-500'} text-xs font-semibold flex flex-wrap items-center gap-2 mt-1.5">
-                  <span class="flex items-center gap-1"><svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> ${g.usuario}</span>
+                  <span class="flex items-center gap-1"><svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> ${safeText(g.usuario || 'Sin usuario')}</span>
                   <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${isBolsillo ? 'bg-rose-100 text-rose-700 border-rose-200':'bg-slate-100 text-slate-500 border-slate-200'} border">Registrado: ${dateStr}</span>
-                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${isBolsillo ? 'bg-rose-600 text-white border-transparent' : 'bg-brand-50 text-brand-700 border border-brand-200'}">Compra: <strong class="font-bold">${g.fecha_compra || 'N/A'}</strong></span>
-                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${badgeClass} border font-bold">${g.origen_pago || 'Casa'}</span>
-                  ${g.numero_ticket ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200 font-bold">Tick: ${g.numero_ticket}</span>` : ''}
-                  ${g.numero_factura ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200 font-bold">Fact: ${g.numero_factura}</span>` : ''}
-                  ${g.iva ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200 font-bold">IVA: $${parseFloat(g.iva).toFixed(2)}</span>` : ''}
+                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${isBolsillo ? 'bg-rose-600 text-white border-transparent' : 'bg-brand-50 text-brand-700 border border-brand-200'}">Compra: <strong class="font-bold">${safeText(g.fecha_compra || 'N/A')}</strong></span>
+                  ${folioBadge}
+                  <span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider ${badgeClass} border font-bold">${safeText(g.origen_pago || 'Casa')}</span>
+                  ${g.numero_ticket ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200 font-bold">Tick: ${safeText(g.numero_ticket)}</span>` : ''}
+                  ${g.numero_factura ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200 font-bold">Fact: ${safeText(g.numero_factura)}</span>` : ''}
+                  ${g.iva ? `<span class="px-1.5 py-0.5 rounded text-[9.5px] uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200 font-bold">IVA: ${safeMoney(g.iva)}</span>` : ''}
                 </div>
               </td>
               <td class="px-6 py-4">
-                <span class="px-2.5 py-1 ${isBolsillo ? 'bg-rose-200/50 border-rose-200 text-rose-800' : 'bg-slate-100 border-slate-200 text-slate-600'} border rounded text-[10px] font-black uppercase">${g.tipo}</span>
+                <span class="px-2.5 py-1 ${isBolsillo ? 'bg-rose-200/50 border-rose-200 text-rose-800' : 'bg-slate-100 border-slate-200 text-slate-600'} border rounded text-[10px] font-black uppercase">${safeText(g.tipo || 'Sin tipo')}</span>
               </td>
               <td class="px-6 py-4 text-right font-black ${amountColor} tabular-nums tracking-tight">
                 ${amount}
@@ -547,9 +673,13 @@ async function loadGastos() {
               </td>
             `;
             tbody.appendChild(tr);
+            } catch (rowError) {
+              console.error('Error renderizando comprobante', g?.id, rowError);
+            }
         });
     } catch(e) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-rose-500 font-bold bg-rose-50/50">PostgreSQL Error: ${e.message}</td></tr>`;
+        if (summary) summary.textContent = 'Error al cargar registros';
     }
 }
 
@@ -583,6 +713,15 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         // 2. Postgres Row Insert (Auto-ID vía DB. Si en tu CSV el max id fue X, el default autoincremental de la columna BigInt funciona o le generamos un timestamp simulando BIGINT)
         const newId = Date.now();
         
+        const expedienteFolio = document.getElementById('expediente_folio').value;
+        const initialHistory = expedienteFolio && !gastosSupportsExpediente
+          ? [{
+              fecha: new Date().toISOString(),
+              autor: currentUser,
+              cambios: [`Expediente vinculado: '${expedienteFolio}'`]
+            }]
+          : [];
+
         const payload = {
             id: newId,
             usuario: currentUser,
@@ -597,8 +736,9 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             numero_ticket: document.getElementById('numero_ticket').value || null,
             numero_factura: document.getElementById('numero_factura').value || null,
             iva: document.getElementById('iva').value ? parseFloat(document.getElementById('iva').value).toFixed(2) : null,
-            historial: []
+            historial: initialHistory
         };
+        if (gastosSupportsExpediente && expedienteFolio) payload.expediente_folio = expedienteFolio;
         
         const { error: dbErr } = await supabaseClient.from('gastos').insert([payload]);
         if(dbErr) throw new Error("Falla registro SQL: " + dbErr.message);
@@ -650,8 +790,9 @@ function openModal(id) {
     document.getElementById('edit-ticket').value = gasto.numero_ticket || '';
     document.getElementById('edit-factura').value = gasto.numero_factura || '';
     document.getElementById('edit-iva').value = gasto.iva || '';
+    document.getElementById('edit-expediente').value = resolveGastoFolio(gasto);
     
-    const historias = typeof gasto.historial === 'string' ? JSON.parse(gasto.historial||'[]') : (gasto.historial||[]);
+    const historias = safeJsonArray(gasto.historial);
     renderHistorial(historias);
     
     const modal = document.getElementById('editModal');
@@ -683,14 +824,14 @@ function renderHistorial(historias) {
     
     container.innerHTML = '';
     [...historias].reverse().forEach((h, i) => {
-        let lis = h.cambios.map(c => `<li class="text-slate-600 font-medium">${c}</li>`).join('');
+        let lis = (Array.isArray(h.cambios) ? h.cambios : []).map(c => `<li class="text-slate-600 font-medium">${safeText(c)}</li>`).join('');
         container.innerHTML += `
         <div class="relative pl-6 pb-5 group">
           <span class="absolute left-[-15px] top-1.5 h-2 w-2 shadow-[0_0_0_4px_white] rounded-full bg-brand-500 group-hover:scale-125 transition"></span>
           <div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
-              <span class="font-black text-slate-800 text-[10px] uppercase">${h.autor} editó registros funcionales</span>
-              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${new Date(h.fecha).toLocaleString()}</span>
+              <span class="font-black text-slate-800 text-[10px] uppercase">${safeText(h.autor || 'Sistema')} editó registros funcionales</span>
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${safeText(new Date(h.fecha || Date.now()).toLocaleString())}</span>
             </div>
             <ul class="text-[11px] leading-relaxed list-disc list-inside space-y-0.5 ml-1 marker:text-brand-500">${lis}</ul>
           </div>
@@ -709,6 +850,7 @@ async function salvarEdicion() {
     const ticket = document.getElementById('edit-ticket').value.trim();
     const factura = document.getElementById('edit-factura').value.trim();
     const iva_val = document.getElementById('edit-iva').value;
+    const expedienteFolio = document.getElementById('edit-expediente').value;
     
     if(!concepto || !importe || !tipo || !fecha_compra) return alertMsg('Propiedades vacías', true);
     
@@ -720,7 +862,7 @@ async function salvarEdicion() {
     try {
         // Encontrar datos viejos localmente
         const gasto = gastosCache.find(g => parseInt(g.id) === parseInt(id));
-        const historiasAnteriores = typeof gasto.historial === 'string' ? JSON.parse(gasto.historial||'[]') : (gasto.historial||[]);
+        const historiasAnteriores = safeJsonArray(gasto.historial);
         
         let cambios = [];
         if(gasto.concepto !== concepto) cambios.push(`Concepto: '${gasto.concepto}' → '${concepto}'`);
@@ -731,6 +873,7 @@ async function salvarEdicion() {
         if((gasto.numero_ticket || '') !== ticket) cambios.push(`Ticket: '${gasto.numero_ticket||''}' → '${ticket}'`);
         if((gasto.numero_factura || '') !== factura) cambios.push(`Factura: '${gasto.numero_factura||''}' → '${factura}'`);
         if(parseFloat(gasto.iva || 0).toFixed(2) !== parseFloat(iva_val || 0).toFixed(2)) cambios.push(`IVA: $${parseFloat(gasto.iva||0).toFixed(2)} → $${parseFloat(iva_val||0).toFixed(2)}`);
+        if(resolveGastoFolio(gasto) !== expedienteFolio) cambios.push(`Expediente vinculado: '${resolveGastoFolio(gasto) || 'Sin expediente'}' → '${expedienteFolio || 'Sin expediente'}'`);
         
         if(cambios.length === 0) {
             closeModal();
@@ -754,6 +897,7 @@ async function salvarEdicion() {
             iva: iva_val ? parseFloat(iva_val).toFixed(2) : null,
             historial: historiasAnteriores
         };
+        if (gastosSupportsExpediente) payload.expediente_folio = expedienteFolio || null;
 
         const { error } = await supabaseClient.from('gastos').update(payload).eq('id', id);
         if(error) throw new Error("Falla de capa SQL: " + error.message);
