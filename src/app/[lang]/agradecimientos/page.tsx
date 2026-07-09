@@ -1,15 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
 import { Heart, Send, Star, MapPin, X, CheckCircle, AlertCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-const sb = createClient(
-  "https://uywihjppwzrrfjkguvot.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw"
-);
 
 interface Agradecimiento {
   id: number;
@@ -41,13 +35,16 @@ export default function AgradecimientosPage() {
 
   useEffect(() => {
     const load = async () => {
-      const [{ data: dest }, { data: rest }] = await Promise.all([
-        sb.from("agradecimientos").select("*").eq("aprobado", true).eq("destacado", true).order("created_at", { ascending: false }),
-        sb.from("agradecimientos").select("*").eq("aprobado", true).eq("destacado", false).order("created_at", { ascending: false }).limit(50),
-      ]);
-      setDestacados(dest || []);
-      setMensajes(rest || []);
-      setLoading(false);
+      try {
+        const res = await fetch("/api/agradecimientos", { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        setDestacados(Array.isArray(data.destacados) ? data.destacados : []);
+        setMensajes(Array.isArray(data.mensajes) ? data.mensajes : []);
+      } catch (err) {
+        console.error("Error loading agradecimientos:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
@@ -65,20 +62,29 @@ export default function AgradecimientosPage() {
     setSending(true);
     setFormError("");
     try {
-      const { error } = await sb.from("agradecimientos").insert({
-        nombre: form.nombre.trim(),
-        mensaje: form.mensaje.trim(),
-        ciudad: form.ciudad.trim() || null,
-        email: form.email.trim() || null,
-        aprobado: false,
-        destacado: false,
+      const res = await fetch("/api/agradecimientos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: form.nombre.trim(),
+          mensaje: form.mensaje.trim(),
+          ciudad: form.ciudad.trim() || null,
+          email: form.email.trim() || null,
+        }),
       });
-      if (error) throw error;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || "No se pudo guardar el mensaje");
+      }
+      if (data?.mensaje) {
+        setMensajes((prev) => [data.mensaje, ...prev]);
+      }
       setSent(true);
       setForm(INITIAL_FORM);
       setTimeout(() => { setSent(false); setShowForm(false); }, 4000);
     } catch (err: any) {
-      setFormError("Ocurrió un error. Inténtalo de nuevo.");
+      console.error("Error submitting agradecimiento:", err);
+      setFormError(err?.message || "Ocurrió un error. Inténtalo de nuevo.");
     }
     setSending(false);
   };

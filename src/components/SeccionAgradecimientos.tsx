@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, Star, MapPin, Send } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
 import { useI18n } from "@/i18n/I18nProvider";
-
-const sb = createClient(
-  "https://uywihjppwzrrfjkguvot.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw"
-);
 
 interface Agradecimiento {
   id: number;
@@ -150,14 +144,17 @@ export default function SeccionAgradecimientos() {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await sb
-        .from("agradecimientos")
-        .select("*")
-        .eq("aprobado", true)
-        .order("destacado", { ascending: false })
-        .order("created_at", { ascending: false });
-      setItems(data || []);
-      setLoading(false);
+      try {
+        const res = await fetch("/api/agradecimientos", { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        const destacados = Array.isArray(data.destacados) ? data.destacados : [];
+        const mensajes = Array.isArray(data.mensajes) ? data.mensajes : [];
+        setItems([...destacados, ...mensajes]);
+      } catch (err) {
+        console.error("Error loading muro de amor:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
