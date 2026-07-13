@@ -23,8 +23,11 @@
       }
 
       * { box-sizing: border-box; }
+      [hidden] { display: none !important; }
       body {
         margin: 0;
+        min-height: 100%;
+        overflow-y: auto;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         color: var(--ink);
         background:
@@ -200,6 +203,8 @@
       .today .day-number { background: var(--brand); color: white; }
       .day-count { color: var(--muted); font-size: 11px; font-weight: 900; }
       .event-chip {
+        position: relative;
+        overflow: hidden;
         width: 100%;
         border: 0;
         border-left: 4px solid var(--brand);
@@ -215,7 +220,25 @@
       }
       .event-chip strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .event-chip span { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .event-chip.cancelled { border-left-color: var(--danger); background: #fff1f2; }
+      .event-chip.cancelled {
+        border-left-color: var(--danger);
+        background: #fff1f2;
+        color: #991b1b;
+        min-height: 52px;
+        padding-top: 20px;
+      }
+      .event-chip.cancelled::after {
+        content: "CONSULTA ELIMINADA";
+        position: absolute;
+        top: 5px;
+        left: 7px;
+        color: rgba(185, 28, 28, .78);
+        font-size: 8px;
+        font-weight: 950;
+        letter-spacing: .12em;
+        transform: rotate(-2deg);
+        pointer-events: none;
+      }
       .event-chip.done { border-left-color: var(--warn); background: #fffbeb; }
       .more-chip { color: var(--brand-dark); font-size: 11px; font-weight: 900; padding-left: 4px; }
 
@@ -231,6 +254,8 @@
 
       .day-view, .list-view { display: grid; gap: 10px; padding: 14px; }
       .agenda-row {
+        position: relative;
+        overflow: hidden;
         display: grid;
         grid-template-columns: 150px minmax(0, 1fr) auto;
         gap: 14px;
@@ -242,6 +267,20 @@
       }
       .agenda-time { color: var(--brand-dark); font-size: 13px; font-weight: 950; }
       .agenda-row h3 { margin: 0 0 6px; font-size: 18px; }
+      .agenda-row.cancelled { background: #fff7f7; border-color: #fecaca; }
+      .agenda-row.cancelled::after {
+        content: "CONSULTA ELIMINADA";
+        position: absolute;
+        right: 28px;
+        top: 50%;
+        color: rgba(185, 28, 28, .11);
+        font-size: clamp(24px, 4vw, 52px);
+        font-weight: 950;
+        letter-spacing: .08em;
+        transform: translateY(-50%) rotate(-8deg);
+        pointer-events: none;
+        white-space: nowrap;
+      }
       .agenda-meta { color: var(--muted); font-size: 13px; line-height: 1.45; }
       .status {
         display: inline-flex;
@@ -292,6 +331,11 @@
       .item span { display: block; margin-top: 4px; overflow-wrap: anywhere; }
       .full { grid-column: 1 / -1; }
       .detail-actions { display: flex; gap: 10px; justify-content: flex-end; padding: 0 22px 22px; }
+      .delete-form { padding: 22px; }
+      .delete-form h2 { margin: 0; font-size: 28px; }
+      .delete-form p { color: var(--muted); line-height: 1.55; }
+      .delete-form textarea { min-height: 120px; }
+      .required-note { margin: 8px 0 0; color: #991b1b !important; font-size: 12px; font-weight: 800; }
       .toast {
         position: fixed;
         left: 50%;
@@ -355,7 +399,7 @@
               <select id="expedienteSelect" required>
                 <option value="">Cargando expedientes...</option>
               </select>
-              <p class="hint" id="patientHint">El folio se guarda en calendario.patient_id.</p>
+              <p class="hint" id="patientHint">La cita quedará vinculada a este expediente.</p>
             </div>
             <div>
               <label for="therapistInput">Terapeuta</label>
@@ -370,15 +414,18 @@
               <input id="endInput" type="datetime-local" />
             </div>
             <div>
-              <label for="locationInput">Lugar</label>
-              <input id="locationInput" value="Sacramento" />
+              <label for="locationInput">Modalidad *</label>
+              <select id="locationInput" required>
+                <option value="Fuentes de la Felicidad">Fuentes de la Felicidad</option>
+                <option value="Sacramento" selected>Sacramento</option>
+                <option value="En línea">En línea</option>
+              </select>
             </div>
             <div>
               <label for="statusInput">Estado</label>
               <select id="statusInput">
                 <option value="active">Activa</option>
                 <option value="done">Completada</option>
-                <option value="cancelled">Cancelada</option>
               </select>
             </div>
             <div>
@@ -410,7 +457,7 @@
               <option value="">Todos</option>
               <option value="active">Activas</option>
               <option value="done">Completadas</option>
-              <option value="cancelled">Canceladas</option>
+              <option value="cancelled">Eliminadas</option>
             </select>
             <input id="jumpDate" type="date" />
           </div>
@@ -435,21 +482,28 @@
         <div class="detail-grid" id="detailGrid"></div>
       </div>
       <div class="detail-actions">
-        <button class="btn btn-danger" type="button" id="cancelDetail">Cancelar cita</button>
+        <button class="btn btn-danger" type="button" id="cancelDetail">Eliminar consulta</button>
       </div>
+    </dialog>
+
+    <dialog id="deleteDialog">
+      <form id="deleteForm" class="delete-form">
+        <p class="eyebrow">Baja clínica con trazabilidad</p>
+        <h2>Eliminar consulta</h2>
+        <p>La consulta no se borrará del historial. Permanecerá en el calendario con una marca de agua y la razón registrada.</p>
+        <label for="deleteReasonInput">Razón de la eliminación *</label>
+        <textarea id="deleteReasonInput" minlength="5" required placeholder="Escribe la razón de la eliminación"></textarea>
+        <p class="required-note">Este campo es obligatorio.</p>
+        <div class="detail-actions" style="padding: 18px 0 0;">
+          <button class="btn btn-ghost" type="button" id="closeDelete">Volver</button>
+          <button class="btn btn-danger" type="submit" id="confirmDelete">Confirmar eliminación</button>
+        </div>
+      </form>
     </dialog>
 
     <div class="toast" id="toast"></div>
 
     <script>
-      const SUPABASE_URL = "https://uywihjppwzrrfjkguvot.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
-      const REST = `${SUPABASE_URL}/rest/v1`;
-      const headers = {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-      };
       const weekdays = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
       const hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
       const state = { expedientes: [], citas: [], view: "month", cursor: new Date(), selectedId: null };
@@ -522,33 +576,62 @@
         return state.expedientes.find((row) => row.folio === folio || row.id === folio);
       }
 
-      function patientName(row) {
-        const patient = findPatient(row.patient_id);
-        return patient?.nombre_completo || row.patient_id || "Paciente sin expediente";
+      function appointmentPatientId(row) {
+        return row.expediente_id || row.patient_id || "";
       }
 
-      async function rest(path, options = {}) {
-        const response = await fetch(`${REST}${path}`, {
+      function appointmentFolio(row) {
+        const patient = findPatient(appointmentPatientId(row));
+        return patient?.folio || row.patient_id || "Sin folio";
+      }
+
+      function patientName(row) {
+        const patient = findPatient(appointmentPatientId(row));
+        return patient?.nombre_completo || "Paciente sin expediente";
+      }
+
+      function isDeleted(row) {
+        return ["cancelled", "cancelada", "deleted", "eliminada"].includes(String(row?.status || "").toLowerCase());
+      }
+
+      function statusClass(row) {
+        const raw = String(row?.status || "active").toLowerCase();
+        if (isDeleted(row)) return "cancelled";
+        if (["done", "completed", "completada"].includes(raw)) return "done";
+        return "active";
+      }
+
+      function statusLabel(row) {
+        if (isDeleted(row)) return "Eliminada";
+        if (["done", "completed", "completada"].includes(statusClass(row))) return "Completada";
+        return "Activa";
+      }
+
+      async function clinicalApi(options = {}) {
+        const response = await fetch("/api/clinical", {
           ...options,
-          headers: { ...headers, Prefer: "return=representation", ...(options.headers || {}) },
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", ...(options.headers || {}) },
         });
-        if (!response.ok) throw new Error(await response.text());
-        if (response.status === 204) return null;
-        return response.json();
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "No fue posible completar la operación clínica.");
+        return result;
       }
 
       async function loadExpedientes() {
-        state.expedientes = await rest("/expediente?select=id,folio,nombre_completo,telefono,email,terapeuta_asignado,estado&order=created_at.desc");
+        const result = await clinicalApi();
+        state.expedientes = result.expedientes || [];
         const select = $("expedienteSelect");
         select.innerHTML = '<option value="">Selecciona expediente</option>' + state.expedientes
-          .map((row) => `<option value="${escapeHtml(row.folio || row.id)}">${escapeHtml(row.folio || "Sin folio")} · ${escapeHtml(row.nombre_completo || "Sin nombre")}</option>`)
+          .map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.folio || "Sin folio")} · ${escapeHtml(row.nombre_completo || "Sin nombre")}</option>`)
           .join("");
         $("statPatients").textContent = state.expedientes.length;
       }
 
       async function loadCitas() {
         $("calendarView").innerHTML = '<div class="loading">Cargando calendario...</div>';
-        state.citas = await rest("/calendario?select=*&order=start_at.asc");
+        const result = await clinicalApi();
+        state.citas = result.citas || [];
         render();
       }
 
@@ -564,9 +647,9 @@
       function matches(row) {
         const query = $("searchInput").value.trim().toLowerCase();
         const status = $("statusFilter").value;
-        const patient = findPatient(row.patient_id);
+        const patient = findPatient(appointmentPatientId(row));
         const haystack = [
-          row.patient_id,
+          appointmentFolio(row),
           row.therapist_id,
           row.notes,
           row.location,
@@ -574,7 +657,7 @@
           patient?.telefono,
           patient?.email,
         ].join(" ").toLowerCase();
-        return (!query || haystack.includes(query)) && (!status || (row.status || "active") === status);
+        return (!query || haystack.includes(query)) && (!status || statusClass(row) === status);
       }
 
       function filteredRows() {
@@ -608,7 +691,7 @@
 
       function renderStats(rows) {
         $("statTotal").textContent = state.citas.length;
-        $("statActive").textContent = state.citas.filter((row) => (row.status || "active") === "active").length;
+        $("statActive").textContent = state.citas.filter((row) => statusClass(row) === "active").length;
         $("statPeriod").textContent = activePeriodRows(rows).length;
       }
 
@@ -619,11 +702,11 @@
       }
 
       function eventChip(row) {
-        const status = row.status || "active";
+        const status = statusClass(row);
         return `
           <button class="event-chip ${escapeHtml(status)}" type="button" data-open="${escapeHtml(row.id)}">
             <strong>${escapeHtml(formatTime(row.start_at))} · ${escapeHtml(patientName(row))}</strong>
-            <span>${escapeHtml(row.therapist_id || row.location || "Sin terapeuta")}</span>
+            <span>${escapeHtml(row.location || "Sin modalidad")}</span>
           </button>
         `;
       }
@@ -673,19 +756,20 @@
       }
 
       function agendaRow(row) {
-        const patient = findPatient(row.patient_id);
-        const status = row.status || "active";
+        const patient = findPatient(appointmentPatientId(row));
+        const status = statusClass(row);
         return `
-          <article class="agenda-row">
+          <article class="agenda-row ${escapeHtml(status)}">
             <div class="agenda-time">${escapeHtml(formatDate(row.start_at))}<br>${escapeHtml(formatTime(row.start_at))}</div>
             <div>
-              <span class="badge">${escapeHtml(row.patient_id || "Sin folio")}</span>
+              <span class="badge">${escapeHtml(appointmentFolio(row))}</span>
               <h3>${escapeHtml(patientName(row))}</h3>
-              <span class="status ${escapeHtml(status)}">${escapeHtml(status)}</span>
+              <span class="status ${escapeHtml(status)}">${escapeHtml(statusLabel(row))}</span>
               <div class="agenda-meta">
                 Terapeuta: ${escapeHtml(row.therapist_id || patient?.terapeuta_asignado || "No asignado")}<br>
-                Lugar: ${escapeHtml(row.location || "No registrado")}<br>
+                Modalidad: ${escapeHtml(row.location || "No registrada")}<br>
                 ${escapeHtml(row.notes || "Sin notas")}
+                ${isDeleted(row) ? `<br><strong>Razón de eliminación:</strong> ${escapeHtml(row.cancel_reason || "No registrada")}` : ""}
               </div>
             </div>
             <button class="btn btn-ghost" type="button" data-open="${escapeHtml(row.id)}">Ver</button>
@@ -751,36 +835,47 @@
       function openDetail(id) {
         const row = state.citas.find((cita) => cita.id === id);
         if (!row) return;
-        const patient = findPatient(row.patient_id);
+        const patient = findPatient(appointmentPatientId(row));
         state.selectedId = id;
-        $("detailFolio").textContent = row.patient_id || "Sin folio";
+        $("detailFolio").textContent = appointmentFolio(row);
         $("detailName").textContent = patientName(row);
         $("detailGrid").innerHTML = [
-          item("Estado", row.status || "active"),
+          item("Estado", statusLabel(row)),
           item("Inicio", formatDateTime(row.start_at)),
           item("Fin", formatDateTime(row.end_at)),
-          item("Lugar", row.location),
+          item("Modalidad", row.location),
           item("Terapeuta", row.therapist_id || patient?.terapeuta_asignado),
           item("Teléfono", patient?.telefono),
           item("Correo", patient?.email),
           itemFull("Notas", row.notes),
+          ...(isDeleted(row) ? [itemFull("Razón de eliminación", row.cancel_reason)] : []),
         ].join("");
+        $("cancelDetail").hidden = isDeleted(row);
         $("detailDialog").showModal();
       }
 
-      async function cancelCita(id) {
-        if (!id) return;
+      async function cancelCita(id, reason) {
+        const cleanReason = String(reason || "").trim();
+        if (!id || cleanReason.length < 5) {
+          toast("Escribe una razón de al menos 5 caracteres");
+          return;
+        }
         try {
-          await rest(`/calendario?id=eq.${encodeURIComponent(id)}`, {
-            method: "PATCH",
-            body: JSON.stringify({ status: "cancelled", cancel_reason: "Cancelada desde calendario clínico" }),
+          await clinicalApi({
+            method: "POST",
+            body: JSON.stringify({
+              action: "updateCitaStatus",
+              id,
+              status: "cancelled",
+              cancel_reason: cleanReason,
+            }),
           });
-          toast("Cita cancelada");
-          $("detailDialog").close();
+          toast("Consulta eliminada con razón registrada");
+          $("deleteDialog").close();
           await loadCitas();
         } catch (error) {
           console.error(error);
-          toast("No se pudo cancelar la cita");
+          toast(error.message || "No se pudo eliminar la consulta");
         }
       }
 
@@ -797,13 +892,12 @@
 
       $("appointmentForm").addEventListener("submit", async (event) => {
         event.preventDefault();
-        const patientFolio = $("expedienteSelect").value;
-        if (!patientFolio) return;
+        const expedienteId = $("expedienteSelect").value;
+        if (!expedienteId) return;
 
         const startAt = $("startInput").value;
         const payload = {
-          id: crypto.randomUUID(),
-          patient_id: patientFolio,
+          expediente_id: expedienteId,
           therapist_id: $("therapistInput").value.trim() || null,
           notes: $("notesInput").value.trim() || null,
           start_at: startAt ? new Date(startAt).toISOString() : null,
@@ -815,7 +909,10 @@
         $("saveBtn").disabled = true;
         $("saveBtn").textContent = "Guardando...";
         try {
-          await rest("/calendario", { method: "POST", body: JSON.stringify(payload) });
+          await clinicalApi({
+            method: "POST",
+            body: JSON.stringify({ action: "saveCita", payload }),
+          });
           toast("Cita vinculada al expediente");
           state.cursor = startAt ? new Date(startAt) : new Date();
           event.currentTarget.reset();
@@ -836,7 +933,7 @@
         const patient = findPatient($("expedienteSelect").value);
         $("patientHint").textContent = patient
           ? `${patient.nombre_completo || "Paciente"} · ${patient.telefono || "sin teléfono"}`
-          : "El folio se guarda en calendario.patient_id.";
+          : "La cita quedará vinculada a este expediente.";
         if (patient?.terapeuta_asignado && !$("therapistInput").value) {
           $("therapistInput").value = patient.terapeuta_asignado;
         }
@@ -865,7 +962,38 @@
         });
       });
       $("closeDetail").addEventListener("click", () => $("detailDialog").close());
-      $("cancelDetail").addEventListener("click", () => cancelCita(state.selectedId));
+      $("cancelDetail").addEventListener("click", () => {
+        const row = state.citas.find((cita) => cita.id === state.selectedId);
+        if (!row || isDeleted(row)) return;
+        $("detailDialog").close();
+        $("deleteReasonInput").value = "";
+        $("deleteReasonInput").setCustomValidity("");
+        $("deleteDialog").showModal();
+        $("deleteReasonInput").focus();
+      });
+      $("closeDelete").addEventListener("click", () => {
+        $("deleteDialog").close();
+        openDetail(state.selectedId);
+      });
+      $("deleteReasonInput").addEventListener("input", () => $("deleteReasonInput").setCustomValidity(""));
+      $("deleteForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const reasonInput = $("deleteReasonInput");
+        const reason = reasonInput.value.trim();
+        if (reason.length < 5) {
+          reasonInput.setCustomValidity("Escribe una razón de al menos 5 caracteres.");
+          reasonInput.reportValidity();
+          return;
+        }
+        $("confirmDelete").disabled = true;
+        $("confirmDelete").textContent = "Eliminando...";
+        try {
+          await cancelCita(state.selectedId, reason);
+        } finally {
+          $("confirmDelete").disabled = false;
+          $("confirmDelete").textContent = "Confirmar eliminación";
+        }
+      });
 
       $("jumpDate").value = dateKey(state.cursor);
       $("startInput").value = toLocalInput(new Date());

@@ -53,6 +53,7 @@ export default function EcosystemDashboard() {
 
   const handleLogout = async () => {
     await sb.auth.signOut();
+    await fetch("/api/therapist-session", { method: "DELETE" });
     localStorage.removeItem("crei_session");
     router.push("/es/portal-terapeutas");
   };

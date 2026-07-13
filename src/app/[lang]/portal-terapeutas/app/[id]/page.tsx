@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Maximize, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
+import TherapistClinicalWorkspace from "@/components/TherapistClinicalWorkspace";
 
 const appNames: Record<string, string> = {
   calendario: "Calendario Clínico",
@@ -76,8 +77,9 @@ export default function IframeAppContainer() {
     return <div className="p-10 text-center" style={{ color: "#7c5cbf" }}>App no encontrada.</div>;
   }
 
-  const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260709-core-5`;
+  const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260713-clinical-2`;
   const accent = appAccents[appId] || "#7c5cbf";
+  const nativeClinicalMode = appId === "expediente" ? appId : null;
 
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: "#150b24" }}>
@@ -138,10 +140,14 @@ export default function IframeAppContainer() {
       </header>
 
       {/* Frame */}
-      <main className="flex-1 relative bg-[#150b24]">
+      <main className="relative min-h-0 flex-1 bg-[#150b24]">
         {/* Glow ambient background behind the frame while loading */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full mix-blend-screen filter blur-[100px] opacity-10 pointer-events-none" style={{ background: accent }} />
 
+        {nativeClinicalMode ? (
+          <TherapistClinicalWorkspace mode={nativeClinicalMode} />
+        ) : (
+          <>
         {isLoading && !hasError && (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center z-20"
@@ -170,11 +176,13 @@ export default function IframeAppContainer() {
 
         <iframe
           src={appStaticUrl}
-          className="w-full h-full border-0 rounded-b-xl"
+          className="block h-full w-full rounded-b-xl border-0"
           title={`CREI · ${appNames[appId]}`}
           onLoad={() => setIsLoading(false)}
           onError={() => { setIsLoading(false); setHasError(true); }}
         />
+          </>
+        )}
       </main>
     </div>
   );

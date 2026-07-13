@@ -6,11 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, Loader2, ArrowRight, AlertCircle, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
-const sb = createClient(supabaseUrl, supabaseKey);
 
 export default function TherapistLogin() {
   const { lang } = useI18n();
@@ -27,34 +22,22 @@ export default function TherapistLogin() {
     setErrorMsg("");
 
     try {
-      const emailsToTry = [
-        `${username.toLowerCase().trim()}@crei.mx`,
-        `${username.toLowerCase().trim()}@gmail.com`,
-        username.trim()
-      ];
-
-      for (const email of emailsToTry) {
-        const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
-        if (!authError && authData?.user) break;
-      }
-
-      const { data: rpcData } = await sb.rpc("login_user", {
-        p_username: username,
-        p_password: password
+      const response = await fetch("/api/therapist-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username.trim(), password })
       });
+      const synced = await response.json();
+      if (!response.ok) throw new Error(synced.error || "Usuario o contraseña incorrectos.");
 
-      if (rpcData && rpcData.success) {
-        const sessionData = {
-          user: rpcData.user.username,
-          username: rpcData.user.username,
-          role: rpcData.user.role,
-          id: String(rpcData.user.id),
-        };
-        localStorage.setItem("crei_session", JSON.stringify(sessionData));
-        router.push(`/${lang}/portal-terapeutas/dashboard`);
-      } else {
-        throw new Error("Usuario o contraseña incorrectos.");
-      }
+      const sessionData = {
+        user: synced.user.username,
+        username: synced.user.username,
+        role: synced.user.role,
+        id: String(synced.user.id)
+      };
+      localStorage.setItem("crei_session", JSON.stringify(sessionData));
+      router.push(`/${lang}/portal-terapeutas/dashboard`);
     } catch (err: any) {
       setErrorMsg(err.message || "Usuario o contraseña incorrectos.");
     } finally {
