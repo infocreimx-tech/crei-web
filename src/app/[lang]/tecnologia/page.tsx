@@ -14,9 +14,10 @@ import BackToTop from "@/components/BackToTop";
 
 export default function TechnologyPage() {
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="modern-content min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="flex-1 w-full pt-20">
+      <div className="flex-1 w-full">
+        <header className="modern-page-title"><span>Tecnología</span><h1>Innovación con criterio humano.</h1><p>Herramientas terapéuticas, análisis responsable y experiencias inmersivas al servicio del proceso clínico.</p></header>
         <Technology />
         <Tech4DChair />
         <TechBioWell />

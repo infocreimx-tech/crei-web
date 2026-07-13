@@ -26,7 +26,7 @@ export default function Navbar() {
           { name: "Blog", href: `/${lang}/blog` },
           { name: "APP", href: `/${lang}/app` },
           { name: "Love Wall", href: `/${lang}/agradecimientos` },
-          { name: "Contact", href: `/${lang}/#contacto` },
+          { name: "Contact", href: `/${lang}/contacto` },
         ]
       : [
           { name: "Nosotros", href: `/${lang}/nosotros` },
@@ -36,7 +36,7 @@ export default function Navbar() {
           { name: "Blog", href: `/${lang}/blog` },
           { name: "APP", href: `/${lang}/app` },
           { name: "Amor", href: `/${lang}/agradecimientos` },
-          { name: "Contacto", href: `/${lang}/#contacto` },
+          { name: "Contacto", href: `/${lang}/contacto` },
         ];
 
   useEffect(() => {
@@ -48,8 +48,8 @@ export default function Navbar() {
   return (
     <nav
       role="navigation"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-background/90 backdrop-blur-md shadow-md ${
-        isScrolled || mobileMenuOpen ? "py-3" : "py-5"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#faf8f4]/95 backdrop-blur-xl border-b border-[#302747]/10 ${
+        isScrolled || mobileMenuOpen ? "py-2 shadow-[0_8px_30px_rgba(48,39,71,0.08)]" : "py-3"
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
@@ -68,12 +68,12 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav — only visible on large screens */}
-        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+        <div className="hidden lg:flex items-center gap-3 xl:gap-5">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-xs font-semibold tracking-wide text-primary/80 hover:text-primary transition-colors whitespace-nowrap uppercase"
+              className="text-[11px] font-bold tracking-[0.06em] text-[#302747]/75 hover:text-[#7258a8] transition-colors whitespace-nowrap uppercase"
             >
               {link.name}
             </Link>
@@ -83,7 +83,7 @@ export default function Navbar() {
         {/* Right side actions */}
         <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
           {/* Language switcher */}
-          <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-primary/70">
+          <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-[#302747]/60">
             {lang === "es" ? (
               <span className="font-bold text-primary">ES</span>
             ) : (
@@ -99,7 +99,7 @@ export default function Navbar() {
 
           <Link
             href={`/${lang}/portal-pago`}
-            className="text-xs font-bold tracking-widest uppercase text-accent border border-accent/40 bg-accent/5 px-3 py-1.5 rounded-md hover:bg-accent hover:text-white transition-all duration-300"
+            className="text-[10px] font-bold tracking-widest uppercase text-white bg-[#302747] px-4 py-2.5 rounded-full hover:bg-[#7258a8] transition-all duration-300 shadow-sm"
           >
             {lang === "en" ? "Payment Portal" : "Portal de Pagos"}
           </Link>
@@ -107,7 +107,7 @@ export default function Navbar() {
 
         {/* Hamburger — visible below lg */}
         <button
-          className="lg:hidden text-primary p-1"
+          className="lg:hidden text-[#7258a8] p-2 rounded-full bg-[#eee8f6]"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -122,14 +122,14 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-background border-t border-border overflow-hidden"
+            className="lg:hidden bg-[#faf8f4] border-t border-[#302747]/10 overflow-hidden shadow-xl"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-lg font-medium text-primary py-1"
+                  className="text-base font-semibold text-[#302747] py-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}

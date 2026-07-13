@@ -7,9 +7,10 @@ import ChatBot from "@/components/ChatBot";
 
 export default function NosotrosPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="modern-content min-h-screen bg-background">
       <Navbar />
-      <div className="pt-20">
+      <div>
+        <header className="modern-page-title"><span>Nosotros</span><h1>Personas cuidando personas.</h1><p>Conoce la historia, el propósito, los valores y el equipo multidisciplinario que hacen posible el acompañamiento CREI.</p></header>
         <About />
       </div>
       <Footer />

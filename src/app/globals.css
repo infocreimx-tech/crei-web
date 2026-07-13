@@ -113,3 +113,232 @@ html[data-info-modal="1"] .info-session-modal-panel {
   transform: translateY(0) scale(1);
   opacity: 1;
 }
+
+/* Unified 2026 interface system for the complete public experience. */
+.modern-content {
+  --background: #faf8f4;
+  --foreground: #302747;
+  --primary: #5f478f;
+  --primary-foreground: #ffffff;
+  --secondary: #eee8f6;
+  --secondary-foreground: #302747;
+  --accent: #8067b3;
+  --accent-foreground: #ffffff;
+  --muted: #f3efe9;
+  --muted-foreground: #6d6475;
+  --card: #ffffff;
+  --card-foreground: #302747;
+  --border: #e4ded6;
+  background: #faf8f4;
+  color: #302747;
+}
+
+.modern-content > section:first-of-type {
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-content section {
+  scroll-margin-top: 88px;
+}
+
+.modern-content h1,
+.modern-content h2,
+.modern-content h3 {
+  letter-spacing: -0.025em;
+}
+
+.modern-content a,
+.modern-content button {
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.modern-content a:focus-visible,
+.modern-content button:focus-visible,
+.modern-content input:focus-visible,
+.modern-content textarea:focus-visible,
+.modern-content select:focus-visible {
+  outline: 3px solid rgba(128, 103, 179, 0.35);
+  outline-offset: 3px;
+}
+
+.modern-content [class*="rounded-3xl"],
+.modern-content [class*="rounded-[2rem]"] {
+  box-shadow: 0 16px 45px rgba(48, 39, 71, 0.08);
+}
+
+.modern-content input,
+.modern-content textarea,
+.modern-content select {
+  border-radius: 14px !important;
+}
+
+.modern-page-title {
+  padding: 150px clamp(22px, 7vw, 110px) 72px;
+  background: linear-gradient(135deg, #f6f1fb 0%, #faf8f4 54%, #edf4e8 100%);
+  border-bottom: 1px solid #e4ded6;
+}
+
+.modern-page-title span {
+  color: #7258a8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.modern-page-title h1 {
+  max-width: 900px;
+  margin: 18px 0 16px;
+  color: #302747;
+  font-family: var(--font-playfair);
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 0.98;
+}
+
+.modern-page-title p {
+  max-width: 680px;
+  margin: 0;
+  color: #6d6475;
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.7;
+}
+
+/* Full component restyling — maps legacy dark modules into the new calm system. */
+.modern-content [class*="bg-[#0e0720]"],
+.modern-content [class*="bg-[#150b24]"],
+.modern-content [class*="bg-[#1a0f2e]"] {
+  background-color: #faf8f4 !important;
+}
+
+.modern-content [class*="bg-[#0e0720]"]:nth-of-type(even),
+.modern-content [class*="bg-[#150b24]"]:nth-of-type(even),
+.modern-content [class*="bg-[#1a0f2e]"]:nth-of-type(even) {
+  background-color: #f1ebf7 !important;
+}
+
+.modern-content [class~="text-white"],
+.modern-content [class*="text-white/"] {
+  color: #302747 !important;
+}
+
+.modern-content [class*="border-white/"] {
+  border-color: rgba(48, 39, 71, 0.14) !important;
+}
+
+.modern-content [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.modern-content [class*="shadow-2xl"],
+.modern-content [class*="shadow-xl"] {
+  box-shadow: 0 20px 55px rgba(48, 39, 71, 0.11) !important;
+}
+
+.modern-content section img {
+  border-radius: inherit;
+}
+
+.modern-content section [class*="backdrop-blur"] {
+  backdrop-filter: blur(16px);
+}
+
+/* About and services: preserve every module while making the full journeys lighter. */
+.modern-content :is(section, article) [class*="bg-[#1a0f2e]"],
+.modern-content :is(section, article) [class*="bg-[#150b24]"],
+.modern-content :is(section, article) [class*="bg-[#0e0720]"] {
+  border: 1px solid #e4ded6;
+}
+
+.modern-content [class*="from-[#0e0720]"],
+.modern-content [class*="from-[#150b24]"],
+.modern-content [class*="from-[#1a0f2e]"] {
+  --tw-gradient-from: #f6f1fb var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(246, 241, 251, 0) var(--tw-gradient-to-position) !important;
+}
+
+.modern-content [class*="to-[#0e0720]"],
+.modern-content [class*="to-[#150b24]"],
+.modern-content [class*="to-[#1a0f2e]"] {
+  --tw-gradient-to: #faf8f4 var(--tw-gradient-to-position) !important;
+}
+
+/* Method and technology: editorial rhythm for every internal feature section. */
+.modern-content [class*="rounded-[3rem]"] {
+  border-radius: 32px !important;
+  border-color: #e4ded6 !important;
+  box-shadow: 0 18px 50px rgba(48, 39, 71, 0.08);
+}
+
+.modern-content [class*="bg-card"] {
+  background-color: #ffffff !important;
+  border-color: #e4ded6 !important;
+}
+
+.modern-content [class*="bg-background"] {
+  background-color: #faf8f4 !important;
+}
+
+.modern-content [class*="text-primary/"] {
+  color: rgba(48, 39, 71, 0.72) !important;
+}
+
+.modern-content [class~="text-primary"] {
+  color: #302747 !important;
+}
+
+.modern-content [class~="text-accent"] {
+  color: #7258a8 !important;
+}
+
+/* Blog: turn the former chat-like dark surface into a calm editorial reading area. */
+.modern-content [class*="bg-[#0b141a]"],
+.modern-content [class*="bg-[#182229]"],
+.modern-content [class*="bg-[#202c33]"],
+.modern-content [class*="bg-[#2a3942]"] {
+  background-color: #f1ebf7 !important;
+}
+
+.modern-content [class*="bg-[#005c4b]"] {
+  background-color: #e5f0dc !important;
+}
+
+.modern-content [class*="bg-[#00a884]"] {
+  background-color: #7258a8 !important;
+}
+
+/* Forms: larger touch targets and clearer state contrast throughout Contact. */
+.modern-content form input,
+.modern-content form textarea,
+.modern-content form select {
+  min-height: 48px;
+  background: #ffffff !important;
+  border: 1px solid #d9d1e1 !important;
+  color: #302747 !important;
+}
+
+.modern-content form textarea {
+  min-height: 132px;
+}
+
+.modern-content form label {
+  color: #302747;
+  font-weight: 700;
+}
+
+.modern-content form button[type="submit"] {
+  min-height: 50px;
+  border-radius: 999px !important;
+  box-shadow: 0 12px 30px rgba(114, 88, 168, 0.2);
+}
+
+@media (max-width: 768px) {
+  .modern-page-title {
+    padding-top: 122px;
+    padding-bottom: 52px;
+  }
+
+  .modern-content [class*="rounded-[3rem]"] {
+    border-radius: 22px !important;
+  }
+}

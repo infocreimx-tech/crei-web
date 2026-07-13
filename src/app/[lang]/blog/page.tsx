@@ -17,8 +17,9 @@ export default async function BlogPage({
     console.log("ARTICLES COUNT:", articles.length, "LANG:", resolvedParams.lang);
 
     return (
-        <main className="min-h-screen bg-background relative">
+        <main className="modern-content min-h-screen bg-background relative">
             <Navbar />
+            <header className="modern-page-title"><span>Blog CREI</span><h1>Comprender también es avanzar.</h1><p>Ideas, herramientas y conversaciones para mirar la salud emocional y las adicciones con mayor claridad.</p></header>
             <Journal articles={articles} />
             <Newsletter lang={resolvedParams.lang} />
             <Footer />

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Zap, ShieldCheck, WifiOff, LayoutGrid, ChevronLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
+import Navbar from "@/components/Navbar";
 
 export default async function AppOverviewPage({ params }: { params: Promise<{ lang: "es" | "en" }> }) {
   const { lang } = await params;
@@ -42,7 +43,9 @@ export default async function AppOverviewPage({ params }: { params: Promise<{ la
   };
 
   return (
-    <main className="min-h-screen pt-28 pb-0">
+    <main className="modern-content min-h-screen pb-0">
+      <Navbar />
+      <header className="modern-page-title"><span>App CREI</span><h1>Tu proceso, siempre cerca.</h1><p>Accede a recursos, portales y herramientas de acompañamiento desde una experiencia rápida, privada y disponible.</p></header>
       {/* Hero Section */}
       <section className="relative px-6 py-20 lg:py-32 overflow-hidden flex items-center justify-center">
         

@@ -22,9 +22,10 @@ export default async function MetodoPage({
   const articles = getPosts(resolvedParams.lang);
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="modern-content min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="flex-1 w-full pt-20">
+      <div className="flex-1 w-full">
+        <header className="modern-page-title"><span>Método CREI</span><h1>Un modelo de vida, no una solución temporal.</h1><p>Comprende el enfoque, las etapas, modalidades y herramientas que adaptamos a la historia de cada persona y familia.</p></header>
         <Method />
         <MethodCompare />
         <MethodTimeline />

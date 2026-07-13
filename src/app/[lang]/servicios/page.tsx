@@ -7,9 +7,10 @@ import ChatBot from "@/components/ChatBot";
 
 export default function ServiciosPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="modern-content min-h-screen bg-background">
       <Navbar />
-      <div className="pt-24">
+      <div>
+        <header className="modern-page-title"><span>Servicios</span><h1>La ayuda adecuada para cada momento.</h1><p>Valoración, asesoramiento individual, grupal y familiar, intervención en crisis y seguimiento continuo.</p></header>
         <Services />
       </div>
       <Footer />

@@ -1,107 +1,142 @@
 "use client";
-import Link from "next/link";
-import { X, CalendarDays, MessageSquare } from "lucide-react";
-import { useEffect, useState } from "react";
+
+import { CalendarDays, CreditCard, ExternalLink, ShieldCheck, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
+
+const ZOOM_URL = "https://us06web.zoom.us/j/87921788787?pwd=kC7cQninnoXLg9IzTv12SAOuLYwrWY.1";
+const STORAGE_KEY = "crei_important_notice_2026_07";
 
 export default function InfoSessionModal() {
   const { lang } = useI18n();
-  const [show, setShow] = useState(true);
-  const copy =
-    lang === "en"
-      ? {
-          title: "Overcoming addiction is possible.",
-          body:
-            "Every Thursday at 8:00 PM we’ll be here for you. Join a weekly Zoom info session for patients and families: learn our clinical approach, get your questions answered, and take the first step with professional support.",
-          when: "Every Thursday • 8:00 PM (Mexico City time)",
-          close: "Close",
-          closeAria: "Close",
-          body2:
-            "Join from anywhere. Limited capacity; please be on time. If you want access, share it via WhatsApp or request the link and our team will send it to you.",
-          send: "Send link to my WhatsApp",
-          sendAria: "Send link to my WhatsApp",
-          closeNotice: "Close notice"
-        }
-      : {
-          title: "Superar una adicción es posible.",
-          body:
-            "Todos los jueves a las 20:00 hrs te esperamos. Acompáñanos a una sesión informativa semanal por Zoom para pacientes y familias: conoce nuestro enfoque clínico, resuelve dudas y da el primer paso con acompañamiento profesional.",
-          when: "Todos los jueves • 20:00 hrs (hora CDMX)",
-          close: "Cerrar",
-          closeAria: "Cerrar",
-          body2:
-            "Participa desde cualquier lugar. Cupo limitado; únete puntualmente. Si quieres recibir el acceso, compártelo por WhatsApp o solicita el link y nuestro equipo te lo enviará.",
-          send: "Enviar link a mi WhatsApp",
-          sendAria: "Enviar link a mi WhatsApp",
-          closeNotice: "Cerrar aviso"
-        };
+  const [show, setShow] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const isEn = lang === "en";
+
+  const copy = isEn
+    ? {
+        badge: "Important information",
+        title: "Protect your process and your payments",
+        paymentTitle: "Payments are made only to the Foundation",
+        paymentBody: "Direct payments to therapists are not accepted. Every payment must be made directly through the official CREI Foundation channels.",
+        zoomTitle: "Thursday information session",
+        zoomBody: "Every Thursday we host an informational Zoom session for people with addictions and codependency, as well as their families.",
+        zoomButton: "Join the Zoom session",
+        close: "I understand",
+        closeAria: "Close important information"
+      }
+    : {
+        badge: "Información importante",
+        title: "Protege tu proceso y tus pagos",
+        paymentTitle: "Los pagos se realizan únicamente a la Fundación",
+        paymentBody: "No se aceptan pagos directos a terapeutas. Todo pago debe realizarse directamente mediante los canales oficiales de la Fundación CREI.",
+        zoomTitle: "Sesión informativa de los jueves",
+        zoomBody: "Todos los jueves tenemos una sesión informativa por Zoom para personas con adicciones y codependencia, así como para sus familiares.",
+        zoomButton: "Entrar a la sesión de Zoom",
+        close: "Entendido",
+        closeAria: "Cerrar información importante"
+      };
+
   useEffect(() => {
-    try {
-      document.documentElement.dataset.infoModal = "1";
-    } catch {}
+    const dismissed = window.sessionStorage.getItem(STORAGE_KEY);
+    if (dismissed) return;
+
+    const timer = window.setTimeout(() => setShow(true), 700);
+    return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (!show) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [show]);
+
   function close() {
-    try {
-      window.localStorage.setItem("infoSession_2026-02-19_dismissed", "1");
-      document.documentElement.dataset.infoModal = "0";
-      setShow(false);
-    } catch {}
+    window.sessionStorage.setItem(STORAGE_KEY, "1");
+    setShow(false);
   }
- 
+
+  if (!show) return null;
+
   return (
-    <div className={`info-session-modal-overlay ${show ? "" : "opacity-0 invisible pointer-events-none"}`} aria-modal="true" role="dialog">
-      <div className="mx-auto mt-24 w-[92%] max-w-[560px] rounded-3xl border border-border bg-card shadow-2xl overflow-hidden info-session-modal-panel">
-        <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 border-b border-border">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-2xl font-serif font-bold text-primary">{copy.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground max-w-prose">
-                {copy.body}
-              </p>
-              <div className="mt-4 flex items-center gap-3 text-primary">
-                <CalendarDays className="w-5 h-5" />
-                <span className="text-sm font-medium">{copy.when}</span>
-              </div>
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-[#1b1428]/70 p-4 backdrop-blur-md"
+      role="presentation"
+      onMouseDown={(event) => event.target === event.currentTarget && close()}
+    >
+      <section
+        className="relative max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-[28px] border border-white/60 bg-[#faf8f4] shadow-[0_30px_90px_rgba(25,18,39,0.35)]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="important-notice-title"
+      >
+        <button
+          ref={closeButtonRef}
+          type="button"
+          onClick={close}
+          aria-label={copy.closeAria}
+          className="absolute right-5 top-5 z-10 rounded-full border border-[#302747]/10 bg-white p-2.5 text-[#302747] shadow-sm hover:bg-[#eee8f6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7258a8]"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <header className="border-b border-[#302747]/10 bg-gradient-to-br from-[#eee8f6] via-[#faf8f4] to-[#edf4e8] px-6 pb-7 pt-8 sm:px-9">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#7258a8]/20 bg-white/75 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7258a8]">
+            <ShieldCheck className="h-4 w-4" /> {copy.badge}
+          </div>
+          <h2 id="important-notice-title" className="max-w-lg pr-10 font-serif text-3xl font-bold leading-tight text-[#302747] sm:text-4xl">
+            {copy.title}
+          </h2>
+        </header>
+
+        <div className="space-y-4 p-6 sm:p-9">
+          <article className="flex gap-4 rounded-2xl border border-[#e1d7ea] bg-white p-5">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#eee8f6] text-[#7258a8]">
+              <CreditCard className="h-5 w-5" />
             </div>
-            <button
-              onClick={close}
-              aria-label={copy.closeAria}
-              className="rounded-full p-2 text-muted-foreground hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-[#302747]">{copy.paymentTitle}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#6d6475]">{copy.paymentBody}</p>
+            </div>
+          </article>
+
+          <article className="flex gap-4 rounded-2xl border border-[#dce8d2] bg-[#f5f9f1] p-5">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#dcefc5] text-[#466334]">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-serif text-xl font-bold text-[#302747]">{copy.zoomTitle}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#6d6475]">{copy.zoomBody}</p>
+              <a
+                href={ZOOM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#302747] px-5 py-3 text-sm font-bold text-white hover:-translate-y-0.5 hover:bg-[#7258a8] sm:w-auto"
+              >
+                {copy.zoomButton} <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </article>
+
+          <button
+            type="button"
+            onClick={close}
+            className="w-full rounded-full border border-[#302747]/15 bg-transparent px-5 py-3 text-sm font-bold text-[#302747] hover:bg-[#eee8f6]"
+          >
+            {copy.close}
+          </button>
         </div>
- 
-        <div className="p-6">
-          <p className="text-sm text-muted-foreground">{copy.body2}</p>
- 
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link
-              href={`https://wa.me/?text=${encodeURIComponent(
-                lang === "en"
-                  ? "Access link to the weekly info session (Thursday 8:00 PM, Mexico City time): https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1"
-                  : "Link de acceso a la sesión informativa (jueves 20:00 hrs, hora CDMX): https://us06web.zoom.us/j/83243324228?pwd=68BMZhf1aHNV2UvDbvYh2mjtZ0ucs7.1"
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label={copy.sendAria}
-            >
-              <MessageSquare className="w-5 h-5" />
-              {copy.send}
-            </Link>
-            <button
-              onClick={close}
-              className="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-border bg-background text-primary font-medium hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label={copy.closeNotice}
-            >
-              {copy.close}
-            </button>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

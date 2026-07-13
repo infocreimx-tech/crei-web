@@ -95,7 +95,9 @@ export default function AgradecimientosPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24" style={{ background: "linear-gradient(135deg, #0f0a1e 0%, #1a0f2e 40%, #0d1a2e 100%)" }}>
+      <main className="modern-content min-h-screen" style={{ background: "linear-gradient(135deg, #171126 0%, #302747 55%, #443563 100%)" }}>
+
+        <header className="modern-page-title"><span>Amor y comunidad</span><h1>Historias que hacen visible el cambio.</h1><p>Mensajes reales de personas y familias que encontraron acompañamiento, herramientas y un nuevo camino en CREI.</p></header>
 
         {/* ── Hero ── */}
         <section className="relative py-20 px-6 text-center overflow-hidden">
