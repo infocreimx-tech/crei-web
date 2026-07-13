@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { getTherapistSessionSecret } from "@/lib/serverSupabaseConfig";
 
 export const THERAPIST_COOKIE = "crei_therapist_session";
 
@@ -10,9 +11,7 @@ export type TherapistSession = {
 };
 
 function secret() {
-  const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!value) throw new Error("SUPABASE_SERVICE_ROLE_KEY no está configurada.");
-  return value;
+  return getTherapistSessionSecret();
 }
 
 export function signTherapistSession(input: Omit<TherapistSession, "exp">) {

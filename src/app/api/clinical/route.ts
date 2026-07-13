@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { THERAPIST_COOKIE, verifyTherapistSession } from "@/lib/therapistSession";
+import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -8,10 +9,9 @@ export const dynamic = "force-dynamic";
 const APPOINTMENT_LOCATIONS = ["Fuentes de la Felicidad", "Sacramento", "En línea"] as const;
 
 function serverClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Supabase no está configurado en el servidor.");
-  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { url, adminKey } = getServerSupabaseConfig();
+  if (!adminKey) throw new Error("Falta configurar la clave privada de Supabase en el servidor de producción.");
+  return createClient(url, adminKey, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
 function sessionFrom(request: NextRequest) {

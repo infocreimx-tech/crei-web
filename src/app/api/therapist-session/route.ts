@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { signTherapistSession, THERAPIST_COOKIE } from "@/lib/therapistSession";
+import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !anonKey || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return NextResponse.json({ error: "La autenticación del portal no está configurada en el servidor." }, { status: 500 });
+    const { url: supabaseUrl, publicKey, adminKey } = getServerSupabaseConfig();
+    if (!adminKey) {
+      return NextResponse.json({
+        error: "Falta configurar la clave privada de Supabase en el servidor de producción."
+      }, { status: 503 });
     }
 
     const body = await request.json();
@@ -20,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar primero contra el sistema legacy. La service role nunca llega al navegador.
-    const legacyClient = createClient(supabaseUrl, anonKey, { auth: { persistSession: false } });
+    const legacyClient = createClient(supabaseUrl, publicKey, { auth: { persistSession: false } });
     const { data: rpcData, error: rpcError } = await legacyClient.rpc("login_user", {
       p_username: username,
       p_password: password
