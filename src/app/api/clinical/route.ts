@@ -6,7 +6,12 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
-const APPOINTMENT_LOCATIONS = ["Fuentes de la Felicidad", "Sacramento", "En línea"] as const;
+const APPOINTMENT_LOCATION_ALIASES = {
+  "Fuente de la Felicidad": "Fuente de la Felicidad",
+  "Fuentes de la Felicidad": "Fuente de la Felicidad",
+  Sacramento: "Sacramento",
+  "En línea": "En línea"
+} as const;
 
 function serverClient() {
   const { url, adminKey } = getServerSupabaseConfig();
@@ -75,9 +80,12 @@ export async function POST(request: NextRequest) {
 
     if (body.action === "saveCita") {
       const appointment = body.payload || {};
-      const location = String(appointment.location || "").trim();
-      if (!APPOINTMENT_LOCATIONS.includes(location as (typeof APPOINTMENT_LOCATIONS)[number])) {
-        return NextResponse.json({ error: "Selecciona una modalidad válida: Fuentes de la Felicidad, Sacramento o En línea." }, { status: 400 });
+      const requestedLocation = String(appointment.location || "").trim();
+      const location = APPOINTMENT_LOCATION_ALIASES[
+        requestedLocation as keyof typeof APPOINTMENT_LOCATION_ALIASES
+      ];
+      if (!location) {
+        return NextResponse.json({ error: "Selecciona una modalidad válida: Fuente de la Felicidad, Sacramento o En línea." }, { status: 400 });
       }
       const { data: expediente, error: expedienteError } = await supabase.from("expediente").select("id, activo, terapeuta_asignado").eq("id", appointment.expediente_id).single();
       if (expedienteError || !expediente || !expediente.activo) return NextResponse.json({ error: "El expediente no existe o está inactivo." }, { status: 400 });
