@@ -28,6 +28,7 @@ export default function EcosystemDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string>("");
+  const isArturo = String(user || "").trim().toLowerCase() === "arturo";
 
   useEffect(() => {
     sb.auth.getSession().then(({ data: { session } }) => {
@@ -282,7 +283,7 @@ export default function EcosystemDashboard() {
         </div>
 
         {/* ── Módulos Financieros Admin ── */}
-        {role === "admin" && (
+        {(role === "admin" || isArturo) && (
           <div className="relative z-10 mt-16">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px flex-1" style={{ background: "rgba(159,134,192,0.15)" }} />
@@ -299,9 +300,9 @@ export default function EcosystemDashboard() {
                 { href: "/es/portal-terapeutas/finanzas/ingresos", name: "Ingresos", desc: "Total de ingresos por terapias y otros.", icon: TrendingUp, accent: "#10b981" },
                 { href: "/es/portal-terapeutas/finanzas/conferencias", name: "Conferencias y Otros", desc: "Ingresos por conferencias, eventos y donaciones.", icon: Mic, accent: "#f59e0b" },
                 { href: "/es/portal-terapeutas/finanzas/egresos", name: "Egresos", desc: "Nómina y gastos adicionales con comprobantes.", icon: TrendingDown, accent: "#ef4444" },
-                { href: "/es/portal-terapeutas/finanzas/medio-camino", name: "Casa de Medio Camino", desc: "Pagos y gastos operativos de la casa.", icon: Home, accent: "#06b6d4" },
+                { href: "/es/portal-terapeutas/finanzas/medio-camino", name: "Casa de Medio Camino", desc: isArturo ? "Gastos operativos de la casa." : "Pagos y gastos operativos de la casa.", icon: Home, accent: "#06b6d4" },
                 { href: "/es/portal-terapeutas/finanzas/utilidad-neta", name: "Utilidad Neta", desc: "Balance financiero mensual y análisis de rentabilidad.", icon: BarChart3, accent: "#a855f7" },
-              ].map((mod) => (
+              ].filter((mod) => role === "admin" || mod.name === "Casa de Medio Camino").map((mod) => (
                 <Link
                   key={mod.name}
                   href={mod.href}
@@ -325,7 +326,7 @@ export default function EcosystemDashboard() {
                     style={{ background: mod.accent }} />
                   <div className="absolute top-4 right-4 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
                     style={{ background: `${mod.accent}20`, border: `1px solid ${mod.accent}50`, color: mod.accent }}>
-                    <ShieldCheck className="w-3 h-3" /> Solo Admin
+                    <ShieldCheck className="w-3 h-3" /> {isArturo ? "Solo Gastos" : "Solo Admin"}
                   </div>
                   <div className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg border border-white/5"
                     style={{ background: `${mod.accent}15`, backdropFilter: "blur(10px)" }}>

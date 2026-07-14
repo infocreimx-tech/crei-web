@@ -267,6 +267,8 @@ export default function MedioCaminoPage() {
   const { lang } = useParams() as { lang: string };
   const [currentUser, setCurrentUser] = useState("");
   const [tab, setTab] = useState<Tab>("residentes");
+  const [gastosOnly, setGastosOnly] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
@@ -290,20 +292,46 @@ export default function MedioCaminoPage() {
       const p = JSON.parse(s);
       const username = (p.user || "").trim();
       const role = (p.role || "").trim();
-      // admin tiene acceso total (Fernando, Lulu) + usuarios cmc (Sergio)
+      // admin tiene acceso total (Fernando, Lulu) + usuarios CMC (Sergio).
+      // Arturo solo puede consultar y administrar la sección de gastos.
       const allowedCmc = ["fernando", "lulu", "sergio"];
-      if (role !== "admin" && role !== "cmc" && !allowedCmc.includes(username.toLowerCase())) {
+      const isArturo = username.toLowerCase() === "arturo";
+      if (role !== "admin" && role !== "cmc" && !allowedCmc.includes(username.toLowerCase()) && !isArturo) {
         router.push(`/${lang}/portal-terapeutas/dashboard`);
         return;
       }
+      if (isArturo) {
+        setGastosOnly(true);
+        setTab("gastos");
+      }
       setCurrentUser(username);
+      setAuthReady(true);
     } catch { router.push(`/${lang}/portal-terapeutas`); }
   }, [router, lang]);
 
   // ── Load data por periodo ────────────────────────────────────
-  const loadData = async (p: string) => {
+  const loadData = async (p: string, onlyGastos = false) => {
     setIsLoading(true);
     try {
+      if (onlyGastos) {
+        const { data: g } = await sb.from("cmc_gastos").select("*").eq("periodo", p).order("num_consecutivo", { ascending: true });
+        setResidentes([]);
+        setTerapias([]);
+        setGastos((g || []).map((row: any): GastoRow => ({
+          id: row.id,
+          num_consecutivo: row.num_consecutivo,
+          concepto_gasto: row.concepto_gasto || "",
+          monto: row.monto != null ? String(row.monto) : "",
+          forma_pago: row.forma_pago || "",
+          tipo_comprobante: row.tipo_comprobante || "",
+          datos_comprobante: row.datos_comprobante || "",
+          fecha_ticket: row.fecha_ticket || "",
+          periodo: row.periodo,
+          isDirty: false,
+        })));
+        setIsLoading(false);
+        return;
+      }
       const [{ data: r }, { data: t }, { data: g }] = await Promise.all([
         sb.from("cmc_residentes").select("*").eq("periodo", p).order("num_consecutivo", { ascending: true }),
         sb.from("cmc_terapias").select("*").eq("periodo", p).order("num_consecutivo", { ascending: true }),
@@ -354,7 +382,9 @@ export default function MedioCaminoPage() {
     setIsLoading(false);
   };
 
-  useEffect(() => { loadData(periodo); }, [month, year]);
+  useEffect(() => {
+    if (authReady) loadData(periodo, gastosOnly);
+  }, [month, year, authReady, gastosOnly]);
 
   const handleMonthChange = (m: number, y: number) => {
     setMonth(m);
@@ -535,6 +565,7 @@ export default function MedioCaminoPage() {
   const handleExcelExport = () => {
     const label = `${MESES_NOMBRES[month - 1]}_${year}`;
     exportToExcel([
+      ...(gastosOnly ? [] : [
       {
         sheetName: "Residentes",
         rows: residentes.map(r => ({
@@ -560,6 +591,7 @@ export default function MedioCaminoPage() {
           "Forma de Pago": r.forma_pago,
         })),
       },
+      ]),
       {
         sheetName: "Gastos",
         rows: gastos.map(r => ({
@@ -689,7 +721,7 @@ export default function MedioCaminoPage() {
             { id: "residentes", label: "🏠 Residentes", count: residentes.length },
             { id: "terapias",   label: "🩺 Terapias",   count: terapias.length },
             { id: "gastos",     label: "💸 Gastos",      count: gastos.length },
-          ] as { id: Tab; label: string; count: number }[]).map(t => (
+          ] as { id: Tab; label: string; count: number }[]).filter(t => !gastosOnly || t.id === "gastos").map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className="px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all border-b-2 flex items-center gap-2"
               style={{
@@ -734,7 +766,7 @@ export default function MedioCaminoPage() {
       {/* ══════════════════════════════════════════════════════
           TAB: RESIDENTES
       ══════════════════════════════════════════════════════ */}
-      {tab === "residentes" && (
+      {!gastosOnly && tab === "residentes" && (
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -824,7 +856,7 @@ export default function MedioCaminoPage() {
       {/* ══════════════════════════════════════════════════════
           TAB: TERAPIAS
       ══════════════════════════════════════════════════════ */}
-      {tab === "terapias" && (
+      {!gastosOnly && tab === "terapias" && (
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
