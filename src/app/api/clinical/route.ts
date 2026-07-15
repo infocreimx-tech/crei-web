@@ -5,6 +5,19 @@ import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const NO_STORE_HEADERS = {
+  "Cache-Control": "private, no-store, no-cache, max-age=0, must-revalidate",
+  "CDN-Cache-Control": "no-store",
+  "Surrogate-Control": "no-store"
+};
+
+function clinicalJson(body: unknown, init?: ResponseInit) {
+  const headers = new Headers(init?.headers);
+  Object.entries(NO_STORE_HEADERS).forEach(([key, value]) => headers.set(key, value));
+  return NextResponse.json(body, { ...init, headers });
+}
 
 const APPOINTMENT_LOCATION_ALIASES = {
   "Fuente de la Felicidad": "Fuente de la Felicidad",
@@ -24,7 +37,7 @@ function sessionFrom(request: NextRequest) {
 }
 
 function unauthorized() {
-  return NextResponse.json({ error: "Sesión clínica vencida. Inicia sesión nuevamente." }, { status: 401 });
+  return clinicalJson({ error: "Sesión clínica vencida. Inicia sesión nuevamente." }, { status: 401 });
 }
 
 export async function GET(request: NextRequest) {
@@ -43,10 +56,10 @@ export async function GET(request: NextRequest) {
     const citas = session.role === "admin"
       ? citaResult.data || []
       : (citaResult.data || []).filter((item) => String(item.therapist_id || "") === session.id);
-    return NextResponse.json({ expedientes, citas });
+    return clinicalJson({ expedientes, citas });
   } catch (caught) {
     const message = caught instanceof Error ? caught.message : "No fue posible cargar la información clínica.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return clinicalJson({ error: message }, { status: 500 });
   }
 }
 
@@ -71,11 +84,36 @@ export async function POST(request: NextRequest) {
         }
         const { data, error } = await supabase.from("expediente").update(payload).eq("id", body.id).select().single();
         if (error) throw error;
-        return NextResponse.json({ data });
+        return clinicalJson({ data });
       }
       const { data, error } = await supabase.from("expediente").insert({ ...payload, folio: body.folio }).select().single();
       if (error) throw error;
-      return NextResponse.json({ data }, { status: 201 });
+      return clinicalJson({ data }, { status: 201 });
+    }
+
+    if (body.action === "setExpedienteActive") {
+      const active = body.active === true;
+      const expedienteId = String(body.id || "").trim();
+      if (!expedienteId) return clinicalJson({ error: "Expediente no válido." }, { status: 400 });
+
+      if (session.role !== "admin") {
+        const { data: existing, error: existingError } = await supabase
+          .from("expediente")
+          .select("terapeuta_asignado")
+          .eq("id", expedienteId)
+          .single();
+        if (existingError || !existing) return clinicalJson({ error: "El expediente no existe." }, { status: 404 });
+        if (existing.terapeuta_asignado && existing.terapeuta_asignado !== session.username) return unauthorized();
+      }
+
+      const { data, error } = await supabase
+        .from("expediente")
+        .update({ activo: active })
+        .eq("id", expedienteId)
+        .select()
+        .single();
+      if (error) throw error;
+      return clinicalJson({ data });
     }
 
     if (body.action === "saveCita") {
@@ -85,10 +123,10 @@ export async function POST(request: NextRequest) {
         requestedLocation as keyof typeof APPOINTMENT_LOCATION_ALIASES
       ];
       if (!location) {
-        return NextResponse.json({ error: "Selecciona una modalidad válida: Fuente de la Felicidad, Sacramento o En línea." }, { status: 400 });
+        return clinicalJson({ error: "Selecciona una modalidad válida: Fuente de la Felicidad, Sacramento o En línea." }, { status: 400 });
       }
       const { data: expediente, error: expedienteError } = await supabase.from("expediente").select("id, activo, terapeuta_asignado").eq("id", appointment.expediente_id).single();
-      if (expedienteError || !expediente || !expediente.activo) return NextResponse.json({ error: "El expediente no existe o está inactivo." }, { status: 400 });
+      if (expedienteError || !expediente || !expediente.activo) return clinicalJson({ error: "El expediente no existe o está inactivo." }, { status: 400 });
       if (session.role !== "admin" && expediente.terapeuta_asignado && expediente.terapeuta_asignado !== session.username) return unauthorized();
       const { data, error } = await supabase.from("calendario").insert({
         expediente_id: appointment.expediente_id,
@@ -102,26 +140,26 @@ export async function POST(request: NextRequest) {
         therapist_user_id: null
       }).select().single();
       if (error) throw error;
-      return NextResponse.json({ data }, { status: 201 });
+      return clinicalJson({ data }, { status: 201 });
     }
 
     if (body.action === "updateCitaStatus") {
       const status = String(body.status || "").toLowerCase();
       const cancelReason = String(body.cancel_reason || "").trim();
       if (status === "cancelled" && cancelReason.length < 5) {
-        return NextResponse.json({ error: "La razón de eliminación es obligatoria y debe tener al menos 5 caracteres." }, { status: 400 });
+        return clinicalJson({ error: "La razón de eliminación es obligatoria y debe tener al menos 5 caracteres." }, { status: 400 });
       }
       let query = supabase.from("calendario").update({ status, cancel_reason: status === "cancelled" ? cancelReason : null }).eq("id", body.id);
       if (session.role !== "admin") query = query.eq("therapist_id", session.id);
       const { data, error } = await query.select().single();
       if (error) throw error;
-      return NextResponse.json({ data });
+      return clinicalJson({ data });
     }
 
-    return NextResponse.json({ error: "Acción clínica no reconocida." }, { status: 400 });
+    return clinicalJson({ error: "Acción clínica no reconocida." }, { status: 400 });
   } catch (caught) {
     const message = caught instanceof Error ? caught.message : "No fue posible guardar la información clínica.";
     console.error("Clinical API write error:", caught);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return clinicalJson({ error: message }, { status: 500 });
   }
 }

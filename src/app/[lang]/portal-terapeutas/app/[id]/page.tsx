@@ -79,7 +79,7 @@ export default function IframeAppContainer() {
 
   const appStaticUrl = `/legacy-apps/${appId}/index.html?v=20260713-clinical-2`;
   const accent = appAccents[appId] || "#7c5cbf";
-  const nativeClinicalMode = appId === "expediente" ? appId : null;
+  const nativeClinicalMode = appId === "expediente" || appId === "calendario" ? appId : null;
 
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: "#150b24" }}>

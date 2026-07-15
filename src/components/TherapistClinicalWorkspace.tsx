@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Edit3, FilePlus2, FolderOpen,
-  Grid3X3, List, Loader2, MapPin, RefreshCw, Search, ShieldAlert, X
+  Grid3X3, List, Loader2, MapPin, RefreshCw, RotateCcw, Search, ShieldAlert, Trash2, X
 } from "lucide-react";
 
 type WorkspaceMode = "expediente" | "calendario";
@@ -96,6 +96,7 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
+  const [expedienteView, setExpedienteView] = useState<"active" | "deleted">("active");
   const [showExpedienteForm, setShowExpedienteForm] = useState(false);
   const [editing, setEditing] = useState<Expediente | null>(null);
   const [draft, setDraft] = useState<ExpedienteDraft>(EMPTY_DRAFT);
@@ -109,7 +110,12 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/clinical", { cache: "no-store" });
+      // El parámetro evita reutilizar respuestas antiguas que el CDN de Hostinger
+      // hubiera almacenado antes de que la API enviara encabezados no-store.
+      const response = await fetch(`/api/clinical?fresh=${Date.now()}`, {
+        cache: "no-store",
+        credentials: "same-origin"
+      });
       const result = await response.json();
       if (!response.ok) {
         if (/expediente_id|column/i.test(result.error || "")) {
@@ -139,12 +145,17 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
 
   const filteredExpedientes = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return expedientes;
-    return expedientes.filter((item) =>
-      [item.folio, item.nombre_completo, item.telefono, item.email, item.sustancia_consumo]
-        .some((value) => String(value || "").toLowerCase().includes(term))
-    );
-  }, [expedientes, search]);
+    return expedientes.filter((item) => {
+      const belongsToView = expedienteView === "active" ? item.activo : !item.activo;
+      if (!belongsToView) return false;
+      if (!term) return true;
+      return [item.folio, item.nombre_completo, item.telefono, item.email, item.sustancia_consumo]
+        .some((value) => String(value || "").toLowerCase().includes(term));
+    });
+  }, [expedientes, search, expedienteView]);
+
+  const activeExpedientes = useMemo(() => expedientes.filter((item) => item.activo), [expedientes]);
+  const deletedExpedientes = useMemo(() => expedientes.filter((item) => !item.activo), [expedientes]);
 
   const openCreateExpediente = () => {
     setEditing(null);
@@ -185,6 +196,7 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
       };
       const response = await fetch("/api/clinical", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "saveExpediente", id: editing?.id || null, folio: editing?.folio || createFolio(), payload })
       });
@@ -201,6 +213,30 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
     }
   };
 
+  const setExpedienteActive = async (expediente: Expediente, active: boolean) => {
+    if (!active && !window.confirm(`¿Eliminar a ${expediente.nombre_completo}? Su información se conservará en la sección Eliminados.`)) return;
+    setSaving(true);
+    setError("");
+    try {
+      const response = await fetch("/api/clinical", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "setExpedienteActive", id: expediente.id, active })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "No fue posible actualizar el expediente.");
+      setNotice(active
+        ? `${expediente.nombre_completo} fue restaurado y vuelve a estar disponible en Calendario.`
+        : `${expediente.nombre_completo} fue movido a Pacientes eliminados.`);
+      await loadData();
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "No fue posible actualizar el expediente.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const saveCita = async (event: React.FormEvent) => {
     event.preventDefault();
     const expediente = expedienteById.get(citaDraft.expediente_id);
@@ -212,6 +248,7 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
     try {
       const response = await fetch("/api/clinical", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "saveCita", payload: {
         expediente_id: expediente.id,
@@ -250,6 +287,7 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
     setError("");
     const response = await fetch("/api/clinical", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "updateCitaStatus", id: cita.id, status, cancel_reason: cancelReason?.trim() || null })
     });
@@ -297,11 +335,23 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
 
         {mode === "expediente" ? (
           <>
+            <div className="mb-4 grid gap-3 sm:grid-cols-2">
+              <button onClick={() => setExpedienteView("active")} className={`rounded-2xl border px-4 py-3 text-left transition ${expedienteView === "active" ? "border-emerald-300 bg-emerald-50" : "border-[#ded6e9] bg-white hover:bg-[#f7f5fa]"}`}>
+                <span className="flex items-center gap-2 text-sm font-bold text-[#2d2340]"><FolderOpen className="h-4 w-4 text-emerald-600" /> Pacientes activos</span>
+                <span className="mt-1 block text-xs text-[#6c6178]">{activeExpedientes.length} disponibles para Calendario</span>
+              </button>
+              <button onClick={() => setExpedienteView("deleted")} className={`rounded-2xl border px-4 py-3 text-left transition ${expedienteView === "deleted" ? "border-red-300 bg-red-50" : "border-[#ded6e9] bg-white hover:bg-[#f7f5fa]"}`}>
+                <span className="flex items-center gap-2 text-sm font-bold text-[#2d2340]"><Trash2 className="h-4 w-4 text-red-600" /> Pacientes eliminados</span>
+                <span className="mt-1 block text-xs text-[#6c6178]">{deletedExpedientes.length} expedientes conservados</span>
+              </button>
+            </div>
             <div className="mb-5 flex items-center gap-3 rounded-2xl border border-[#ded6e9] bg-white px-4 py-3"><Search className="h-4 w-4 text-[#7c5cbf]" /><input value={search} onChange={(event) => setSearch(event.target.value)} className="w-full bg-transparent text-sm outline-none" placeholder="Buscar por nombre, folio, teléfono, correo o sustancia" /><button onClick={loadData} title="Actualizar"><RefreshCw className="h-4 w-4" /></button></div>
             {filteredExpedientes.length === 0 ? (
-              <EmptyState icon={FolderOpen} title="Aún no hay expedientes" body="Crea el primer expediente para habilitar ese paciente dentro de Calendario." action="Crear primer expediente" onAction={openCreateExpediente} />
+              expedienteView === "active"
+                ? <EmptyState icon={FolderOpen} title="Aún no hay pacientes activos" body="Crea un expediente o restaura un paciente eliminado para habilitarlo dentro de Calendario." action="Crear expediente" onAction={openCreateExpediente} />
+                : <EmptyState icon={Trash2} title="No hay pacientes eliminados" body="Los expedientes eliminados aparecerán aquí y conservarán toda su información." action="Ver pacientes activos" onAction={() => setExpedienteView("active")} />
             ) : (
-              <div className="grid gap-4 lg:grid-cols-2">{filteredExpedientes.map((item) => <article key={item.id} className="rounded-3xl border border-[#ded6e9] bg-white p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><div><span className="rounded-full bg-[#e9f3fa] px-3 py-1 text-[11px] font-bold text-[#0369a1]">{item.folio}</span><h2 className="mt-3 font-serif text-xl font-bold">{item.nombre_completo}</h2></div><button onClick={() => openEditExpediente(item)} className="rounded-full border border-[#ded6e9] p-2 text-[#7c5cbf] hover:bg-[#f0eafc]" aria-label={`Editar ${item.nombre_completo}`}><Edit3 className="h-4 w-4" /></button></div><dl className="mt-4 grid gap-2 text-sm text-[#6c6178] sm:grid-cols-2"><div><dt className="text-[10px] font-bold uppercase">Teléfono</dt><dd>{item.telefono || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Correo</dt><dd className="truncate">{item.email || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Motivo / sustancia</dt><dd>{item.sustancia_consumo || item.motivo_ingreso || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Terapeuta</dt><dd>{item.terapeuta_asignado || "Sin asignar"}</dd></div></dl><div className="mt-4 flex items-center gap-2 text-xs font-semibold text-emerald-700"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Disponible para Calendario</div></article>)}</div>
+              <div className="grid gap-4 lg:grid-cols-2">{filteredExpedientes.map((item) => <article key={item.id} className={`rounded-3xl border bg-white p-5 shadow-sm ${item.activo ? "border-[#ded6e9]" : "border-red-200"}`}><div className="flex items-start justify-between gap-3"><div><span className={`rounded-full px-3 py-1 text-[11px] font-bold ${item.activo ? "bg-[#e9f3fa] text-[#0369a1]" : "bg-red-50 text-red-700"}`}>{item.folio}</span><h2 className="mt-3 font-serif text-xl font-bold">{item.nombre_completo}</h2></div><div className="flex items-center gap-2">{item.activo ? <><button onClick={() => openEditExpediente(item)} className="rounded-full border border-[#ded6e9] p-2 text-[#7c5cbf] hover:bg-[#f0eafc]" aria-label={`Editar ${item.nombre_completo}`}><Edit3 className="h-4 w-4" /></button><button onClick={() => setExpedienteActive(item, false)} disabled={saving} className="rounded-full border border-red-200 p-2 text-red-600 hover:bg-red-50 disabled:opacity-50" aria-label={`Eliminar ${item.nombre_completo}`}><Trash2 className="h-4 w-4" /></button></> : <button onClick={() => setExpedienteActive(item, true)} disabled={saving} className="inline-flex items-center gap-2 rounded-full border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"><RotateCcw className="h-4 w-4" /> Restaurar</button>}</div></div><dl className="mt-4 grid gap-2 text-sm text-[#6c6178] sm:grid-cols-2"><div><dt className="text-[10px] font-bold uppercase">Teléfono</dt><dd>{item.telefono || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Correo</dt><dd className="truncate">{item.email || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Motivo / sustancia</dt><dd>{item.sustancia_consumo || item.motivo_ingreso || "—"}</dd></div><div><dt className="text-[10px] font-bold uppercase">Terapeuta</dt><dd>{item.terapeuta_asignado || "Sin asignar"}</dd></div></dl><div className={`mt-4 flex items-center gap-2 text-xs font-semibold ${item.activo ? "text-emerald-700" : "text-red-700"}`}><span className={`h-2 w-2 rounded-full ${item.activo ? "bg-emerald-500" : "bg-red-500"}`} /> {item.activo ? "Disponible para Calendario" : "Eliminado · información conservada"}</div></article>)}</div>
             )}
           </>
         ) : (
