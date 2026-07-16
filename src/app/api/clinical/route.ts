@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = serverClient();
     const expedienteQuery = supabase.from("expediente").select("*").order("created_at", { ascending: false });
-    const citaQuery = supabase.from("calendario").select("id, expediente_id, therapist_id, start_at, end_at, notes, location, status, cancel_reason").order("start_at", { ascending: true });
+    const citaQuery = supabase.from("calendario").select("id, expediente_id, therapist_id, start_at, end_at, notes, location, status, cancel_reason, created_at").order("start_at", { ascending: true });
     const [expedienteResult, citaResult] = await Promise.all([expedienteQuery, citaQuery]);
     if (expedienteResult.error) throw expedienteResult.error;
     if (citaResult.error) throw citaResult.error;

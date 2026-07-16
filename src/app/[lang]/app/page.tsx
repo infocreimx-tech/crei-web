@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Zap, ShieldCheck, WifiOff, LayoutGrid, ChevronLeft } from "lucide-react";
+import { BookOpen, CalendarDays, ShieldCheck, Target, ChevronLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import Navbar from "@/components/Navbar";
@@ -11,33 +11,33 @@ export default async function AppOverviewPage({ params }: { params: Promise<{ la
 
   const t = {
     badge: isEs ? "CREI PWA" : "CREI PWA",
-    title: isEs ? "La Clínica en tu Bolsillo" : "The Clinic in your Pocket",
+    title: isEs ? "Tu proceso, siempre cerca" : "Your process, always close",
     description: isEs 
-      ? "Lleva el Centro de Reestructuración Emocional Integral contigo. Una experiencia nativa, ultrarrápida y sin límites de conexión." 
-      : "Take the Emotional Integral Restructuring Center with you. A native experience, ultra-fast and without connection limits.",
+      ? "La App CREI reúne las tareas, metas, recursos y recordatorios de tu acompañamiento terapéutico. Es una herramienta de seguimiento para pacientes activos; no diagnostica ni sustituye a tu terapeuta."
+      : "The CREI App brings together therapeutic tasks, goals, resources and reminders. It is a follow-up tool for active patients; it does not diagnose or replace your therapist.",
     
-    featuresTitle: isEs ? "Capacidades de Próxima Generación" : "Next-Generation Capabilities",
+    featuresTitle: isEs ? "¿Para qué sirve la App CREI?" : "What is the CREI App for?",
     
     feats: [
       {
-        icon: <Zap className="w-6 h-6 text-accent" />,
-        title: isEs ? "Velocidad Extrema" : "Extreme Speed",
-        desc: isEs ? "Tiempos de carga nulos gracias al caché inteligente local y pre renderizado avanzado." : "Zero loading times thanks to smart local caching and advanced pre-rendering."
+        icon: <Target className="w-6 h-6 text-accent" />,
+        title: isEs ? "Tareas y metas terapéuticas" : "Therapeutic tasks and goals",
+        desc: isEs ? "Registra ejercicios, hábitos y objetivos acordados durante tus sesiones." : "Track exercises, habits and goals agreed upon during your sessions."
       },
       {
-        icon: <WifiOff className="w-6 h-6 text-accent" />,
-        title: isEs ? "Soporte Offline" : "Offline Support",
-        desc: isEs ? "Accede a tus portales, recursos y tu agenda terapéutica sin preocupación por tu conexión de internet." : "Access your portals, resources and therapeutic schedule without worrying about your internet connection."
+        icon: <BookOpen className="w-6 h-6 text-accent" />,
+        title: isEs ? "Diario y biblioteca" : "Journal and library",
+        desc: isEs ? "Accede al diario, cuaderno de 12 pasos y materiales seleccionados para tu proceso." : "Access your journal, 12-step workbook and selected materials for your process."
       },
       {
-        icon: <LayoutGrid className="w-6 h-6 text-accent" />,
-        title: isEs ? "Experiencia Nativa Oclusiva" : "Immersive Native Experience",
-        desc: isEs ? "Sin barra de direcciones, integrándose sin problemas al ecosistema de tu dispositivo con soporte a pantalla completa." : "No address bar, seamlessly integrating into your device ecosystem with full screen support."
+        icon: <CalendarDays className="w-6 h-6 text-accent" />,
+        title: isEs ? "Agenda y recordatorios" : "Schedule and reminders",
+        desc: isEs ? "Consulta tus actividades y próximos momentos importantes de seguimiento." : "Review your activities and upcoming follow-up moments."
       },
       {
         icon: <ShieldCheck className="w-6 h-6 text-accent" />,
-        title: isEs ? "Privacidad Asegurada" : "Assured Privacy",
-        desc: isEs ? "Aislamiento estricto (Sandboxed enviroment) conservando las conexiones a bases de datos encriptadas directamente contra el backend de la clínica." : "Strict isolation (Sandboxed environment) preserving encrypted database connections directly against the clinic's backend."
+        title: isEs ? "Acceso privado" : "Private access",
+        desc: isEs ? "Las herramientas clínicas y el seguimiento requieren una cuenta autorizada por CREI." : "Clinical tools and follow-up require an account authorized by CREI."
       }
     ]
   };
@@ -45,7 +45,7 @@ export default async function AppOverviewPage({ params }: { params: Promise<{ la
   return (
     <main className="modern-content min-h-screen pb-0">
       <Navbar />
-      <header className="modern-page-title"><span>App CREI</span><h1>Tu proceso, siempre cerca.</h1><p>Accede a recursos, portales y herramientas de acompañamiento desde una experiencia rápida, privada y disponible.</p></header>
+      <header className="modern-page-title"><span>App CREI</span><h1>Tu proceso, siempre cerca.</h1><p>Consulta tareas, metas, diario, recursos y recordatorios desde un espacio privado de seguimiento.</p></header>
       {/* Hero Section */}
       <section className="relative px-6 py-20 lg:py-32 overflow-hidden flex items-center justify-center">
         

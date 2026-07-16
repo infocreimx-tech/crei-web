@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle, Lock, UserRound } from "lucide-react";
+import { AlertCircle, CheckCircle, Lock, ShieldCheck, UserRound } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 
 
@@ -14,6 +14,7 @@ export default function Contact() {
   const cardRef = useRef(null);
   const [submitting, setSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [formError, setFormError] = useState("");
   const { scrollYProgress } = useScroll({
     target: cardRef,
     offset: ["start end", "end start"]
@@ -31,16 +32,19 @@ export default function Contact() {
   const copy =
     lang === "en"
       ? {
-          title: "Start your process",
+          title: "Tell us how we can help",
           subtitle:
-            "We are here to listen. Schedule an appointment or ask your questions. Your wellbeing is our priority.",
+            "Complete this questionnaire and the CREI team will review your request and contact you.",
           cardTitle: "Comprehensive Restructuring",
           cardP1:
             "Unlike traditional approaches that only treat the symptom, our center focuses on Comprehensive Restructuring. We believe each person has a unique emotional structure; sometimes, due to trauma, addiction, or life crises, that structure weakens.",
           cardP2:
             "Our work is to provide the blueprint and the tools so you can rebuild your life. Here, emotional intelligence is not an abstract concept—it is our backbone. We work at the root of your mental processes so change is not temporary, but a new way of inhabiting your world.",
           imageAlt: "Structure and light",
-          formTitle: "Schedule your appointment",
+          confidential: "Confidential request",
+          formTitle: "Contact questionnaire",
+          formIntro:
+            "Share your information with us. A member of our clinical team will contact you privately.",
           name: "Full name",
           namePlaceholder: "John Smith",
           email: "Email",
@@ -56,20 +60,24 @@ export default function Contact() {
           messagePlaceholder: "Tell us briefly how we can help…",
           consent: "I accept the privacy notice and the processing of my data.",
           sending: "Sending...",
-          send: "Send request",
-          toastMessage: "✅ Request sent successfully!"
+          send: "Send questionnaire",
+          toastMessage: "Questionnaire sent successfully!",
+          errorMessage: "We could not send your questionnaire. Please try again."
         }
       : {
-          title: "Comienza tu proceso",
+          title: "Cuéntanos cómo podemos ayudarte",
           subtitle:
-            "Estamos aquí para escucharte. Agenda una cita o resuelve tus dudas. Tu bienestar es nuestra prioridad.",
+            "Completa este cuestionario y el equipo de CREI revisará tu solicitud para ponerse en contacto contigo.",
           cardTitle: "Reestructuración Integral",
           cardP1:
             "A diferencia de los enfoques tradicionales que solo tratan el síntoma, en nuestro centro nos enfocamos en la Reestructuración Integral. Creemos que cada persona posee una estructura emocional única; a veces, debido a traumas, adicciones o crisis de vida, esa estructura se debilita.",
           cardP2:
             "Nuestro trabajo es proporcionarte los planos y las herramientas para que vuelvas a edificar tu vida. Aquí, la inteligencia emocional no es un concepto abstracto, es nuestra columna vertebral. Trabajamos en la raíz de tus procesos mentales para que el cambio no sea temporal, sino una nueva forma de habitar tu mundo.",
           imageAlt: "Estructura y luz",
-          formTitle: "Agenda tu Cita",
+          confidential: "Solicitud confidencial",
+          formTitle: "Cuestionario de contacto",
+          formIntro:
+            "Compártenos tus datos. Una persona de nuestro equipo clínico se pondrá en contacto contigo de forma privada.",
           name: "Nombre Completo",
           namePlaceholder: "Juan Pérez",
           email: "Email",
@@ -85,13 +93,15 @@ export default function Contact() {
           messagePlaceholder: "Cuéntanos brevemente cómo podemos ayudarte...",
           consent: "Acepto el aviso de privacidad y el tratamiento de mis datos.",
           sending: "Enviando...",
-          send: "Enviar Solicitud",
-          toastMessage: "✅ ¡Solicitud enviada exitosamente!"
+          send: "Enviar cuestionario",
+          toastMessage: "¡Cuestionario enviado correctamente!",
+          errorMessage: "No pudimos enviar el cuestionario. Inténtalo nuevamente."
         };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
+    setFormError("");
     setSubmitting(true);
     const form = e.currentTarget;
     const fd = new FormData(form);
@@ -112,14 +122,20 @@ export default function Contact() {
       if (res.ok) {
         form.reset();
         setShowToast(true);
+      } else {
+        setFormError(copy.errorMessage);
       }
+    } catch {
+      setFormError(copy.errorMessage);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section id="contacto" className="py-24 bg-muted/30 relative">
+    <section id="contacto" className="relative overflow-hidden bg-[#f1edf5] py-24">
+      <div className="pointer-events-none absolute -left-28 top-20 h-72 w-72 rounded-full bg-[#bda6e8]/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-10 h-80 w-80 rounded-full bg-white/80 blur-3xl" />
       {/* Toast Notification */}
       <AnimatePresence>
         {showToast && (
@@ -135,7 +151,7 @@ export default function Contact() {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto px-6">
+      <div className="container relative mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           
           {/* Left Column: Info & Insurance */}
@@ -144,7 +160,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-serif font-bold text-primary mb-6"
+              className="mb-6 font-serif text-4xl font-bold text-[#302747] md:text-5xl"
             >
               {copy.title}
             </motion.h2>
@@ -153,7 +169,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-muted-foreground mb-12"
+              className="mb-12 max-w-xl text-lg leading-relaxed text-[#675e70]"
             >
               {copy.subtitle}
             </motion.p>
@@ -167,9 +183,9 @@ export default function Contact() {
             >
               <Link
                 href={`/${lang}/portal`}
-                className="flex items-center justify-center gap-3 px-6 py-4 bg-white border border-border shadow-sm rounded-xl text-primary font-bold tracking-wide uppercase hover:border-primary/50 transition-all hover:-translate-y-1 group"
+                className="group flex items-center justify-center gap-3 rounded-xl border border-[#d7cde1] bg-white px-6 py-4 font-bold uppercase tracking-wide text-[#302747] shadow-sm transition-all hover:-translate-y-1 hover:border-[#7258a8]"
               >
-                <UserRound className="w-5 h-5 text-primary/70 group-hover:text-primary transition-colors" />
+                <UserRound className="h-5 w-5 text-[#7258a8] transition-colors" />
                 {lang === "en" ? "Beneficiary" : "Beneficiario"}
               </Link>
               <Link
@@ -183,7 +199,7 @@ export default function Contact() {
 
             <div 
               ref={cardRef}
-              className="bg-primary text-primary-foreground p-8 md:p-10 rounded-3xl shadow-lg relative overflow-hidden group"
+              className="group relative overflow-hidden rounded-3xl bg-[#302747] p-8 text-white shadow-lg md:p-10"
             >
               {/* Background Image */}
               <motion.div 
@@ -203,7 +219,7 @@ export default function Contact() {
               
               <div className="relative z-10">
                 <h3 className="text-2xl font-serif font-bold mb-6">{copy.cardTitle}</h3>
-                <div className="space-y-4 text-primary-foreground/90 leading-relaxed">
+                <div className="space-y-4 leading-relaxed text-white/85">
                   <p>
                     {copy.cardP1}
                   </p>
@@ -220,29 +236,36 @@ export default function Contact() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-card border border-border p-8 md:p-10 rounded-3xl shadow-lg"
+            className="rounded-[2rem] border border-[#d9cfe2] bg-[#fffdf9] p-6 shadow-[0_24px_70px_rgba(48,39,71,0.15)] sm:p-8 md:p-10"
           >
-            <h3 className="text-2xl font-serif font-bold text-primary mb-6">{copy.formTitle}</h3>
+            <div className="mb-8 border-b border-[#e7dfea] pb-7">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#eee7f8] px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#634993]">
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                {copy.confidential}
+              </div>
+              <h3 className="mb-3 font-serif text-3xl font-bold text-[#302747]">{copy.formTitle}</h3>
+              <p className="max-w-xl leading-relaxed text-[#675e70]">{copy.formIntro}</p>
+            </div>
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-primary">{copy.name}</label>
+                  <label htmlFor="name" className="text-sm font-bold text-[#40364b]">{copy.name}</label>
                   <input 
                     type="text" 
                     id="name" 
                     name="name"
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 py-3.5 text-[#302747] placeholder:text-[#8a8192] outline-none transition focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10"
                     placeholder={copy.namePlaceholder}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-primary">{copy.email}</label>
+                  <label htmlFor="email" className="text-sm font-bold text-[#40364b]">{copy.email}</label>
                   <input 
                     type="email" 
                     id="email" 
                     name="email"
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 py-3.5 text-[#302747] placeholder:text-[#8a8192] outline-none transition focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10"
                     placeholder={copy.emailPlaceholder}
                     required
                   />
@@ -250,23 +273,23 @@ export default function Contact() {
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-primary">{copy.phone}</label>
+                <label htmlFor="phone" className="text-sm font-bold text-[#40364b]">{copy.phone}</label>
                 <input 
                   type="tel" 
                   id="phone" 
                   name="phone"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                  className="w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 py-3.5 text-[#302747] placeholder:text-[#8a8192] outline-none transition focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10"
                   placeholder="+52 55 1234 5678"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="service" className="text-sm font-medium text-primary">{copy.service}</label>
+                <label htmlFor="service" className="text-sm font-bold text-[#40364b]">{copy.service}</label>
                 <select 
                   id="service" 
                   name="service"
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                  className="w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 py-3.5 text-[#302747] outline-none transition focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10"
                   required
                 >
                   <option value="">{copy.servicePick}</option>
@@ -278,25 +301,32 @@ export default function Contact() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-medium text-primary">{copy.message}</label>
+                <label htmlFor="message" className="text-sm font-bold text-[#40364b]">{copy.message}</label>
                 <textarea 
                   id="message" 
                   name="message"
                   rows={4}
-                  className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all resize-none"
+                  className="w-full resize-none rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 py-3.5 text-[#302747] placeholder:text-[#8a8192] outline-none transition focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10"
                   placeholder={copy.messagePlaceholder}
                 />
               </div>
 
-              <div className="flex items-center gap-3">
-                <input id="consentimiento" name="consentimiento" type="checkbox" defaultChecked className="w-5 h-5 rounded border border-border" />
-                <label htmlFor="consentimiento" className="text-sm text-muted-foreground">{copy.consent}</label>
+              <div className="flex items-start gap-3 rounded-xl border border-[#e4dce8] bg-[#f8f5fb] p-4">
+                <input id="consentimiento" name="consentimiento" type="checkbox" defaultChecked required className="mt-0.5 h-5 w-5 shrink-0 accent-[#7258a8]" />
+                <label htmlFor="consentimiento" className="text-sm leading-relaxed text-[#5f5668]">{copy.consent}</label>
               </div>
+
+              {formError && (
+                <div role="alert" className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800">
+                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+                  {formError}
+                </div>
+              )}
 
               <button 
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#7258a8] py-4 font-bold text-white shadow-[0_12px_30px_rgba(114,88,168,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#5d438d] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#7258a8]/25 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? copy.sending : copy.send} <CheckCircle size={18} />
               </button>
@@ -307,4 +337,3 @@ export default function Contact() {
     </section>
   );
 }
-

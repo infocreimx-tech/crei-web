@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import I18nProvider from "@/i18n/I18nProvider";
 import { getMessages, locales, type Locale } from "@/i18n/messages";
-import InfoSessionModal from "@/components/InfoSessionModal";
+import CrisisSupport from "@/components/CrisisSupport";
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -54,7 +54,7 @@ export default async function LangLayout({
   return (
     <I18nProvider lang={lang as Locale} messages={messages}>
       {children}
-      <InfoSessionModal />
+      <CrisisSupport />
     </I18nProvider>
   );
 }
