@@ -38,7 +38,7 @@ type Cita = {
   location: string | null;
   status: string | null;
   cancel_reason: string | null;
-  created_at: string;
+  updated_at?: string;
 };
 
 const WEB_APPOINTMENT_MARKER = "[RESERVA_WEB]";
@@ -136,9 +136,13 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
         throw new Error(result.error || "No fue posible cargar la información clínica.");
       }
       setAuthUserId("server-session");
-      setExpedientes((result.expedientes || []) as Expediente[]);
+      setExpedientes(((result.expedientes || []) as Expediente[]).map((item) => ({
+        ...item,
+        activo: item.activo !== false
+      })));
       const loadedCitas = (result.citas || []).filter((item: Cita) => item.expediente_id) as Cita[];
       setCitas(loadedCitas);
+      if (result.warning) setError(String(result.warning));
       const session = readPortalSession();
       const storageKey = `crei_seen_web_appointments_${session.id || session.name}`;
       let seenIds: string[] = [];

@@ -40,23 +40,44 @@ function unauthorized() {
   return clinicalJson({ error: "Sesión clínica vencida. Inicia sesión nuevamente." }, { status: 401 });
 }
 
+function normalizedUsername(value: unknown) {
+  return String(value || "").trim().toLocaleLowerCase("es-MX");
+}
+
+function belongsToTherapist(assignedTherapist: unknown, sessionUsername: string) {
+  const assigned = normalizedUsername(assignedTherapist);
+  return !assigned || assigned === normalizedUsername(sessionUsername);
+}
+
 export async function GET(request: NextRequest) {
   const session = sessionFrom(request);
   if (!session) return unauthorized();
   try {
     const supabase = serverClient();
     const expedienteQuery = supabase.from("expediente").select("*").order("created_at", { ascending: false });
-    const citaQuery = supabase.from("calendario").select("id, expediente_id, therapist_id, start_at, end_at, notes, location, status, cancel_reason, created_at").order("start_at", { ascending: true });
+    // La tabla instalada utiliza updated_at y no created_at. Solicitar una
+    // columna inexistente hacía fallar toda la respuesta y ocultaba también
+    // los expedientes que sí estaban guardados correctamente.
+    const citaQuery = supabase.from("calendario").select("id, expediente_id, therapist_id, start_at, end_at, notes, location, status, cancel_reason, updated_at").order("start_at", { ascending: true });
     const [expedienteResult, citaResult] = await Promise.all([expedienteQuery, citaQuery]);
     if (expedienteResult.error) throw expedienteResult.error;
-    if (citaResult.error) throw citaResult.error;
+    const allExpedientes = (expedienteResult.data || []).map((item) => ({
+      ...item,
+      // Los registros legacy sin valor explícito deben seguir disponibles.
+      activo: item.activo !== false
+    }));
     const expedientes = session.role === "admin"
-      ? expedienteResult.data || []
-      : (expedienteResult.data || []).filter((item) => !item.terapeuta_asignado || item.terapeuta_asignado === session.username);
+      ? allExpedientes
+      : allExpedientes.filter((item) => belongsToTherapist(item.terapeuta_asignado, session.username));
+    const calendarRows = citaResult.error ? [] : (citaResult.data || []);
     const citas = session.role === "admin"
-      ? citaResult.data || []
-      : (citaResult.data || []).filter((item) => String(item.therapist_id || "") === session.id);
-    return clinicalJson({ expedientes, citas });
+      ? calendarRows
+      : calendarRows.filter((item) => String(item.therapist_id || "") === session.id);
+    return clinicalJson({
+      expedientes,
+      citas,
+      warning: citaResult.error ? `Los expedientes cargaron, pero Calendario no pudo actualizarse: ${citaResult.error.message}` : null
+    });
   } catch (caught) {
     const message = caught instanceof Error ? caught.message : "No fue posible cargar la información clínica.";
     return clinicalJson({ error: message }, { status: 500 });
@@ -80,7 +101,7 @@ export async function POST(request: NextRequest) {
       if (body.id) {
         if (session.role !== "admin") {
           const { data: existing } = await supabase.from("expediente").select("terapeuta_asignado").eq("id", body.id).single();
-          if (existing?.terapeuta_asignado && existing.terapeuta_asignado !== session.username) return unauthorized();
+          if (!belongsToTherapist(existing?.terapeuta_asignado, session.username)) return unauthorized();
         }
         const { data, error } = await supabase.from("expediente").update(payload).eq("id", body.id).select().single();
         if (error) throw error;
@@ -103,7 +124,7 @@ export async function POST(request: NextRequest) {
           .eq("id", expedienteId)
           .single();
         if (existingError || !existing) return clinicalJson({ error: "El expediente no existe." }, { status: 404 });
-        if (existing.terapeuta_asignado && existing.terapeuta_asignado !== session.username) return unauthorized();
+        if (!belongsToTherapist(existing.terapeuta_asignado, session.username)) return unauthorized();
       }
 
       const { data, error } = await supabase
@@ -127,7 +148,7 @@ export async function POST(request: NextRequest) {
       }
       const { data: expediente, error: expedienteError } = await supabase.from("expediente").select("id, activo, terapeuta_asignado").eq("id", appointment.expediente_id).single();
       if (expedienteError || !expediente || !expediente.activo) return clinicalJson({ error: "El expediente no existe o está inactivo." }, { status: 400 });
-      if (session.role !== "admin" && expediente.terapeuta_asignado && expediente.terapeuta_asignado !== session.username) return unauthorized();
+      if (session.role !== "admin" && !belongsToTherapist(expediente.terapeuta_asignado, session.username)) return unauthorized();
       const { data, error } = await supabase.from("calendario").insert({
         expediente_id: appointment.expediente_id,
         start_at: appointment.start_at,
