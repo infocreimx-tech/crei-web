@@ -9,10 +9,11 @@ import { ThursdayRegistration } from "@/components/HomepageAccessForms";
 import { CREI_WHATSAPP_URL } from "@/components/CrisisSupport";
 import Contact from "@/components/Contact";
 import PWAInstallButton from "@/components/PWAInstallButton";
+import AssessmentBooking from "@/components/AssessmentBooking";
 import styles from "./experiencia.module.css";
 
 const faqs = [
-  ["¿Cuánto dura una sesión y qué costo tiene?", "La orientación inicial dura 15 minutos y no tiene costo. Una sesión clínica suele durar 50 minutos. La tarifa depende del profesional y la modalidad; se informa por escrito antes de reservar y no se realiza ningún cargo sin autorización. Los tratamientos residenciales de clínicas aliadas se cotizan por separado."],
+  ["¿Cuánto dura una sesión y qué costo tiene?", "La cita de valoración inicial dura 60 minutos. Una sesión clínica posterior suele durar 50 minutos. La tarifa depende del profesional y la modalidad; se informa por escrito antes de confirmar y no se realiza ningún cargo sin autorización. Los tratamientos residenciales de clínicas aliadas se cotizan por separado."],
   ["¿CREI ofrece internamiento o solamente consulta externa?", "Ofrecemos valoración, orientación y seguimiento en consulta externa. Cuando una persona necesita atención residencial, CREI evalúa el caso y coordina el ingreso con una clínica aliada adecuada. CREI no se presenta como un centro de rehabilitación tradicional."],
   ["¿Puedo recibir ayuda sin internarme?", "Sí. Muchos procesos comienzan con consulta externa, orientación familiar, psicoterapia o seguimiento. La recomendación residencial solo se plantea cuando la evaluación clínica indica que es el nivel de atención más seguro."],
   ["¿Mi familiar tiene que querer ayuda para comenzar?", "No necesariamente. La familia puede iniciar con una orientación para comprender la situación, establecer límites seguros y conocer alternativas. Esto no reemplaza el consentimiento que ciertos tratamientos requieren."],
@@ -62,7 +63,7 @@ export default function ExperienciaPage() {
           <div className={styles.eyebrow}><span /> Atención humana · Práctica clínica</div>
           <h1>Un primer paso claro, incluso cuando hablar cuesta.</h1>
           <p>Orientación en salud emocional y adicciones para personas y familias. Conoce tus opciones, completa el cuestionario y recibe acompañamiento sin juicios.</p>
-          <div className={styles.heroActions}><a href="#contacto" className={styles.primaryCta}>Completar cuestionario <ArrowRight size={19} /></a><a href={CREI_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={styles.crisisCta}>Ayuda por WhatsApp CREI <HeartPulse size={18} /></a></div>
+          <div className={styles.heroActions}><a href="#cita-valoracion" className={styles.primaryCta}>Agendar valoración <ArrowRight size={19} /></a><a href={CREI_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={styles.crisisCta}>Ayuda por WhatsApp CREI <HeartPulse size={18} /></a></div>
           <div className={styles.trustLine}><ShieldCheck size={18} /><span><b>Conversación confidencial</b><small>Cuéntanos qué servicio necesitas · Sin compromiso</small></span></div>
         </div>
         <div className={styles.heroVisual}><div className={styles.orbit}><span>mente</span><span>cuerpo</span><span>entorno</span></div><div className={styles.photoWrap}><Image src="/services-therapy.png" alt="Espacio privado y cálido para recibir atención terapéutica" fill className={styles.photo} priority /></div><div className={styles.floatCard}><span className={styles.liveDot} /><b>Cuestionario en línea</b><small>Cuéntanos cómo podemos ayudarte</small></div><div className={styles.heroNumber}><strong>15</strong><span>minutos de<br />orientación gratuita</span></div></div>
@@ -90,7 +91,9 @@ export default function ExperienciaPage() {
         </div>
       </section>
 
-      <section className={styles.process} id="proceso"><div className={styles.processCopy}><span>Tu primer paso</span><h2>No necesitas saber exactamente qué tratamiento pedir.</h2><p>Completa el cuestionario final para que el equipo conozca tu necesidad y pueda orientarte.</p><a href="#contacto" className={styles.lightCta}><MessageCircle size={18} /> Ir al cuestionario</a></div><ol className={styles.steps}><li><b>1</b><div><small>Cuestionario</small><h3>Cuéntanos lo esencial</h3><p>Déjanos tus datos, el servicio de interés y un mensaje opcional.</p></div></li><li><b>2</b><div><small>Revisión</small><h3>El equipo recibe tu solicitud</h3><p>La información queda registrada de forma segura en CREI.</p></div></li><li><b>3</b><div><small>Siguiente paso</small><h3>Recibe orientación</h3><p>Te contactaremos para explicarte las alternativas disponibles.</p></div></li></ol></section>
+      <section className={styles.process} id="proceso"><div className={styles.processCopy}><span>Tu primer paso</span><h2>No necesitas saber exactamente qué tratamiento pedir.</h2><p>Agenda una valoración inicial de una hora para que el equipo conozca tu situación y pueda orientarte.</p><a href="#cita-valoracion" className={styles.lightCta}><CalendarDays size={18} /> Agendar valoración</a></div><ol className={styles.steps}><li><b>1</b><div><small>Horario</small><h3>Elige tu cita</h3><p>Selecciona fecha, hora y modalidad en línea.</p></div></li><li><b>2</b><div><small>Valoración</small><h3>Una hora para comprender tu situación</h3><p>El equipo realiza una valoración clínica inicial y escucha tus necesidades.</p></div></li><li><b>3</b><div><small>Siguiente paso</small><h3>Recibe orientación</h3><p>Conoce las alternativas de atención y el nivel de apoyo recomendado.</p></div></li></ol></section>
+
+      <AssessmentBooking lang={lang} />
 
       <section className={styles.appSection} id="app-crei">
         <div className={styles.appVisual}><div className={styles.phoneMock}><div className={styles.phoneTop}><Image src="/logo-header.png" alt="" width={38} height={38} /><span><b>Mi proceso</b><small>Hoy · seguimiento personal</small></span></div><div className={styles.phoneCard}><Target /><span><b>Meta de la semana</b><small>Revisar avances y registrar cómo te sentiste.</small></span></div><div className={styles.phoneCard}><BookOpen /><span><b>Cuaderno y recursos</b><small>Ejercicios asignados por tu terapeuta.</small></span></div><div className={styles.phoneProgress}><span>Progreso semanal</span><b>4 de 6 actividades</b><i><em /></i></div></div></div>
