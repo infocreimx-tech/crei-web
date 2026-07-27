@@ -42,6 +42,11 @@ const inputClass =
 export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
   const [modality, setModality] = useState<Modality>("presencial");
   const [minDate, setMinDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [occupiedTimes, setOccupiedTimes] = useState<string[]>([]);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -56,6 +61,60 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
       }).format(new Date()),
     );
   }, []);
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setOccupiedTimes([]);
+      setSelectedTime("");
+      setAvailabilityError("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setLoadingAvailability(true);
+    setAvailabilityError("");
+    setOccupiedTimes([]);
+    setSelectedTime("");
+
+    const loadAvailability = async () => {
+      try {
+        const response = await fetch(
+          `/api/assessment-appointments?fecha=${encodeURIComponent(selectedDate)}`,
+          { signal: controller.signal, cache: "no-store" },
+        );
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+              (lang === "en"
+                ? "We could not check availability."
+                : "No pudimos consultar la disponibilidad."),
+          );
+        }
+
+        setOccupiedTimes(
+          Array.isArray(result.occupiedTimes) ? result.occupiedTimes : [],
+        );
+      } catch (caught) {
+        if (controller.signal.aborted) return;
+        setAvailabilityError(
+          caught instanceof Error
+            ? caught.message
+            : lang === "en"
+              ? "We could not check availability."
+              : "No pudimos consultar la disponibilidad.",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingAvailability(false);
+        }
+      }
+    };
+
+    loadAvailability();
+    return () => controller.abort();
+  }, [lang, selectedDate]);
 
   const copy =
     lang === "en"
@@ -76,6 +135,11 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           phone: "Phone or WhatsApp",
           date: "Date",
           time: "Start time",
+          chooseDateFirst: "Choose a date first",
+          checkingAvailability: "Checking availability...",
+          occupied: "Occupied",
+          noAvailability:
+            "There are no available appointments on this date. Choose another day.",
           modality: "Modality",
           inPerson: "In person",
           video: "Video call",
@@ -109,6 +173,11 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           phone: "Teléfono o WhatsApp",
           date: "Fecha",
           time: "Hora de inicio",
+          chooseDateFirst: "Primero elige una fecha",
+          checkingAvailability: "Consultando disponibilidad...",
+          occupied: "Ocupado",
+          noAvailability:
+            "No quedan citas disponibles en esta fecha. Elige otro día.",
           modality: "Modalidad",
           inPerson: "Presencial",
           video: "Videollamada",
@@ -163,6 +232,9 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
 
       setConfirmation(result.appointment as Confirmation);
       form.reset();
+      setSelectedDate("");
+      setSelectedTime("");
+      setOccupiedTimes([]);
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -342,23 +414,65 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
                       required
                       type="date"
                       min={minDate}
+                      value={selectedDate}
+                      onChange={(event) => setSelectedDate(event.target.value)}
                       className={inputClass}
                     />
                   </label>
                   <label className="text-sm font-bold text-[#40364b]">
                     {copy.time}
-                    <select name="hora" required defaultValue="" className={inputClass}>
+                    <select
+                      name="hora"
+                      required
+                      value={selectedTime}
+                      onChange={(event) => setSelectedTime(event.target.value)}
+                      disabled={
+                        !selectedDate ||
+                        loadingAvailability ||
+                        Boolean(availabilityError)
+                      }
+                      className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-60`}
+                    >
                       <option value="" disabled>
-                        --:--
+                        {loadingAvailability
+                          ? copy.checkingAvailability
+                          : selectedDate
+                            ? "--:--"
+                            : copy.chooseDateFirst}
                       </option>
                       {AVAILABLE_TIMES.map((time) => (
-                        <option key={time} value={time}>
+                        <option
+                          key={time}
+                          value={time}
+                          disabled={occupiedTimes.includes(time)}
+                        >
                           {time}
+                          {occupiedTimes.includes(time)
+                            ? ` · ${copy.occupied}`
+                            : ""}
                         </option>
                       ))}
                     </select>
                   </label>
                 </div>
+
+                {availabilityError && (
+                  <p
+                    role="alert"
+                    className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+                  >
+                    {availabilityError}
+                  </p>
+                )}
+
+                {selectedDate &&
+                  !loadingAvailability &&
+                  !availabilityError &&
+                  occupiedTimes.length === AVAILABLE_TIMES.length && (
+                    <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+                      {copy.noAvailability}
+                    </p>
+                  )}
 
                 <fieldset>
                   <legend className="text-sm font-bold text-[#40364b]">

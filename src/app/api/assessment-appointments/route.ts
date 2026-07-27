@@ -39,6 +39,84 @@ function isMissingTableError(error: { code?: string; message?: string } | null) 
   );
 }
 
+function isValidCalendarDate(fecha: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return false;
+
+  const [year, month, day] = fecha.split("-").map(Number);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    calendarDate.getUTCFullYear() === year &&
+    calendarDate.getUTCMonth() === month - 1 &&
+    calendarDate.getUTCDate() === day
+  );
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const fecha = String(request.nextUrl.searchParams.get("fecha") || "").trim();
+
+    if (!isValidCalendarDate(fecha)) {
+      return NextResponse.json(
+        { error: "Selecciona una fecha válida." },
+        { status: 400 },
+      );
+    }
+
+    const dayStart = new Date(`${fecha}T00:00:00${MEXICO_CITY_OFFSET}`);
+    const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
+    const supabase = getServerClient();
+
+    const { data, error } = await supabase
+      .from("citas_valoracion")
+      .select("inicio")
+      .gte("inicio", dayStart.toISOString())
+      .lt("inicio", dayEnd.toISOString())
+      .in("estado", ["pendiente", "confirmada"]);
+
+    if (error) {
+      if (isMissingTableError(error)) {
+        return NextResponse.json(
+          {
+            error:
+              "La agenda de valoración aún no está activada. Ejecuta el SQL incluido en supabase/migrations.",
+          },
+          { status: 503 },
+        );
+      }
+      throw error;
+    }
+
+    const occupiedTimes = Array.from(VALID_TIMES).filter((time) => {
+      const slot = new Date(`${fecha}T${time}:00${MEXICO_CITY_OFFSET}`);
+      return data?.some(
+        (appointment) =>
+          new Date(appointment.inicio).getTime() === slot.getTime(),
+      );
+    });
+
+    return NextResponse.json(
+      { fecha, occupiedTimes },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  } catch (caught) {
+    console.error("Assessment availability error:", caught);
+    return NextResponse.json(
+      {
+        error:
+          caught instanceof Error
+            ? caught.message
+            : "No fue posible consultar los horarios disponibles.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -75,21 +153,9 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || !VALID_TIMES.has(hora)) {
+    if (!isValidCalendarDate(fecha) || !VALID_TIMES.has(hora)) {
       return NextResponse.json(
         { error: "Selecciona una fecha y hora válidas." },
-        { status: 400 },
-      );
-    }
-    const [year, month, day] = fecha.split("-").map(Number);
-    const calendarDate = new Date(Date.UTC(year, month - 1, day));
-    if (
-      calendarDate.getUTCFullYear() !== year ||
-      calendarDate.getUTCMonth() !== month - 1 ||
-      calendarDate.getUTCDate() !== day
-    ) {
-      return NextResponse.json(
-        { error: "Selecciona una fecha válida." },
         { status: 400 },
       );
     }
