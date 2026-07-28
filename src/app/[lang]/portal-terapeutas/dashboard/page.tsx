@@ -29,6 +29,7 @@ export default function EcosystemDashboard() {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string>("");
   const isArturo = String(user || "").trim().toLowerCase() === "arturo";
+  const isPaulina = String(user || "").trim().toLowerCase() === "paulina";
 
   useEffect(() => {
     sb.auth.getSession().then(({ data: { session } }) => {
@@ -210,6 +211,54 @@ export default function EcosystemDashboard() {
               </div>
             </Link>
           ))}
+
+          {isPaulina && (
+            <Link
+              href="/es/portal-terapeutas/paulina/pacientes"
+              className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
+              style={{
+                background: "rgba(30, 15, 45, 0.85)",
+                border: "1px solid rgba(16, 185, 129, 0.35)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                backdropFilter: "blur(16px)",
+              }}
+            >
+              <div
+                className="absolute top-[-20px] right-[-20px] w-32 h-32 rounded-full opacity-20 filter blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-60"
+                style={{ background: "#10b981" }}
+              />
+              <div
+                className="absolute top-4 right-4 flex items-center gap-1 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest"
+                style={{
+                  background: "rgba(16,185,129,.12)",
+                  border: "1px solid rgba(16,185,129,.35)",
+                  color: "#6ee7b7",
+                }}
+              >
+                <ShieldCheck className="h-3 w-3" />
+                Sólo Paulina
+              </div>
+              <div
+                className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 shadow-lg"
+                style={{ background: "rgba(16,185,129,.12)" }}
+              >
+                <ClipboardList className="h-6 w-6 text-emerald-400 transition-transform group-hover:scale-110" />
+              </div>
+              <div className="relative z-10 mt-2 flex-1">
+                <h3 className="mb-2 font-serif text-xl font-bold text-[#fbfaff]">
+                  Registro de Pacientes
+                </h3>
+                <p className="text-sm font-medium leading-relaxed text-emerald-200/70">
+                  Datos básicos y consulta de pacientes registrados.
+                </p>
+              </div>
+              <div className="relative z-10 mt-4 flex items-center justify-end">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10">
+                  <ArrowRight className="h-4 w-4 text-emerald-400 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+          )}
 
           {/* Tarjeta de Usuarios — solo visible para admin */}
           {role === "admin" && (
