@@ -21,7 +21,9 @@ export default async function PaulinaPatientsPage({
   );
 
   if (!session) redirect(`/${lang}/portal-terapeutas`);
-  if (session.username.trim().toLocaleLowerCase("es-MX") !== "paulina") {
+  const isPaulina =
+    session.username.trim().toLocaleLowerCase("es-MX") === "paulina";
+  if (!isPaulina && session.role !== "admin") {
     redirect(`/${lang}/portal-terapeutas/dashboard`);
   }
 
@@ -29,6 +31,7 @@ export default async function PaulinaPatientsPage({
     <PaulinaPatientRegistry
       lang={lang}
       therapistName={session.username}
+      canCreate={isPaulina}
     />
   );
 }

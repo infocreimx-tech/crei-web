@@ -34,9 +34,11 @@ type PatientRecord = {
 export default function PaulinaPatientRegistry({
   lang,
   therapistName,
+  canCreate,
 }: {
   lang: "es" | "en";
   therapistName: string;
+  canCreate: boolean;
 }) {
   const [patients, setPatients] = useState<PatientRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +78,8 @@ export default function PaulinaPatientRegistry({
           retry: "Try again",
           registered: "Registered",
           protected: "Only Paulina can view and create these records.",
+          adminReadOnly:
+            "Administrative view: you can review every record in this program.",
         }
       : {
           back: "Volver al portal",
@@ -106,6 +110,8 @@ export default function PaulinaPatientRegistry({
           retry: "Intentar nuevamente",
           registered: "Registrado",
           protected: "Sólo Paulina puede consultar y crear estos registros.",
+          adminReadOnly:
+            "Vista administrativa: puedes consultar todos los registros de este programa.",
         };
 
   const loadPatients = async () => {
@@ -239,7 +245,12 @@ export default function PaulinaPatientRegistry({
           </p>
         </section>
 
-        <div className="grid items-start gap-7 lg:grid-cols-[0.78fr_1.22fr]">
+        <div
+          className={`grid items-start gap-7 ${
+            canCreate ? "lg:grid-cols-[0.78fr_1.22fr]" : ""
+          }`}
+        >
+          {canCreate && (
           <section className="rounded-[2rem] border border-[#ded6e7] bg-white p-6 shadow-[0_20px_60px_rgba(48,39,71,.1)] md:p-8">
             <div className="mb-6 border-b border-[#eee8f1] pb-5">
               <h2 className="font-serif text-3xl font-bold">{copy.formTitle}</h2>
@@ -370,6 +381,7 @@ export default function PaulinaPatientRegistry({
               </button>
             </form>
           </section>
+          )}
 
           <section className="overflow-hidden rounded-[2rem] border border-[#ded6e7] bg-white shadow-[0_20px_60px_rgba(48,39,71,.1)]">
             <div className="flex items-center justify-between gap-4 border-b border-[#eee8f1] px-6 py-6 md:px-8">
@@ -397,7 +409,7 @@ export default function PaulinaPatientRegistry({
             <div className="border-b border-[#eee8f1] bg-[#faf8fc] px-6 py-3 text-xs text-[#756b7e] md:px-8">
               <span className="inline-flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                {copy.protected}
+                {canCreate ? copy.protected : copy.adminReadOnly}
               </span>
             </div>
 

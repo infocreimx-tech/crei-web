@@ -45,6 +45,13 @@ function isPaulina(username: string) {
   return username.trim().toLocaleLowerCase("es-MX") === "paulina";
 }
 
+function hasRegistryAccess(session: {
+  username: string;
+  role: "admin" | "therapist";
+}) {
+  return session.role === "admin" || isPaulina(session.username);
+}
+
 function unauthorized() {
   return registryJson(
     { error: "Este programa está disponible únicamente para Paulina." },
@@ -95,17 +102,23 @@ export async function GET(request: NextRequest) {
       { status: 401 },
     );
   }
-  if (!isPaulina(session.username)) return unauthorized();
+  if (!hasRegistryAccess(session)) return unauthorized();
 
   try {
-    const { data, error } = await serverClient()
+    let query = serverClient()
       .from("registro_pacientes_paulina")
       .select(
         "id,nombre,ciudad,telefono,sexo,dia,hora,created_at,updated_at",
       )
-      .eq("terapeuta_id", session.id)
-      .eq("terapeuta_username", session.username)
       .order("created_at", { ascending: false });
+
+    if (session.role !== "admin") {
+      query = query
+        .eq("terapeuta_id", session.id)
+        .eq("terapeuta_username", session.username);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       if (isMissingScheduleColumnsError(error)) {
@@ -142,7 +155,15 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   }
-  if (!isPaulina(session.username)) return unauthorized();
+  if (!isPaulina(session.username)) {
+    return registryJson(
+      {
+        error:
+          "La vista administrativa es de consulta. Sólo Paulina puede crear registros en este programa.",
+      },
+      { status: 403 },
+    );
+  }
 
   try {
     const body = await request.json();

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import {
+  THERAPIST_COOKIE,
+  verifyTherapistSession,
+} from "@/lib/therapistSession";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
@@ -13,8 +17,23 @@ const headers = {
 const sha256 = (str: string) =>
   crypto.createHash("sha256").update(str).digest("hex");
 
+function requireAdmin(request: NextRequest) {
+  const session = verifyTherapistSession(
+    request.cookies.get(THERAPIST_COOKIE)?.value,
+  );
+  return session?.role === "admin";
+}
+
+function forbidden() {
+  return NextResponse.json(
+    { error: "Esta acción está disponible únicamente para administradores." },
+    { status: 403 },
+  );
+}
+
 // ── GET: listar todos los usuarios ─────────────────────────────────────────
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!requireAdmin(request)) return forbidden();
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/usuarios?select=id,username,role,is_active&order=id.asc`,
@@ -30,6 +49,7 @@ export async function GET() {
 
 // ── POST: crear usuario ────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  if (!requireAdmin(req)) return forbidden();
   try {
     const body = await req.json();
     const { username, password, role } = body;
@@ -81,6 +101,7 @@ export async function POST(req: NextRequest) {
 
 // ── PATCH: actualizar usuario (password, role, is_active) ──────────────────
 export async function PATCH(req: NextRequest) {
+  if (!requireAdmin(req)) return forbidden();
   try {
     const body = await req.json();
     const { id, password, role, is_active } = body;
@@ -113,6 +134,7 @@ export async function PATCH(req: NextRequest) {
 
 // ── DELETE: eliminar usuario ────────────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
+  if (!requireAdmin(req)) return forbidden();
   try {
     const body = await req.json();
     const { id } = body;

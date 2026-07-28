@@ -30,6 +30,7 @@ export default function EcosystemDashboard() {
   const [role, setRole] = useState<string>("");
   const isArturo = String(user || "").trim().toLowerCase() === "arturo";
   const isPaulina = String(user || "").trim().toLowerCase() === "paulina";
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     sb.auth.getSession().then(({ data: { session } }) => {
@@ -102,7 +103,9 @@ export default function EcosystemDashboard() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 text-xs font-bold tracking-widest uppercase" style={{ color: "#c4b5fd" }}>
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span className="capitalize text-[#fbfaff]">{user.toLowerCase() === "admin" ? "Administrador" : user}</span>
+              <span className="capitalize text-[#fbfaff]">
+                {isAdmin ? `Administrador · ${user}` : user}
+              </span>
             </div>
 
             <div className="w-px h-5" style={{ background: "rgba(159, 134, 192, 0.25)" }} />
@@ -142,7 +145,8 @@ export default function EcosystemDashboard() {
           >
             Bienvenido,{" "}
             <span className="italic font-light" style={{ color: "#c4b5fd" }}>
-              Dr. {user.toLowerCase() === "admin" ? "Administrador" : user.charAt(0).toUpperCase() + user.slice(1)}
+              {isAdmin ? "Administradora" : "Dr."}{" "}
+              {user.charAt(0).toUpperCase() + user.slice(1)}
             </span>
           </h2>
           <p className="text-lg leading-relaxed font-medium" style={{ color: "#c4b5fd" }}>
@@ -212,7 +216,7 @@ export default function EcosystemDashboard() {
             </Link>
           ))}
 
-          {isPaulina && (
+          {(isPaulina || isAdmin) && (
             <Link
               href="/es/portal-terapeutas/paulina/pacientes"
               className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
@@ -236,7 +240,7 @@ export default function EcosystemDashboard() {
                 }}
               >
                 <ShieldCheck className="h-3 w-3" />
-                Sólo Paulina
+                {isPaulina ? "Programa Paulina" : "Vista Admin"}
               </div>
               <div
                 className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 shadow-lg"
@@ -261,7 +265,7 @@ export default function EcosystemDashboard() {
           )}
 
           {/* Tarjeta de Usuarios — solo visible para admin */}
-          {role === "admin" && (
+          {isAdmin && (
             <>
               <Link
                 href={`/es/portal-terapeutas/usuarios`}
@@ -332,7 +336,7 @@ export default function EcosystemDashboard() {
         </div>
 
         {/* ── Módulos Financieros Admin ── */}
-        {(role === "admin" || isArturo) && (
+        {(isAdmin || isArturo) && (
           <div className="relative z-10 mt-16">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px flex-1" style={{ background: "rgba(159,134,192,0.15)" }} />
@@ -351,7 +355,7 @@ export default function EcosystemDashboard() {
                 { href: "/es/portal-terapeutas/finanzas/egresos", name: "Egresos", desc: "Nómina y gastos adicionales con comprobantes.", icon: TrendingDown, accent: "#ef4444" },
                 { href: "/es/portal-terapeutas/finanzas/medio-camino", name: "Casa de Medio Camino", desc: isArturo ? "Gastos operativos de la casa." : "Pagos y gastos operativos de la casa.", icon: Home, accent: "#06b6d4" },
                 { href: "/es/portal-terapeutas/finanzas/utilidad-neta", name: "Utilidad Neta", desc: "Balance financiero mensual y análisis de rentabilidad.", icon: BarChart3, accent: "#a855f7" },
-              ].filter((mod) => role === "admin" || mod.name === "Casa de Medio Camino").map((mod) => (
+              ].filter((mod) => isAdmin || mod.name === "Casa de Medio Camino").map((mod) => (
                 <Link
                   key={mod.name}
                   href={mod.href}

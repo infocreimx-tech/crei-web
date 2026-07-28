@@ -374,6 +374,18 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
           )}
         </div>
 
+        {portalSession.role === "admin" && (
+          <div className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+            <div>
+              <b className="block">Vista administrativa global</b>
+              <span className="text-xs leading-5 text-emerald-800">
+                Estás consultando los expedientes y citas de todos los terapeutas.
+              </span>
+            </div>
+          </div>
+        )}
+
         {error && <div role="alert" className="mb-5 flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 sm:flex-row sm:items-center"><div className="flex flex-1 items-start gap-3"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" /><span>{error}</span></div>{/sesión|inicia sesión/i.test(error) && <button onClick={restartSecureLogin} className="shrink-0 rounded-full bg-red-700 px-4 py-2 text-xs font-bold text-white">Cerrar sesión e ingresar nuevamente</button>}</div>}
         {notice && <div className="mb-5 flex items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"><span className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5" />{notice}</span><button onClick={() => setNotice("")} aria-label="Cerrar"><X className="h-4 w-4" /></button></div>}
         {mode === "calendario" && newAssignments.length > 0 && <div role="status" className="mb-5 flex flex-col gap-4 rounded-2xl border border-violet-300 bg-gradient-to-r from-violet-50 to-white p-5 text-violet-950 shadow-sm sm:flex-row sm:items-center"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-violet-600 text-white"><BellRing className="h-5 w-5 animate-pulse" /></span><div className="flex-1"><b className="block font-serif text-lg">{newAssignments.length === 1 ? "Nueva videollamada asignada" : `${newAssignments.length} nuevas videollamadas asignadas`}</b><p className="mt-1 text-xs leading-5 text-violet-800">Se registraron desde crei.mx y ya aparecen en tu calendario.</p><p className="mt-1 text-xs font-bold text-violet-950">{newAssignments.slice(0, 3).map((cita) => expedienteById.get(cita.expediente_id)?.nombre_completo || "Paciente nuevo").join(" · ")}{newAssignments.length > 3 ? ` · +${newAssignments.length - 3}` : ""}</p></div><button type="button" onClick={acknowledgeNewAssignments} className="rounded-full bg-violet-700 px-4 py-2.5 text-xs font-bold text-white">Entendido</button></div>}

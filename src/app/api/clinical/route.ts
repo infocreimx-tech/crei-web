@@ -99,9 +99,24 @@ export async function POST(request: NextRequest) {
         activo: true
       };
       if (body.id) {
+        const { data: existing, error: existingError } = await supabase
+          .from("expediente")
+          .select("terapeuta_asignado")
+          .eq("id", body.id)
+          .single();
+        if (existingError || !existing) {
+          return clinicalJson(
+            { error: "El expediente no existe." },
+            { status: 404 },
+          );
+        }
         if (session.role !== "admin") {
-          const { data: existing } = await supabase.from("expediente").select("terapeuta_asignado").eq("id", body.id).single();
-          if (!belongsToTherapist(existing?.terapeuta_asignado, session.username)) return unauthorized();
+          if (!belongsToTherapist(existing.terapeuta_asignado, session.username)) return unauthorized();
+        } else {
+          // Consultar o editar como administrador no debe reasignar
+          // accidentalmente el expediente al usuario administrador.
+          payload.terapeuta_asignado =
+            existing.terapeuta_asignado || session.username;
         }
         const { data, error } = await supabase.from("expediente").update(payload).eq("id", body.id).select().single();
         if (error) throw error;
@@ -149,6 +164,17 @@ export async function POST(request: NextRequest) {
       const { data: expediente, error: expedienteError } = await supabase.from("expediente").select("id, activo, terapeuta_asignado").eq("id", appointment.expediente_id).single();
       if (expedienteError || !expediente || !expediente.activo) return clinicalJson({ error: "El expediente no existe o está inactivo." }, { status: 400 });
       if (session.role !== "admin" && !belongsToTherapist(expediente.terapeuta_asignado, session.username)) return unauthorized();
+      let appointmentTherapistId = session.id;
+      if (session.role === "admin" && expediente.terapeuta_asignado) {
+        const { data: assignedTherapist } = await supabase
+          .from("usuarios")
+          .select("id")
+          .ilike("username", expediente.terapeuta_asignado)
+          .maybeSingle();
+        if (assignedTherapist?.id) {
+          appointmentTherapistId = String(assignedTherapist.id);
+        }
+      }
       const { data, error } = await supabase.from("calendario").insert({
         expediente_id: appointment.expediente_id,
         start_at: appointment.start_at,
@@ -157,7 +183,7 @@ export async function POST(request: NextRequest) {
         location,
         status: appointment.status || "active",
         id: crypto.randomUUID(),
-        therapist_id: session.id,
+        therapist_id: appointmentTherapistId,
         therapist_user_id: null
       }).select().single();
       if (error) throw error;
