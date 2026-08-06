@@ -424,15 +424,8 @@ async function eliminarTerapeuta(e) {
 // ============================================================
 function actualizarPrevia() {
     const monto = parseFloat(document.getElementById("monto")?.value) || 0;
-    const terapeuta = document.getElementById("terapeuta")?.value || "";
-    const tName = String(terapeuta).toUpperCase();
-    let creiPct = 50;
-    if (tName === "CREI") {
-        creiPct = 100;
-    } else if (tName === "ARTURO") {
-        creiPct = (monto > 501) ? 50 : 40;
-    }
-    const terPct  = 100 - creiPct;
+    const creiPct = 50;
+    const terPct  = 50;
     document.getElementById("creiPct").textContent  = creiPct + "%";
     document.getElementById("terPct").textContent   = terPct + "%";
     document.getElementById("creiMonto").textContent = "$" + (monto * creiPct / 100).toFixed(2);
@@ -456,13 +449,8 @@ async function handleRegistro(e) {
     const pacienteStr = document.getElementById("paciente").value;
     const notasStr = document.getElementById("notas") ? document.getElementById("notas").value.trim() : null;
     const tName = String(terapeuta).toUpperCase();
-    let creiPct = 50;
-    if (tName === "CREI") {
-        creiPct = 100;
-    } else if (tName === "ARTURO") {
-        creiPct = (monto > 501) ? 50 : 40;
-    }
-    const terPct  = 100 - creiPct;
+    const creiPct = 50;
+    const terPct  = 50;
 
     const fileInput = document.getElementById("comprobante");
     let fileUrl = "N/A"; // Fallback URL
