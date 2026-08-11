@@ -67,7 +67,7 @@ function isMissingTableError(error: { code?: string; message?: string } | null) 
   );
 }
 
-function isMissingScheduleColumnsError(
+function isMissingRegistryColumnsError(
   error: { code?: string; message?: string } | null,
 ) {
   return (
@@ -75,10 +75,16 @@ function isMissingScheduleColumnsError(
     error?.code === "42703" ||
     Boolean(
       error?.message &&
-        (error.message.includes("'dia' column") ||
-          error.message.includes("'hora' column") ||
-          error.message.includes("column dia") ||
-          error.message.includes("column hora")),
+        [
+          "dia",
+          "hora",
+          "quien_pago",
+          "fecha_pago",
+          "monto_acordado",
+          "monto_pagado",
+          "forma_pago",
+          "terapeuta_atencion",
+        ].some((column) => error.message?.includes(column)),
     )
   );
 }
@@ -87,8 +93,8 @@ function missingSchemaResponse() {
   return registryJson(
     {
       error:
-        "Falta actualizar el registro con los campos de día y hora. Ejecuta el SQL de la nueva migración en Supabase.",
-      code: "SCHEDULE_COLUMNS_NOT_READY",
+        "Falta actualizar el registro con los campos de pago y atención. Ejecuta el SQL de la nueva migración en Supabase.",
+      code: "REGISTRY_COLUMNS_NOT_READY",
     },
     { status: 503 },
   );
@@ -105,10 +111,11 @@ export async function GET(request: NextRequest) {
   if (!hasRegistryAccess(session)) return unauthorized();
 
   try {
-    let query = serverClient()
+    const supabase = serverClient();
+    let query = supabase
       .from("registro_pacientes_paulina")
       .select(
-        "id,nombre,ciudad,telefono,sexo,dia,hora,created_at,updated_at",
+        "id,nombre,ciudad,telefono,sexo,dia,hora,quien_pago,fecha_pago,monto_acordado,monto_pagado,forma_pago,terapeuta_atencion,created_at,updated_at",
       )
       .order("created_at", { ascending: false });
 
@@ -118,10 +125,18 @@ export async function GET(request: NextRequest) {
         .eq("terapeuta_username", session.username);
     }
 
-    const { data, error } = await query;
+    const [patientsResult, therapistsResult] = await Promise.all([
+      query,
+      supabase
+        .from("usuarios")
+        .select("id,username,role,is_active")
+        .eq("is_active", true)
+        .order("username", { ascending: true }),
+    ]);
+    const { data, error } = patientsResult;
 
     if (error) {
-      if (isMissingScheduleColumnsError(error)) {
+      if (isMissingRegistryColumnsError(error)) {
         return missingSchemaResponse();
       }
       if (isMissingTableError(error)) {
@@ -136,8 +151,19 @@ export async function GET(request: NextRequest) {
       }
       throw error;
     }
+    if (therapistsResult.error) throw therapistsResult.error;
 
-    return registryJson({ patients: data || [] });
+    const therapists = (therapistsResult.data || [])
+      .filter(
+        (therapist) =>
+          therapist.role !== "admin" && Boolean(therapist.username?.trim()),
+      )
+      .map((therapist) => ({
+        id: String(therapist.id),
+        username: therapist.username.trim(),
+      }));
+
+    return registryJson({ patients: data || [], therapists });
   } catch (caught) {
     const message =
       caught instanceof Error
@@ -173,8 +199,31 @@ export async function POST(request: NextRequest) {
     const sexo = String(body?.sexo || "").trim().toLocaleLowerCase("es-MX");
     const dia = String(body?.dia || "").trim();
     const hora = String(body?.hora || "").trim();
+    const quienPago = String(body?.quien_pago || "").trim();
+    const fechaPago = String(body?.fecha_pago || "").trim();
+    const montoAcordadoRaw = String(body?.monto_acordado ?? "").trim();
+    const montoPagadoRaw = String(body?.monto_pagado ?? "").trim();
+    const montoAcordado = Number(montoAcordadoRaw);
+    const montoPagado = Number(montoPagadoRaw);
+    const formaPago = String(body?.forma_pago || "")
+      .trim()
+      .toLocaleLowerCase("es-MX");
+    const terapeutaAtencion = String(body?.terapeuta_atencion || "").trim();
 
-    if (!nombre || !ciudad || !telefono || !sexo || !dia || !hora) {
+    if (
+      !nombre ||
+      !ciudad ||
+      !telefono ||
+      !sexo ||
+      !dia ||
+      !hora ||
+      !quienPago ||
+      !fechaPago ||
+      !montoAcordadoRaw ||
+      !montoPagadoRaw ||
+      !formaPago ||
+      !terapeutaAtencion
+    ) {
       return registryJson(
         { error: "Completa todos los campos del registro." },
         { status: 400 },
@@ -231,7 +280,67 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await serverClient()
+    if (quienPago.length < 2 || quienPago.length > 120) {
+      return registryJson(
+        { error: "El nombre de quien pagó debe tener entre 2 y 120 caracteres." },
+        { status: 400 },
+      );
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaPago)) {
+      return registryJson(
+        { error: "Selecciona una fecha de pago válida." },
+        { status: 400 },
+      );
+    }
+    const parsedPaymentDay = new Date(`${fechaPago}T12:00:00Z`);
+    if (
+      Number.isNaN(parsedPaymentDay.getTime()) ||
+      parsedPaymentDay.toISOString().slice(0, 10) !== fechaPago
+    ) {
+      return registryJson(
+        { error: "Selecciona una fecha de pago válida." },
+        { status: 400 },
+      );
+    }
+    if (
+      !Number.isFinite(montoAcordado) ||
+      montoAcordado < 0 ||
+      montoAcordado > 99_999_999.99
+    ) {
+      return registryJson(
+        { error: "Escribe un monto acordado válido." },
+        { status: 400 },
+      );
+    }
+    if (
+      !Number.isFinite(montoPagado) ||
+      montoPagado < 0 ||
+      montoPagado > 99_999_999.99
+    ) {
+      return registryJson(
+        { error: "Escribe una cantidad pagada válida." },
+        { status: 400 },
+      );
+    }
+    if (
+      !["efectivo", "transferencia", "tarjeta", "deposito", "otro"].includes(
+        formaPago,
+      )
+    ) {
+      return registryJson(
+        { error: "Selecciona una forma de pago válida." },
+        { status: 400 },
+      );
+    }
+    if (terapeutaAtencion.length < 2 || terapeutaAtencion.length > 120) {
+      return registryJson(
+        { error: "El nombre del terapeuta debe tener entre 2 y 120 caracteres." },
+        { status: 400 },
+      );
+    }
+
+    const supabase = serverClient();
+    const { data, error } = await supabase
       .from("registro_pacientes_paulina")
       .insert({
         terapeuta_id: session.id,
@@ -242,14 +351,20 @@ export async function POST(request: NextRequest) {
         sexo,
         dia,
         hora,
+        quien_pago: quienPago,
+        fecha_pago: fechaPago,
+        monto_acordado: montoAcordado,
+        monto_pagado: montoPagado,
+        forma_pago: formaPago,
+        terapeuta_atencion: terapeutaAtencion,
       })
       .select(
-        "id,nombre,ciudad,telefono,sexo,dia,hora,created_at,updated_at",
+        "id,nombre,ciudad,telefono,sexo,dia,hora,quien_pago,fecha_pago,monto_acordado,monto_pagado,forma_pago,terapeuta_atencion,created_at,updated_at",
       )
       .single();
 
     if (error) {
-      if (isMissingScheduleColumnsError(error)) {
+      if (isMissingRegistryColumnsError(error)) {
         return missingSchemaResponse();
       }
       if (isMissingTableError(error)) {

@@ -6,18 +6,32 @@ import {
   ArrowLeft,
   CalendarDays,
   CheckCircle2,
+  CircleDollarSign,
   ClipboardList,
   Clock3,
+  CreditCard,
   Loader2,
   MapPin,
   Phone,
   RefreshCw,
   ShieldCheck,
+  Stethoscope,
   UserRound,
   Users,
 } from "lucide-react";
 
 type PatientSex = "hombre" | "mujer";
+type PaymentMethod =
+  | "efectivo"
+  | "transferencia"
+  | "tarjeta"
+  | "deposito"
+  | "otro";
+
+type TherapistOption = {
+  id: string;
+  username: string;
+};
 
 type PatientRecord = {
   id: string;
@@ -27,6 +41,12 @@ type PatientRecord = {
   sexo: PatientSex;
   dia: string;
   hora: string;
+  quien_pago: string;
+  fecha_pago: string;
+  monto_acordado: number;
+  monto_pagado: number;
+  forma_pago: PaymentMethod;
+  terapeuta_atencion: string;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +61,7 @@ export default function PaulinaPatientRegistry({
   canCreate: boolean;
 }) {
   const [patients, setPatients] = useState<PatientRecord[]>([]);
+  const [therapists, setTherapists] = useState<TherapistOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -68,6 +89,24 @@ export default function PaulinaPatientRegistry({
           sex: "Sex",
           man: "Man",
           woman: "Woman",
+          paymentSection: "Payment and care",
+          paymentHelp:
+            "Record who paid, the date, the agreed amount, the amount paid, the payment method and the therapist.",
+          paidBy: "Who paid",
+          paidByPlaceholder: "Name of the person who made the payment",
+          paymentDate: "Payment date",
+          agreedAmount: "Agreed amount",
+          paidAmount: "Amount paid",
+          currency: "MXN",
+          paymentMethod: "Payment method",
+          choosePaymentMethod: "Select a payment method",
+          cash: "Cash",
+          transfer: "Bank transfer",
+          card: "Card",
+          deposit: "Deposit",
+          other: "Other",
+          therapist: "Therapist",
+          therapistPlaceholder: "Type or select a therapist",
           save: "Save patient",
           saving: "Saving...",
           success: "Patient saved successfully.",
@@ -100,6 +139,24 @@ export default function PaulinaPatientRegistry({
           sex: "Sexo",
           man: "Hombre",
           woman: "Mujer",
+          paymentSection: "Pago y atención",
+          paymentHelp:
+            "Registra quién pagó, la fecha, el monto acordado, cuánto pagó, la forma de pago y el terapeuta.",
+          paidBy: "¿Quién pagó?",
+          paidByPlaceholder: "Nombre de la persona que realizó el pago",
+          paymentDate: "Fecha del pago",
+          agreedAmount: "Monto acordado",
+          paidAmount: "¿Cuánto pagó?",
+          currency: "MXN",
+          paymentMethod: "Forma de pago",
+          choosePaymentMethod: "Selecciona una forma de pago",
+          cash: "Efectivo",
+          transfer: "Transferencia",
+          card: "Tarjeta",
+          deposit: "Depósito",
+          other: "Otro",
+          therapist: "¿Con qué terapeuta?",
+          therapistPlaceholder: "Escribe o selecciona un terapeuta",
           save: "Guardar paciente",
           saving: "Guardando...",
           success: "Paciente guardado correctamente.",
@@ -126,6 +183,9 @@ export default function PaulinaPatientRegistry({
         throw new Error(result.error || "No fue posible cargar los registros.");
       }
       setPatients(Array.isArray(result.patients) ? result.patients : []);
+      setTherapists(
+        Array.isArray(result.therapists) ? result.therapists : [],
+      );
     } catch (caught) {
       setLoadError(
         caught instanceof Error
@@ -170,6 +230,14 @@ export default function PaulinaPatientRegistry({
           sexo: String(data.get("sexo") || ""),
           dia: String(data.get("dia") || ""),
           hora: String(data.get("hora") || ""),
+          quien_pago: String(data.get("quien_pago") || ""),
+          fecha_pago: String(data.get("fecha_pago") || ""),
+          monto_acordado: String(data.get("monto_acordado") || ""),
+          monto_pagado: String(data.get("monto_pagado") || ""),
+          forma_pago: String(data.get("forma_pago") || ""),
+          terapeuta_atencion: String(
+            data.get("terapeuta_atencion") || "",
+          ),
         }),
       });
       const result = await response.json().catch(() => ({}));
@@ -210,8 +278,28 @@ export default function PaulinaPatientRegistry({
     [lang],
   );
 
+  const moneyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(lang === "en" ? "en-US" : "es-MX", {
+        style: "currency",
+        currency: "MXN",
+      }),
+    [lang],
+  );
+
   const inputClass =
     "mt-2 h-12 w-full rounded-xl border border-[#d6cee1] bg-[#faf8fc] px-4 text-sm text-[#302747] outline-none transition placeholder:text-[#9b92a4] focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10";
+
+  const paymentMethods: Array<{ value: PaymentMethod; label: string }> = [
+    { value: "efectivo", label: copy.cash },
+    { value: "transferencia", label: copy.transfer },
+    { value: "tarjeta", label: copy.card },
+    { value: "deposito", label: copy.deposit },
+    { value: "otro", label: copy.other },
+  ];
+
+  const paymentMethodLabel = (method: PaymentMethod) =>
+    paymentMethods.find((option) => option.value === method)?.label || method;
 
   return (
     <main className="min-h-screen bg-[#f5f1f8] text-[#302747]">
@@ -344,6 +432,129 @@ export default function PaulinaPatientRegistry({
                   ))}
                 </div>
               </fieldset>
+
+              <section className="rounded-2xl border border-[#d9cdea] bg-[#f7f2fb] p-5">
+                <div className="mb-5 flex items-start gap-3">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#7258a8] text-white">
+                    <CircleDollarSign className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-serif text-xl font-bold">
+                      {copy.paymentSection}
+                    </h3>
+                    <p className="mt-1 text-xs leading-5 text-[#756b7e]">
+                      {copy.paymentHelp}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block text-sm font-bold">
+                    {copy.paidBy}
+                    <input
+                      name="quien_pago"
+                      required
+                      minLength={2}
+                      maxLength={120}
+                      placeholder={copy.paidByPlaceholder}
+                      className={inputClass}
+                    />
+                  </label>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <label className="block text-sm font-bold sm:col-span-2">
+                      {copy.paymentDate}
+                      <input
+                        name="fecha_pago"
+                        required
+                        type="date"
+                        className={inputClass}
+                      />
+                    </label>
+
+                    <label className="block text-sm font-bold">
+                      {copy.agreedAmount}
+                      <div className="relative">
+                        <span className="pointer-events-none absolute left-4 top-1/2 mt-1 -translate-y-1/2 text-sm font-bold text-[#7258a8]">
+                          $
+                        </span>
+                        <input
+                          name="monto_acordado"
+                          required
+                          type="number"
+                          min="0"
+                          max="99999999.99"
+                          step="0.01"
+                          inputMode="decimal"
+                          className={`${inputClass} pl-8 pr-14`}
+                        />
+                        <span className="pointer-events-none absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-[10px] font-black text-[#8b8292]">
+                          {copy.currency}
+                        </span>
+                      </div>
+                    </label>
+
+                    <label className="block text-sm font-bold">
+                      {copy.paidAmount}
+                      <div className="relative">
+                        <span className="pointer-events-none absolute left-4 top-1/2 mt-1 -translate-y-1/2 text-sm font-bold text-[#7258a8]">
+                          $
+                        </span>
+                        <input
+                          name="monto_pagado"
+                          required
+                          type="number"
+                          min="0"
+                          max="99999999.99"
+                          step="0.01"
+                          inputMode="decimal"
+                          className={`${inputClass} pl-8 pr-14`}
+                        />
+                        <span className="pointer-events-none absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-[10px] font-black text-[#8b8292]">
+                          {copy.currency}
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  <label className="block text-sm font-bold">
+                    {copy.paymentMethod}
+                    <select
+                      name="forma_pago"
+                      required
+                      defaultValue=""
+                      className={inputClass}
+                    >
+                      <option value="" disabled>
+                        {copy.choosePaymentMethod}
+                      </option>
+                      {paymentMethods.map((method) => (
+                        <option key={method.value} value={method.value}>
+                          {method.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block text-sm font-bold">
+                    {copy.therapist}
+                    <input
+                      name="terapeuta_atencion"
+                      required
+                      minLength={2}
+                      maxLength={120}
+                      list="paulina-therapists"
+                      placeholder={copy.therapistPlaceholder}
+                      className={inputClass}
+                    />
+                    <datalist id="paulina-therapists">
+                      {therapists.map((therapist) => (
+                        <option key={therapist.id} value={therapist.username} />
+                      ))}
+                    </datalist>
+                  </label>
+                </div>
+              </section>
 
               {formError && (
                 <p
@@ -482,6 +693,74 @@ export default function PaulinaPatientRegistry({
                       <br />
                       {dateFormatter.format(new Date(patient.created_at))}
                     </p>
+                    <div className="grid gap-3 rounded-2xl border border-[#e5dced] bg-[#faf8fc] p-4 text-sm sm:grid-cols-2 md:col-span-2 xl:col-span-5 xl:grid-cols-3">
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <CircleDollarSign className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.paidBy}
+                          </strong>
+                          {patient.quien_pago || "—"}
+                        </span>
+                      </p>
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.paymentDate}
+                          </strong>
+                          {patient.fecha_pago
+                            ? appointmentDateFormatter.format(
+                                new Date(`${patient.fecha_pago}T12:00:00`),
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <CircleDollarSign className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.agreedAmount}
+                          </strong>
+                          {Number.isFinite(Number(patient.monto_acordado))
+                            ? moneyFormatter.format(
+                                Number(patient.monto_acordado),
+                              )
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <CircleDollarSign className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.paidAmount}
+                          </strong>
+                          {Number.isFinite(Number(patient.monto_pagado))
+                            ? moneyFormatter.format(Number(patient.monto_pagado))
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.paymentMethod}
+                          </strong>
+                          {patient.forma_pago
+                            ? paymentMethodLabel(patient.forma_pago)
+                            : "—"}
+                        </span>
+                      </p>
+                      <p className="flex items-start gap-2 text-[#675e70]">
+                        <Stethoscope className="mt-0.5 h-4 w-4 shrink-0 text-[#7258a8]" />
+                        <span>
+                          <strong className="block text-xs text-[#302747]">
+                            {copy.therapist}
+                          </strong>
+                          {patient.terapeuta_atencion || "—"}
+                        </span>
+                      </p>
+                    </div>
                   </article>
                 ))}
               </div>
