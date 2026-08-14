@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { THERAPIST_COOKIE, verifyTherapistSession } from "@/lib/therapistSession";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 import crypto from "crypto";
+import { isAdministrativeRole } from "@/lib/portalRoles";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -66,11 +67,11 @@ export async function GET(request: NextRequest) {
       // Los registros legacy sin valor explícito deben seguir disponibles.
       activo: item.activo !== false
     }));
-    const expedientes = session.role === "admin"
+    const expedientes = isAdministrativeRole(session.role)
       ? allExpedientes
       : allExpedientes.filter((item) => belongsToTherapist(item.terapeuta_asignado, session.username));
     const calendarRows = citaResult.error ? [] : (citaResult.data || []);
-    const citas = session.role === "admin"
+    const citas = isAdministrativeRole(session.role)
       ? calendarRows
       : calendarRows.filter((item) => String(item.therapist_id || "") === session.id);
     return clinicalJson({
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
             { status: 404 },
           );
         }
-        if (session.role !== "admin") {
+        if (!isAdministrativeRole(session.role)) {
           if (!belongsToTherapist(existing.terapeuta_asignado, session.username)) return unauthorized();
         } else {
           // Consultar o editar como administrador no debe reasignar
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
       const expedienteId = String(body.id || "").trim();
       if (!expedienteId) return clinicalJson({ error: "Expediente no válido." }, { status: 400 });
 
-      if (session.role !== "admin") {
+      if (!isAdministrativeRole(session.role)) {
         const { data: existing, error: existingError } = await supabase
           .from("expediente")
           .select("terapeuta_asignado")
@@ -163,9 +164,9 @@ export async function POST(request: NextRequest) {
       }
       const { data: expediente, error: expedienteError } = await supabase.from("expediente").select("id, activo, terapeuta_asignado").eq("id", appointment.expediente_id).single();
       if (expedienteError || !expediente || !expediente.activo) return clinicalJson({ error: "El expediente no existe o está inactivo." }, { status: 400 });
-      if (session.role !== "admin" && !belongsToTherapist(expediente.terapeuta_asignado, session.username)) return unauthorized();
+      if (!isAdministrativeRole(session.role) && !belongsToTherapist(expediente.terapeuta_asignado, session.username)) return unauthorized();
       let appointmentTherapistId = session.id;
-      if (session.role === "admin" && expediente.terapeuta_asignado) {
+      if (isAdministrativeRole(session.role) && expediente.terapeuta_asignado) {
         const { data: assignedTherapist } = await supabase
           .from("usuarios")
           .select("id")
@@ -197,7 +198,7 @@ export async function POST(request: NextRequest) {
         return clinicalJson({ error: "La razón de eliminación es obligatoria y debe tener al menos 5 caracteres." }, { status: 400 });
       }
       let query = supabase.from("calendario").update({ status, cancel_reason: status === "cancelled" ? cancelReason : null }).eq("id", body.id);
-      if (session.role !== "admin") query = query.eq("therapist_id", session.id);
+      if (!isAdministrativeRole(session.role)) query = query.eq("therapist_id", session.id);
       const { data, error } = await query.select().single();
       if (error) throw error;
       return clinicalJson({ data });

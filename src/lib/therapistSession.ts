@@ -1,12 +1,13 @@
 import crypto from "crypto";
 import { getTherapistSessionSecret } from "@/lib/serverSupabaseConfig";
+import type { PortalRole } from "@/lib/portalRoles";
 
 export const THERAPIST_COOKIE = "crei_therapist_session";
 
 export type TherapistSession = {
   id: string;
   username: string;
-  role: "admin" | "therapist";
+  role: PortalRole;
   exp: number;
 };
 

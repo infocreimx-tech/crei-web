@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { exportToExcel, fmtFecha, fmtMXN } from "@/utils/exportToExcel";
+import { isAdministrativeRole } from "@/lib/portalRoles";
 
 const sb = createClient(
   "https://uywihjppwzrrfjkguvot.supabase.co",
@@ -296,7 +297,7 @@ export default function MedioCaminoPage() {
       // Arturo solo puede consultar y administrar la sección de gastos.
       const allowedCmc = ["fernando", "lulu", "sergio"];
       const isArturo = username.toLowerCase() === "arturo";
-      if (role !== "admin" && role !== "cmc" && !allowedCmc.includes(username.toLowerCase()) && !isArturo) {
+      if (!isAdministrativeRole(role) && role !== "cmc" && !allowedCmc.includes(username.toLowerCase()) && !isArturo) {
         router.push(`/${lang}/portal-terapeutas/dashboard`);
         return;
       }

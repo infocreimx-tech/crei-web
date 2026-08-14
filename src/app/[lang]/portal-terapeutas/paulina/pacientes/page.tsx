@@ -5,6 +5,7 @@ import {
   THERAPIST_COOKIE,
   verifyTherapistSession,
 } from "@/lib/therapistSession";
+import { isAdministrativeRole } from "@/lib/portalRoles";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function PaulinaPatientsPage({
   if (!session) redirect(`/${lang}/portal-terapeutas`);
   const isPaulina =
     session.username.trim().toLocaleLowerCase("es-MX") === "paulina";
-  if (!isPaulina && session.role !== "admin") {
+  if (!isPaulina && !isAdministrativeRole(session.role)) {
     redirect(`/${lang}/portal-terapeutas/dashboard`);
   }
 

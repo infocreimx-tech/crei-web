@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { signTherapistSession, THERAPIST_COOKIE } from "@/lib/therapistSession";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
+import { normalizePortalRole } from "@/lib/portalRoles";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const legacyUser = rpcData.user;
-    const role = legacyUser.role === "admin" ? "admin" : "therapist";
+    const role = normalizePortalRole(legacyUser.role);
     const user = {
       id: String(legacyUser.id),
       username: legacyUser.username || username,

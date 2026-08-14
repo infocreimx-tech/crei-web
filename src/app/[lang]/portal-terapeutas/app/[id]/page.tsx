@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft, Maximize, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import TherapistClinicalWorkspace from "@/components/TherapistClinicalWorkspace";
+import { isSuperAdminRole } from "@/lib/portalRoles";
 
 const appNames: Record<string, string> = {
   calendario: "Calendario Clínico",
@@ -50,8 +51,15 @@ export default function IframeAppContainer() {
           try {
             const parsed = JSON.parse(raw);
             const user = parsed.user || parsed.username || parsed.email || "Desconocido";
+            const legacySession = isSuperAdminRole(parsed.role)
+              ? { ...parsed, role: "admin" }
+              : parsed;
             (event.source as Window).postMessage(
-              { type: "CREI_SESSION_RESPONSE", user, raw },
+              {
+                type: "CREI_SESSION_RESPONSE",
+                user,
+                raw: JSON.stringify(legacySession),
+              },
               event.origin || "*"
             );
           } catch (e) {}

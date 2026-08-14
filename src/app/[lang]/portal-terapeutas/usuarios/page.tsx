@@ -9,6 +9,10 @@ import {
   ToggleLeft, ToggleRight, Loader2, X, Check, AlertCircle,
   UserCog, Eye, EyeOff, RefreshCw
 } from "lucide-react";
+import {
+  isAdministrativeRole,
+  isSuperAdminRole,
+} from "@/lib/portalRoles";
 
 const API = "/api/usuarios";
 
@@ -25,11 +29,18 @@ type ModalType = "crear" | "password" | "eliminar" | null;
 
 // ── Colores por rol ───────────────────────────────────────────────────────────
 const roleBadge = (role: string) =>
-  role === "admin"
-    ? { bg: "rgba(225,29,72,0.15)", border: "rgba(225,29,72,0.4)", color: "#fb7185" }
-    : { bg: "rgba(124,92,191,0.15)", border: "rgba(124,92,191,0.4)", color: "#c4b5fd" };
+  isSuperAdminRole(role)
+    ? { bg: "rgba(245,158,11,0.16)", border: "rgba(245,158,11,0.5)", color: "#fbbf24" }
+    : role === "admin"
+      ? { bg: "rgba(225,29,72,0.15)", border: "rgba(225,29,72,0.4)", color: "#fb7185" }
+      : { bg: "rgba(124,92,191,0.15)", border: "rgba(124,92,191,0.4)", color: "#c4b5fd" };
 
-const roleLabel = (role: string) => (role === "admin" ? "Admin" : "Terapeuta");
+const roleLabel = (role: string) =>
+  isSuperAdminRole(role)
+    ? "Superadmin"
+    : role === "admin"
+      ? "Admin"
+      : "Terapeuta";
 
 // ── Avatar inicial ────────────────────────────────────────────────────────────
 function Avatar({ name, isAdmin }: { name: string; isAdmin: boolean }) {
@@ -54,6 +65,7 @@ function Avatar({ name, isAdmin }: { name: string; isAdmin: boolean }) {
 export default function UsuariosPage() {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState("");
+  const [currentRole, setCurrentRole] = useState("");
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<ModalType>(null);
@@ -74,11 +86,12 @@ export default function UsuariosPage() {
     if (!raw) { router.push("/es/portal-terapeutas/dashboard"); return; }
     try {
       const parsed = JSON.parse(raw);
-      if (parsed.role !== "admin") {
+      if (!isAdministrativeRole(parsed.role)) {
         router.push("/es/portal-terapeutas/dashboard");
         return;
       }
       setCurrentUser(parsed.user || parsed.username || "Admin");
+      setCurrentRole(parsed.role || "admin");
     } catch {
       router.push("/es/portal-terapeutas/dashboard");
     }
@@ -163,6 +176,10 @@ export default function UsuariosPage() {
 
   // ── Cambiar rol via API route ────────────────────────────────────────────────────
   const handleCambiarRol = async (u: Usuario) => {
+    if (isSuperAdminRole(u.role)) {
+      showToast("El rol Superadmin está protegido.", false);
+      return;
+    }
     const newRole = u.role === "admin" ? "therapist" : "admin";
     const res = await fetch(API, {
       method: "PATCH",
@@ -281,7 +298,7 @@ export default function UsuariosPage() {
               className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
               style={{ background: "rgba(225,29,72,0.15)", border: "1px solid rgba(225,29,72,0.3)", color: "#fb7185" }}
             >
-              Solo Admin — {currentUser}
+              {isSuperAdminRole(currentRole) ? "Superadmin" : "Solo Admin"} — {currentUser}
             </div>
           </div>
         </div>
@@ -385,7 +402,7 @@ export default function UsuariosPage() {
 
                   {/* Avatar + username */}
                   <div className="flex items-center gap-3">
-                    <Avatar name={u.username} isAdmin={u.role === "admin"} />
+                    <Avatar name={u.username} isAdmin={isAdministrativeRole(u.role)} />
                     <div>
                       <p className="font-bold text-sm" style={{ color: "#fbfaff" }}>{u.username}</p>
                     </div>
@@ -395,8 +412,9 @@ export default function UsuariosPage() {
                   <div className="flex items-center">
                     <button
                       onClick={() => handleCambiarRol(u)}
-                      title="Click para cambiar rol"
-                      className="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105"
+                      disabled={isSuperAdminRole(u.role)}
+                      title={isSuperAdminRole(u.role) ? "Rol protegido" : "Click para cambiar rol"}
+                      className="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 disabled:cursor-not-allowed disabled:hover:scale-100"
                       style={{ background: badge.bg, border: `1px solid ${badge.border}`, color: badge.color }}
                     >
                       {roleLabel(u.role)}
@@ -580,7 +598,7 @@ export default function UsuariosPage() {
                   <span className="block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#7c5cbf" }}>Seguridad</span>
                   <h2 className="text-2xl font-serif font-bold mb-1" style={{ color: "#fbfaff" }}>Cambiar Contraseña</h2>
                   <div className="flex items-center gap-2 mt-2">
-                    <Avatar name={selectedUser.username} isAdmin={selectedUser.role === "admin"} />
+                    <Avatar name={selectedUser.username} isAdmin={isAdministrativeRole(selectedUser.role)} />
                     <span className="font-semibold text-sm" style={{ color: "#c4b5fd" }}>{selectedUser.username}</span>
                   </div>
                 </div>

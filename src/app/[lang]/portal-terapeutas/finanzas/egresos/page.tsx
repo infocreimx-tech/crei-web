@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { isAdministrativeRole } from "@/lib/portalRoles";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -47,7 +48,7 @@ export default function EgresosPage() {
   useEffect(() => {
     const s = localStorage.getItem("crei_session");
     if (!s) { router.push(`/${lang}/portal-terapeutas`); return; }
-    try { const p = JSON.parse(s); if (p.role !== "admin") router.push(`/${lang}/portal-terapeutas/dashboard`); }
+    try { const p = JSON.parse(s); if (!isAdministrativeRole(p.role)) router.push(`/${lang}/portal-terapeutas/dashboard`); }
     catch { router.push(`/${lang}/portal-terapeutas`); }
   }, [router, lang]);
 

@@ -6,6 +6,7 @@ import {
   BellRing, CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Edit3, FilePlus2, FolderOpen,
   Grid3X3, List, Loader2, MapPin, RefreshCw, RotateCcw, Search, ShieldAlert, Trash2, X
 } from "lucide-react";
+import { isAdministrativeRole, isSuperAdminRole } from "@/lib/portalRoles";
 
 type WorkspaceMode = "expediente" | "calendario";
 
@@ -374,11 +375,15 @@ export default function TherapistClinicalWorkspace({ mode }: { mode: WorkspaceMo
           )}
         </div>
 
-        {portalSession.role === "admin" && (
+        {isAdministrativeRole(portalSession.role) && (
           <div className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
             <div>
-              <b className="block">Vista administrativa global</b>
+              <b className="block">
+                {isSuperAdminRole(portalSession.role)
+                  ? "Vista global de Superadministrador"
+                  : "Vista administrativa global"}
+              </b>
               <span className="text-xs leading-5 text-emerald-800">
                 Estás consultando los expedientes y citas de todos los terapeutas.
               </span>

@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import PushNotificationManager from "@/components/PushNotificationManager";
+import {
+  isAdministrativeRole,
+  isSuperAdminRole,
+} from "@/lib/portalRoles";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
@@ -30,7 +34,8 @@ export default function EcosystemDashboard() {
   const [role, setRole] = useState<string>("");
   const isArturo = String(user || "").trim().toLowerCase() === "arturo";
   const isPaulina = String(user || "").trim().toLowerCase() === "paulina";
-  const isAdmin = role === "admin";
+  const isAdmin = isAdministrativeRole(role);
+  const isSuperAdmin = isSuperAdminRole(role);
 
   useEffect(() => {
     sb.auth.getSession().then(({ data: { session } }) => {
@@ -104,7 +109,11 @@ export default function EcosystemDashboard() {
             <div className="hidden sm:flex items-center gap-2 text-xs font-bold tracking-widest uppercase" style={{ color: "#c4b5fd" }}>
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span className="capitalize text-[#fbfaff]">
-                {isAdmin ? `Administrador · ${user}` : user}
+                {isSuperAdmin
+                  ? `Superadministrador · ${user}`
+                  : isAdmin
+                    ? `Administrador · ${user}`
+                    : user}
               </span>
             </div>
 
@@ -145,7 +154,11 @@ export default function EcosystemDashboard() {
           >
             Bienvenido,{" "}
             <span className="italic font-light" style={{ color: "#c4b5fd" }}>
-              {isAdmin ? "Administradora" : "Dr."}{" "}
+              {isSuperAdmin
+                ? "Superadministrador"
+                : isAdmin
+                  ? "Administrador"
+                  : "Dr."}{" "}
               {user.charAt(0).toUpperCase() + user.slice(1)}
             </span>
           </h2>

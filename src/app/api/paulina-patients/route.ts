@@ -5,6 +5,7 @@ import {
   verifyTherapistSession,
 } from "@/lib/therapistSession";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
+import { isAdministrativeRole } from "@/lib/portalRoles";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -47,9 +48,9 @@ function isPaulina(username: string) {
 
 function hasRegistryAccess(session: {
   username: string;
-  role: "admin" | "therapist";
+  role: "superadmin" | "admin" | "therapist";
 }) {
-  return session.role === "admin" || isPaulina(session.username);
+  return isAdministrativeRole(session.role) || isPaulina(session.username);
 }
 
 function unauthorized() {
@@ -119,7 +120,7 @@ export async function GET(request: NextRequest) {
       )
       .order("created_at", { ascending: false });
 
-    if (session.role !== "admin") {
+    if (!isAdministrativeRole(session.role)) {
       query = query
         .eq("terapeuta_id", session.id)
         .eq("terapeuta_username", session.username);
@@ -156,7 +157,8 @@ export async function GET(request: NextRequest) {
     const therapists = (therapistsResult.data || [])
       .filter(
         (therapist) =>
-          therapist.role !== "admin" && Boolean(therapist.username?.trim()),
+          !isAdministrativeRole(therapist.role) &&
+          Boolean(therapist.username?.trim()),
       )
       .map((therapist) => ({
         id: String(therapist.id),
