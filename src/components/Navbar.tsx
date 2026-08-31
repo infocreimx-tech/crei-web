@@ -23,9 +23,8 @@ export default function Navbar() {
           { name: "Services", href: `/${lang}/servicios` },
           { name: "Method", href: `/${lang}/metodo` },
           { name: "Technology", href: `/${lang}/tecnologia` },
-          { name: "Blog", href: `/${lang}/blog` },
-          { name: "APP", href: `/${lang}/app` },
-          { name: "Love Wall", href: `/${lang}/agradecimientos` },
+          { name: "Application", href: `/${lang}/app` },
+          { name: "Store", href: `/${lang}/tienda` },
           { name: "Contact", href: `/${lang}/contacto` },
         ]
       : [
@@ -33,9 +32,8 @@ export default function Navbar() {
           { name: "Servicios", href: `/${lang}/servicios` },
           { name: "Método", href: `/${lang}/metodo` },
           { name: "Tecnología", href: `/${lang}/tecnologia` },
-          { name: "Blog", href: `/${lang}/blog` },
-          { name: "APP", href: `/${lang}/app` },
-          { name: "Amor", href: `/${lang}/agradecimientos` },
+          { name: "Aplicación", href: `/${lang}/app` },
+          { name: "Tienda", href: `/${lang}/tienda` },
           { name: "Contacto", href: `/${lang}/contacto` },
         ];
 
@@ -73,7 +71,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-[11px] font-bold tracking-[0.06em] text-[#302747]/75 hover:text-[#7258a8] transition-colors whitespace-nowrap uppercase"
+              className={`text-[11px] font-bold tracking-[0.06em] text-[#302747]/75 hover:text-[#7258a8] transition-colors whitespace-nowrap ${link.href.endsWith("/app") ? "" : "uppercase"}`}
             >
               {link.name}
             </Link>
