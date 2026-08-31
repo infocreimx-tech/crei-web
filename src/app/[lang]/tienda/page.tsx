@@ -70,8 +70,6 @@ export default async function TiendaPage({ params }: PageProps) {
           "Practicar gratitud y reconocer tus pequeños avances.",
           "Definir metas personales y convertirlas en acciones concretas.",
         ],
-        journalPending: "Enlace de compra pendiente",
-        journalPendingText: "Agregaremos el botón de Hotmart cuando esté disponible el enlace específico de este producto.",
         comingSoon: "Próximamente",
         categories: [
           {
@@ -131,8 +129,6 @@ export default async function TiendaPage({ params }: PageProps) {
           "Practice gratitude and recognize small steps forward.",
           "Define personal goals and turn them into concrete actions.",
         ],
-        journalPending: "Purchase link pending",
-        journalPendingText: "We will add the Hotmart button once this product's specific link is available.",
         comingSoon: "Coming soon",
         categories: [
           {
@@ -193,19 +189,28 @@ export default async function TiendaPage({ params }: PageProps) {
             className="group relative mx-auto aspect-square w-full max-w-[470px] rounded-full focus-visible:outline-none"
           >
             <div className="absolute inset-[8%] rounded-full bg-[#dcefc5]" />
-            <div className="absolute inset-[13%] rotate-3 rounded-[2.5rem] border border-white/70 bg-white/85 shadow-[0_24px_70px_rgba(48,39,71,0.14)] backdrop-blur-xl transition-transform duration-300 group-hover:rotate-0 group-hover:scale-[1.02]" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-16 text-center">
-              <span className="mb-4 rounded-full bg-[#dcefc5] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#3f5134]">
+            <div className="absolute inset-[13%] rotate-3 overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/85 shadow-[0_24px_70px_rgba(48,39,71,0.18)] transition-transform duration-300 group-hover:rotate-0 group-hover:scale-[1.02]">
+              <Image
+                src="/blog/eeboock.jpeg"
+                alt={isEs ? "Autor del curso Esto no se quita con amor" : "Author of the Esto no se quita con amor course"}
+                fill
+                sizes="(max-width: 1024px) 86vw, 470px"
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#21172f]/95 via-[#302747]/15 to-transparent" />
+            </div>
+            <div className="absolute inset-[13%] flex flex-col items-center justify-between px-8 py-7 text-center sm:px-12 sm:py-9">
+              <span className="rounded-full bg-[#dcefc5] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#3f5134] shadow-sm">
                 {copy.featuredLabel}
               </span>
-              <div className="relative mb-4 h-24 w-24">
-                <Image src="/logo-header.png" alt="CREI" fill className="object-contain" priority />
+              <div className="flex flex-col items-center">
+                <ShoppingBag className="h-7 w-7 text-[#dcefc5] drop-shadow" />
+                <p className="mt-3 font-serif text-2xl font-bold leading-tight text-[#fff] drop-shadow-md sm:text-3xl">{copy.featuredTitle}</p>
+                <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#7258a8] px-5 py-3 text-xs font-black text-[#fff] shadow-[0_10px_25px_rgba(18,10,30,0.35)]">
+                  {copy.buyNow} <ArrowRight className="h-4 w-4" />
+                </span>
               </div>
-              <ShoppingBag className="h-8 w-8 text-[#7258a8]" />
-              <p className="mt-3 font-serif text-2xl font-bold text-[#302747]">{copy.featuredTitle}</p>
-              <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#7258a8] px-5 py-3 text-xs font-black text-[#fff] shadow-[0_10px_25px_rgba(114,88,168,0.25)]">
-                {copy.buyNow} <ArrowRight className="h-4 w-4" />
-              </span>
             </div>
           </a>
         </div>
@@ -286,10 +291,6 @@ export default async function TiendaPage({ params }: PageProps) {
                 ))}
               </ul>
 
-              <div className="mt-8 rounded-2xl border border-dashed border-[#bdaed7] bg-[#f6f1fb] p-5">
-                <p className="text-sm font-black text-[#5f478f]">{copy.journalPending}</p>
-                <p className="mt-2 text-xs leading-5 text-[#6d6475]">{copy.journalPendingText}</p>
-              </div>
             </div>
           </div>
         </div>
