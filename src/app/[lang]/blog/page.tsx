@@ -14,7 +14,6 @@ export default async function BlogPage({
 }) {
     const resolvedParams = await params;
     const articles = getPosts(resolvedParams.lang);
-    console.log("ARTICLES COUNT:", articles.length, "LANG:", resolvedParams.lang);
 
     return (
         <main className="modern-content min-h-screen bg-background relative">

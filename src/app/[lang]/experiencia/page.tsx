@@ -54,6 +54,7 @@ export default function ExperienciaPage() {
           <Link href={`/${lang}/servicios`}>{t("Servicios", "Services")}</Link>
           <Link href={`/${lang}/metodo`}>{t("Método", "Method")}</Link>
           <Link href={`/${lang}/tecnologia`}>{t("Tecnología", "Technology")}</Link>
+          <Link href={`/${lang}/blog`}>Blog</Link>
           <a href="#app-crei">{t("APLICACIÓN", "APPLICATION")}</a>
           <Link href={`/${lang}/tienda`}>{t("Tienda", "Store")}</Link>
           <a href="#contacto">{t("Contacto", "Contact")}</a>
@@ -67,6 +68,7 @@ export default function ExperienciaPage() {
         <Link href={`/${lang}/servicios`} onClick={closeMenu}>{t("Servicios", "Services")}</Link>
         <Link href={`/${lang}/metodo`} onClick={closeMenu}>{t("Método", "Method")}</Link>
         <Link href={`/${lang}/tecnologia`} onClick={closeMenu}>{t("Tecnología", "Technology")}</Link>
+        <Link href={`/${lang}/blog`} onClick={closeMenu}>Blog</Link>
         <a href="#app-crei" onClick={closeMenu}>{t("APLICACIÓN", "APPLICATION")}</a>
         <Link href={`/${lang}/tienda`} onClick={closeMenu}>{t("Tienda", "Store")}</Link>
         <a href="#contacto" onClick={closeMenu}>{t("Contacto", "Contact")}</a>

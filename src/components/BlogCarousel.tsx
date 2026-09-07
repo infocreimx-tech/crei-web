@@ -25,6 +25,8 @@ export default function BlogCarousel({ articles }: BlogCarouselProps) {
           read: "Leer artículo",
         };
 
+  if (articles.length === 0) return null;
+
   return (
     <section className="py-24 bg-[#1a0f2e] border-b border-white/5 overflow-hidden">
       <div className="container mx-auto px-6">

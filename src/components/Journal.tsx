@@ -60,6 +60,9 @@ export default function Journal({ articles }: JournalProps) {
           subtitle: "Clinical insights, practical tools, and reflections on modern mental health.",
           all: "View all messages",
           read: "Read completely",
+          emptyTitle: "New content is on the way",
+          emptyText: "We are preparing a new collection of articles and reflections.",
+          author: "Author: Martin de la O Contreras",
         }
       : {
           label: "Blog",
@@ -67,6 +70,9 @@ export default function Journal({ articles }: JournalProps) {
           subtitle: "Pensamientos clínicos, herramientas prácticas y reflexiones sobre la salud mental moderna.",
           all: "Ver más mensajes",
           read: "Leer artículo",
+          emptyTitle: "Estamos preparando nuevo contenido",
+          emptyText: "Próximamente encontrarás una nueva colección de artículos y reflexiones.",
+          author: "Autor: Martin de la O Contreras",
         };
 
   return (
@@ -114,6 +120,22 @@ export default function Journal({ articles }: JournalProps) {
             {/* Background texture optional - solid is fine for darkmode UI */}
             
             <div className="relative z-10 space-y-8">
+              {articles.length === 0 && (
+                <div className="flex min-h-[420px] flex-col items-center justify-center px-6 text-center">
+                  <span className="grid h-16 w-16 place-items-center rounded-full bg-[#202c33] text-[#53bdeb] shadow-lg">
+                    <BookOpen className="h-7 w-7" />
+                  </span>
+                  <h3 className="mt-6 font-serif text-3xl font-bold text-[#e9edef]">
+                    {copy.emptyTitle}
+                  </h3>
+                  <p className="mt-3 max-w-md text-sm leading-6 text-[#8696a0]">
+                    {copy.emptyText}
+                  </p>
+                  <p className="mt-5 rounded-full bg-[#202c33] px-4 py-2 text-xs font-semibold text-[#d7dee2]">
+                    {copy.author}
+                  </p>
+                </div>
+              )}
               {articles.map((article, index) => {
                 const isSent = index % 2 !== 0;
 
@@ -160,7 +182,7 @@ export default function Journal({ articles }: JournalProps) {
                       {/* Sender name for received messages */}
                       {!isSent && (
                         <div className="text-[#53bdeb] text-sm font-semibold px-2 pt-1 mb-1">
-                          {article.author || "~ Dr. Fer Núñez"}
+                          {article.author || "Martin de la O Contreras"}
                         </div>
                       )}
 
