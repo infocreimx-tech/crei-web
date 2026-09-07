@@ -20,7 +20,7 @@ type Confirmation = {
   modalidad: Modality;
 };
 
-const AVAILABLE_TIMES = [
+const MONDAY_TO_THURSDAY_TIMES = [
   "09:00",
   "10:00",
   "11:00",
@@ -32,12 +32,29 @@ const AVAILABLE_TIMES = [
   "17:00",
 ];
 
+const FRIDAY_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
+
 const CREI_OFFICE_ADDRESS =
   "Sacramento 521, Insurgentes San Borja, Benito Juárez, 03100 Ciudad de México, CDMX";
 const CREI_OFFICE_MAP_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CREI_OFFICE_ADDRESS)}`;
 
 const inputClass =
   "mt-2 h-12 w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 text-sm text-[#302747] outline-none transition placeholder:text-[#91879a] focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10";
+
+function isWeekday(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return weekday >= 1 && weekday <= 5;
+}
+
+function getAvailableTimes(date: string) {
+  if (!date) return [];
+  const [year, month, day] = date.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  if (weekday >= 1 && weekday <= 4) return MONDAY_TO_THURSDAY_TIMES;
+  if (weekday === 5) return FRIDAY_TIMES;
+  return [];
+}
 
 export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
   const [modality, setModality] = useState<Modality>("presencial");
@@ -50,6 +67,7 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
+  const availableTimes = getAvailableTimes(selectedDate);
 
   useEffect(() => {
     setMinDate(
@@ -67,6 +85,18 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
       setOccupiedTimes([]);
       setSelectedTime("");
       setAvailabilityError("");
+      return;
+    }
+
+    if (!isWeekday(selectedDate)) {
+      setOccupiedTimes([]);
+      setSelectedTime("");
+      setLoadingAvailability(false);
+      setAvailabilityError(
+        lang === "en"
+          ? "Assessment appointments are not available on Saturdays or Sundays."
+          : "Las citas de valoración no están disponibles los sábados ni domingos.",
+      );
       return;
     }
 
@@ -135,6 +165,7 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           phone: "Phone or WhatsApp",
           date: "Date",
           time: "Start time",
+          schedule: "Mon–Thu 09:00–17:00 · Fri 09:00–14:00",
           chooseDateFirst: "Choose a date first",
           checkingAvailability: "Checking availability...",
           occupied: "Occupied",
@@ -173,6 +204,7 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           phone: "Teléfono o WhatsApp",
           date: "Fecha",
           time: "Hora de inicio",
+          schedule: "Lun–Jue 09:00–17:00 · Vie 09:00–14:00",
           chooseDateFirst: "Primero elige una fecha",
           checkingAvailability: "Consultando disponibilidad...",
           occupied: "Ocupado",
@@ -360,7 +392,7 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
               <div className="mb-7 border-b border-[#e7dfea] pb-6">
                 <span className="inline-flex items-center gap-2 rounded-full bg-[#eee7f8] px-3 py-2 text-[10px] font-black uppercase tracking-[.15em] text-[#634993]">
                   <CalendarDays className="h-4 w-4" />
-                  60 min · CDMX
+                  60 min · {copy.schedule}
                 </span>
                 <h3 className="mt-4 font-serif text-3xl font-bold text-[#302747]">
                   {copy.formTitle}
@@ -440,7 +472,7 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
                             ? "--:--"
                             : copy.chooseDateFirst}
                       </option>
-                      {AVAILABLE_TIMES.map((time) => (
+                      {availableTimes.map((time) => (
                         <option
                           key={time}
                           value={time}
@@ -468,7 +500,8 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
                 {selectedDate &&
                   !loadingAvailability &&
                   !availabilityError &&
-                  occupiedTimes.length === AVAILABLE_TIMES.length && (
+                  availableTimes.length > 0 &&
+                  occupiedTimes.length === availableTimes.length && (
                     <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
                       {copy.noAvailability}
                     </p>

@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 const MEXICO_CITY_OFFSET = "-06:00";
 const CREI_OFFICE_ADDRESS =
   "Sacramento 521, Insurgentes San Borja, Benito Juárez, 03100 Ciudad de México, CDMX";
-const VALID_TIMES = new Set([
+const MONDAY_TO_THURSDAY_TIMES = [
   "09:00",
   "10:00",
   "11:00",
@@ -14,7 +14,8 @@ const VALID_TIMES = new Set([
   "15:00",
   "16:00",
   "17:00",
-]);
+];
+const FRIDAY_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
 function getServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -52,6 +53,20 @@ function isValidCalendarDate(fecha: string) {
   );
 }
 
+function isWeekday(fecha: string) {
+  const [year, month, day] = fecha.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return weekday >= 1 && weekday <= 5;
+}
+
+function getValidTimes(fecha: string) {
+  const [year, month, day] = fecha.split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  if (weekday >= 1 && weekday <= 4) return MONDAY_TO_THURSDAY_TIMES;
+  if (weekday === 5) return FRIDAY_TIMES;
+  return [];
+}
+
 export async function GET(request: NextRequest) {
   try {
     const fecha = String(request.nextUrl.searchParams.get("fecha") || "").trim();
@@ -59,6 +74,12 @@ export async function GET(request: NextRequest) {
     if (!isValidCalendarDate(fecha)) {
       return NextResponse.json(
         { error: "Selecciona una fecha válida." },
+        { status: 400 },
+      );
+    }
+    if (!isWeekday(fecha)) {
+      return NextResponse.json(
+        { error: "No se pueden agendar valoraciones los sábados ni domingos." },
         { status: 400 },
       );
     }
@@ -87,7 +108,7 @@ export async function GET(request: NextRequest) {
       throw error;
     }
 
-    const occupiedTimes = Array.from(VALID_TIMES).filter((time) => {
+    const occupiedTimes = getValidTimes(fecha).filter((time) => {
       const slot = new Date(`${fecha}T${time}:00${MEXICO_CITY_OFFSET}`);
       return data?.some(
         (appointment) =>
@@ -153,9 +174,24 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    if (!isValidCalendarDate(fecha) || !VALID_TIMES.has(hora)) {
+    if (!isValidCalendarDate(fecha)) {
       return NextResponse.json(
         { error: "Selecciona una fecha y hora válidas." },
+        { status: 400 },
+      );
+    }
+    if (!isWeekday(fecha)) {
+      return NextResponse.json(
+        { error: "No se pueden agendar valoraciones los sábados ni domingos." },
+        { status: 400 },
+      );
+    }
+    if (!getValidTimes(fecha).includes(hora)) {
+      return NextResponse.json(
+        {
+          error:
+            "Selecciona un horario válido: lunes a jueves de 09:00 a 17:00 o viernes de 09:00 a 14:00.",
+        },
         { status: 400 },
       );
     }
