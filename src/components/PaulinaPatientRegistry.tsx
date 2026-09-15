@@ -106,7 +106,7 @@ export default function PaulinaPatientRegistry({
           deposit: "Deposit",
           other: "Other",
           therapist: "Therapist",
-          therapistPlaceholder: "Type or select a therapist",
+          therapistPlaceholder: "Select a therapist",
           save: "Save patient",
           saving: "Saving...",
           success: "Patient saved successfully.",
@@ -156,7 +156,7 @@ export default function PaulinaPatientRegistry({
           deposit: "Depósito",
           other: "Otro",
           therapist: "¿Con qué terapeuta?",
-          therapistPlaceholder: "Escribe o selecciona un terapeuta",
+          therapistPlaceholder: "Selecciona un terapeuta",
           save: "Guardar paciente",
           saving: "Guardando...",
           success: "Paciente guardado correctamente.",
@@ -538,20 +538,21 @@ export default function PaulinaPatientRegistry({
 
                   <label className="block text-sm font-bold">
                     {copy.therapist}
-                    <input
+                    <select
                       name="terapeuta_atencion"
                       required
-                      minLength={2}
-                      maxLength={120}
-                      list="paulina-therapists"
-                      placeholder={copy.therapistPlaceholder}
+                      defaultValue=""
                       className={inputClass}
-                    />
-                    <datalist id="paulina-therapists">
+                    >
+                      <option value="" disabled>
+                        {copy.therapistPlaceholder}
+                      </option>
                       {therapists.map((therapist) => (
-                        <option key={therapist.id} value={therapist.username} />
+                        <option key={therapist.id} value={therapist.username}>
+                          {therapist.username}
+                        </option>
                       ))}
-                    </datalist>
+                    </select>
                   </label>
                 </div>
               </section>

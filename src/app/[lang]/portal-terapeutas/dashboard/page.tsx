@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Search, CalendarDays, Receipt, ClipboardList,
   FolderOpen, FileText, Activity, LogOut, ShieldCheck, ArrowRight, Users,
-  TrendingUp, TrendingDown, User, Mic, BarChart3, DollarSign, Home
+  TrendingUp, TrendingDown, User, Mic, BarChart3, DollarSign, Home, BellRing
 } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import PushNotificationManager from "@/components/PushNotificationManager";
@@ -15,6 +15,7 @@ import {
   isAdministrativeRole,
   isSuperAdminRole,
 } from "@/lib/portalRoles";
+import { isAssignableTherapistUsername } from "@/lib/assignableTherapists";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uywihjppwzrrfjkguvot.supabase.co";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5d2loanBwd3pycmZqa2d1dm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NTQ1OTEsImV4cCI6MjA4OTUzMDU5MX0.7eFia3SwiV4bBHvo-qZsmzEEu4RqTRMnMwbVZgrLZFw";
@@ -32,10 +33,13 @@ export default function EcosystemDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string>("");
+  const [assignedPatientCount, setAssignedPatientCount] = useState(0);
+  const [newAssignedPatientCount, setNewAssignedPatientCount] = useState(0);
   const isArturo = String(user || "").trim().toLowerCase() === "arturo";
   const isPaulina = String(user || "").trim().toLowerCase() === "paulina";
   const isAdmin = isAdministrativeRole(role);
   const isSuperAdmin = isSuperAdminRole(role);
+  const hasAssignedPatientsInbox = isAssignableTherapistUsername(user);
 
   useEffect(() => {
     sb.auth.getSession().then(({ data: { session } }) => {
@@ -58,6 +62,29 @@ export default function EcosystemDashboard() {
       setRole(userRole);
     });
   }, [router]);
+
+  useEffect(() => {
+    if (!user || !isAssignableTherapistUsername(user)) return;
+    let active = true;
+    const loadAssignedPatients = async () => {
+      try {
+        const response = await fetch("/api/assigned-patients", {
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!active) return;
+        setAssignedPatientCount(Number(result.total) || 0);
+        setNewAssignedPatientCount(Number(result.newCount) || 0);
+      } catch {}
+    };
+    loadAssignedPatients();
+    const interval = window.setInterval(loadAssignedPatients, 60_000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [user]);
 
   const handleLogout = async () => {
     await sb.auth.signOut();
@@ -228,6 +255,43 @@ export default function EcosystemDashboard() {
               </div>
             </Link>
           ))}
+
+          {hasAssignedPatientsInbox && (
+            <Link
+              href="/es/portal-terapeutas/pacientes-asignados"
+              className="group relative overflow-hidden rounded-[2rem] p-8 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-2"
+              style={{
+                background: "rgba(30, 15, 45, 0.85)",
+                border: "1px solid rgba(16, 185, 129, 0.45)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                backdropFilter: "blur(16px)",
+              }}
+            >
+              <div className="absolute top-[-20px] right-[-20px] h-32 w-32 rounded-full bg-emerald-500 opacity-20 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-60" />
+              <div className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-300">
+                <BellRing className="h-3 w-3" />
+                {newAssignedPatientCount > 0
+                  ? `${newAssignedPatientCount} nuevos`
+                  : "Sin nuevos"}
+              </div>
+              <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/10 shadow-lg">
+                <Users className="h-6 w-6 text-emerald-400 transition-transform group-hover:scale-110" />
+              </div>
+              <div className="relative z-10 mt-2 flex-1">
+                <h3 className="mb-2 font-serif text-xl font-bold text-[#fbfaff]">
+                  Pacientes asignados
+                </h3>
+                <p className="text-sm font-medium leading-relaxed text-emerald-100/70">
+                  {assignedPatientCount} paciente{assignedPatientCount === 1 ? "" : "s"} en tu bandeja clínica.
+                </p>
+              </div>
+              <div className="relative z-10 mt-4 flex items-center justify-end">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10">
+                  <ArrowRight className="h-4 w-4 text-emerald-400 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+          )}
 
           {(isPaulina || isAdmin) && (
             <Link

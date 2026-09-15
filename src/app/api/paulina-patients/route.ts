@@ -6,6 +6,7 @@ import {
 } from "@/lib/therapistSession";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 import { isAdministrativeRole } from "@/lib/portalRoles";
+import { isAssignableTherapistUsername } from "@/lib/assignableTherapists";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -157,7 +158,7 @@ export async function GET(request: NextRequest) {
     const therapists = (therapistsResult.data || [])
       .filter(
         (therapist) =>
-          !isAdministrativeRole(therapist.role) &&
+          isAssignableTherapistUsername(therapist.username) &&
           Boolean(therapist.username?.trim()),
       )
       .map((therapist) => ({
@@ -340,8 +341,31 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    if (!isAssignableTherapistUsername(terapeutaAtencion)) {
+      return registryJson(
+        { error: "Selecciona uno de los terapeutas autorizados." },
+        { status: 400 },
+      );
+    }
 
     const supabase = serverClient();
+    const { data: assignedTherapist, error: assignedTherapistError } =
+      await supabase
+        .from("usuarios")
+        .select("id,username,is_active")
+        .ilike("username", terapeutaAtencion)
+        .eq("is_active", true)
+        .maybeSingle();
+    if (assignedTherapistError) throw assignedTherapistError;
+    if (
+      !assignedTherapist ||
+      !isAssignableTherapistUsername(assignedTherapist.username)
+    ) {
+      return registryJson(
+        { error: "El terapeuta seleccionado no está activo." },
+        { status: 400 },
+      );
+    }
     const { data, error } = await supabase
       .from("registro_pacientes_paulina")
       .insert({
@@ -358,7 +382,7 @@ export async function POST(request: NextRequest) {
         monto_acordado: montoAcordado,
         monto_pagado: montoPagado,
         forma_pago: formaPago,
-        terapeuta_atencion: terapeutaAtencion,
+        terapeuta_atencion: assignedTherapist.username,
       })
       .select(
         "id,nombre,ciudad,telefono,sexo,dia,hora,quien_pago,fecha_pago,monto_acordado,monto_pagado,forma_pago,terapeuta_atencion,created_at,updated_at",
