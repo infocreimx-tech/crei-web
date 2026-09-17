@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Plus, Minus, Heart, Users, User, Brain, Award, BookOpen, ChevronRight
+  Plus, Minus, Heart, Users, User, Brain, Award, BookOpen, ChevronRight,
+  Instagram, Youtube, Facebook, Twitter, MessageCircle, ExternalLink
 } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -102,6 +103,19 @@ const faqs = {
   ]
 };
 
+const mediaIcons = {
+  tiktok: ({ className = "" }: { className?: string }) => (
+    <svg viewBox="0 0 16 16" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z" />
+    </svg>
+  ),
+  instagram: Instagram,
+  youtube: Youtube,
+  facebook: Facebook,
+  x: Twitter,
+  whatsapp: MessageCircle,
+};
+
 /* ─────────────────────────────────────────────────────── */
 /*  COMPONENT                                               */
 /* ─────────────────────────────────────────────────────── */
@@ -178,10 +192,12 @@ export default function About() {
         mediaTitle: "Fernando Núñez in the Public Eye",
         mediaDesc: "From prison to podcast. Fernando's story has been shared in conferences, digital media and mental health platforms — reaching millions of people who needed to hear that recovery is possible.",
         mediaLinks: [
-          { platform: "TikTok", handle: "@crei.mx", icon: "♪", href: "https://www.tiktok.com/@crei.mx" },
-          { platform: "Instagram", handle: "@crei.mx", icon: "📸", href: "https://www.instagram.com/crei.mx/" },
-          { platform: "YouTube", handle: "@Crei_mx", icon: "▶", href: "https://www.youtube.com/@Crei_mx" },
-          { platform: "Facebook", handle: "CREImx", icon: "👤", href: "https://www.facebook.com/CREImx/" },
+          { platform: "TikTok", handle: "@crei.mx", icon: "tiktok" as const, href: "https://www.tiktok.com/@crei.mx" },
+          { platform: "Instagram", handle: "@crei.mx", icon: "instagram" as const, href: "https://www.instagram.com/crei.mx/" },
+          { platform: "YouTube", handle: "@Crei_mx", icon: "youtube" as const, href: "https://www.youtube.com/@Crei_mx" },
+          { platform: "Facebook", handle: "CREImx", icon: "facebook" as const, href: "https://www.facebook.com/CREImx/" },
+          { platform: "X", handle: "@CreiMx", icon: "x" as const, href: "https://x.com/CreiMx" },
+          { platform: "WhatsApp", handle: "Contact CREI", icon: "whatsapp" as const, href: "https://wa.me/525530412552" },
         ],
         ctaTitle: "Ready to Take the First Step?",
         ctaDesc: "Whether it's you or someone you love — the most important thing is to start. We're here, it's free, and we won't let go.",
@@ -232,7 +248,7 @@ export default function About() {
           { title: "Comunidad", desc: "La recuperación ocurre en conexión. Construimos redes reales de apoyo para pacientes y familias." },
         ],
         timelineLabel: "Nuestra Historia",
-        timelineTitle: "Cómo Nació el CREI",
+        timelineTitle: "Como Nació CREI",
         timeline: [
           { year: "2024", title: "Los Primeros Pasos", desc: "Fernando comienza a ayudar de forma personal y directa a las primeras familias que buscan desesperadamente una salida, compartiendo ciencia y experiencia vivida." },
           { year: "2024", title: "La Necesidad Es Clara", desc: "La demanda crece. Se vuelve evidente que miles de personas necesitan orientación clínica y psicológica profunda, pero no tienen cómo pagarla." },
@@ -244,10 +260,12 @@ export default function About() {
         mediaTitle: "Fernando Núñez en la Escena Pública",
         mediaDesc: "De la prisión al podcast. La historia de Fernando ha sido compartida en conferencias, medios digitales y plataformas de salud mental — llegando a millones de personas que necesitaban saber que la recuperación es posible.",
         mediaLinks: [
-          { platform: "TikTok", handle: "@crei.mx", icon: "♪", href: "https://www.tiktok.com/@crei.mx" },
-          { platform: "Instagram", handle: "@crei.mx", icon: "📸", href: "https://www.instagram.com/crei.mx/" },
-          { platform: "YouTube", handle: "@Crei_mx", icon: "▶", href: "https://www.youtube.com/@Crei_mx" },
-          { platform: "Facebook", handle: "CREImx", icon: "👤", href: "https://www.facebook.com/CREImx/" },
+          { platform: "TikTok", handle: "@crei.mx", icon: "tiktok" as const, href: "https://www.tiktok.com/@crei.mx" },
+          { platform: "Instagram", handle: "@crei.mx", icon: "instagram" as const, href: "https://www.instagram.com/crei.mx/" },
+          { platform: "YouTube", handle: "@Crei_mx", icon: "youtube" as const, href: "https://www.youtube.com/@Crei_mx" },
+          { platform: "Facebook", handle: "CREImx", icon: "facebook" as const, href: "https://www.facebook.com/CREImx/" },
+          { platform: "X", handle: "@CreiMx", icon: "x" as const, href: "https://x.com/CreiMx" },
+          { platform: "WhatsApp", handle: "Contactar a CREI", icon: "whatsapp" as const, href: "https://wa.me/525530412552" },
         ],
         ctaTitle: "¿Listo para dar el primer paso?",
         ctaDesc: "Seas tú o alguien que quieres — lo más importante es empezar. Estamos aquí, es gratis y no te vamos a soltar.",
@@ -397,19 +415,25 @@ export default function About() {
               <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">{copy.mediaTitle}</motion.h2>
               <div className="w-12 h-1 bg-accent rounded-full mb-6" />
               <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-white/60 leading-relaxed text-[15px] mb-10">{copy.mediaDesc}</motion.p>
-              <div className="grid grid-cols-2 gap-4">
-                {copy.mediaLinks.map((m, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {copy.mediaLinks.map((m, i) => {
+                  const MediaIcon = mediaIcons[m.icon];
+                  return (
+                  <motion.div key={m.platform} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                     <a href={m.href} target="_blank" rel="noopener noreferrer"
-                      className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3 hover:border-accent/30 transition-colors cursor-pointer w-full block">
-                      <span className="text-2xl">{m.icon}</span>
-                      <div>
+                      aria-label={`${lang === "en" ? "Visit" : "Visitar"} ${m.platform}`}
+                      className="group bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 hover:border-accent/50 hover:bg-white/10 transition-all cursor-pointer w-full">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent group-hover:bg-accent group-hover:text-[#1a0f2e] transition-colors">
+                        <MediaIcon className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
                         <p className="text-white font-semibold text-sm">{m.platform}</p>
-                        <p className="text-white/40 text-xs">{m.handle}</p>
+                        <p className="text-white/50 text-xs truncate">{m.handle}</p>
                       </div>
+                      <ExternalLink className="h-4 w-4 text-white/25 group-hover:text-accent transition-colors" />
                     </a>
                   </motion.div>
-                ))}
+                )})}
               </div>
             </div>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="relative rounded-3xl overflow-hidden shadow-2xl">

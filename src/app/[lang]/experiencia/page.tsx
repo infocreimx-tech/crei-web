@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowRight, BookOpen, Brain, CalendarDays, Check, ChevronDown, HeartPulse, Home, Languages, Menu, MessageCircle, Phone, ShieldCheck, Smartphone, Sparkles, Stethoscope, Target, Users, Video, X } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, CalendarDays, Check, ChevronDown, ExternalLink, Facebook, HeartPulse, Home, Instagram, Languages, Menu, MessageCircle, Phone, ShieldCheck, Smartphone, Sparkles, Stethoscope, Target, Twitter, Users, Video, X, Youtube } from "lucide-react";
 import { useState } from "react";
 import { ThursdayRegistration } from "@/components/HomepageAccessForms";
 import { CREI_WHATSAPP_URL } from "@/components/CrisisSupport";
@@ -11,6 +11,10 @@ import Contact from "@/components/Contact";
 import PWAInstallButton from "@/components/PWAInstallButton";
 import AssessmentBooking from "@/components/AssessmentBooking";
 import styles from "./experiencia.module.css";
+
+function TikTokIcon() {
+  return <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z" /></svg>;
+}
 
 const faqsByLang = {
   es: [
@@ -42,6 +46,14 @@ export default function ExperienciaPage() {
   const faqs = faqsByLang[lang];
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const socialLinks = [
+    { name: "TikTok", handle: "@crei.mx", href: "https://www.tiktok.com/@crei.mx", icon: <TikTokIcon /> },
+    { name: "Instagram", handle: "@crei.mx", href: "https://www.instagram.com/crei.mx/", icon: <Instagram /> },
+    { name: "YouTube", handle: "@Crei_mx", href: "https://www.youtube.com/@Crei_mx", icon: <Youtube /> },
+    { name: "Facebook", handle: "CREImx", href: "https://www.facebook.com/CREImx/", icon: <Facebook /> },
+    { name: "X", handle: "@CreiMx", href: "https://x.com/CreiMx", icon: <Twitter /> },
+    { name: "WhatsApp", handle: t("Hablar con CREI", "Chat with CREI"), href: CREI_WHATSAPP_URL, icon: <MessageCircle /> },
+  ];
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -59,6 +71,9 @@ export default function ExperienciaPage() {
           <Link href={`/${lang}/tienda`}>{t("Tienda", "Store")}</Link>
           <a href="#contacto">{t("Contacto", "Contact")}</a>
         </nav>
+        <div className={styles.headerSocials} aria-label={t("Redes sociales de CREI", "CREI social media")}>
+          {socialLinks.slice(0, 5).map((social) => <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`${t("Visitar", "Visit")} ${social.name}`}>{social.icon}</a>)}
+        </div>
         <Link href={languageHref} className={styles.languageSwitch} hrefLang={otherLang} aria-label={t("Cambiar la página a inglés", "Switch the page to Spanish")}><Languages size={17} /><span>{t("English", "Español")}</span></Link>
         <button className={styles.menuButton} onClick={() => setMenuOpen(!menuOpen)} aria-label={t("Abrir menú", "Open menu")} aria-expanded={menuOpen}>{menuOpen ? <X /> : <Menu />}</button>
       </header>
@@ -72,6 +87,9 @@ export default function ExperienciaPage() {
         <a href="#app-crei" onClick={closeMenu}>{t("APLICACIÓN", "APPLICATION")}</a>
         <Link href={`/${lang}/tienda`} onClick={closeMenu}>{t("Tienda", "Store")}</Link>
         <a href="#contacto" onClick={closeMenu}>{t("Contacto", "Contact")}</a>
+        <div className={styles.mobileSocials} aria-label={t("Redes sociales de CREI", "CREI social media")}>
+          {socialLinks.map((social) => <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`${t("Visitar", "Visit")} ${social.name}`}>{social.icon}</a>)}
+        </div>
       </nav>}
 
       <section className={styles.hero}>
@@ -146,6 +164,17 @@ export default function ExperienciaPage() {
 
       <section className={styles.team} id="equipo"><div className={styles.teamImage}><Image src="/director.jpeg" alt={t("Especialista de CREI", "CREI specialist")} fill sizes="(max-width: 1000px) 100vw, 45vw" className={styles.photo} /></div><div className={styles.teamCopy}><span>{t("Personas cuidando personas", "People caring for people")}</span><h2>{t("Experiencia clínica.", "Clinical experience.")}<br /><em>{t("Presencia humana.", "Human presence.")}</em></h2><p>{t("Reunimos distintas especialidades alrededor de cada persona. El equipo comparte objetivos, observa avances y ajusta el proceso cuando es necesario.", "We bring different specialties together around each person. The team shares goals, monitors progress, and adjusts the process when needed.")}</p><div className={styles.teamStats}><div><b>{t("Integral", "Comprehensive")}</b><small>{t("Mente, cuerpo y entorno", "Mind, body, and environment")}</small></div><div><b>{t("Cercano", "Approachable")}</b><small>{t("Un equipo que escucha", "A team that listens")}</small></div></div><Link href={`/${lang}/nosotros`}>{t("Conocer al equipo", "Meet the team")} <ArrowRight size={17} /></Link></div></section>
 
+      <section className={styles.socialSection} id="redes" aria-labelledby="social-title">
+        <div className={styles.socialIntro}>
+          <span>{t("Medios y comunidad", "Media and community")}</span>
+          <h2 id="social-title">{t("Sigue a CREI y encuentra contenido para acompañar tu proceso.", "Follow CREI and find content to support your journey.")}</h2>
+          <p>{t("Conversaciones, herramientas y orientación sobre salud emocional, adicciones y acompañamiento familiar.", "Conversations, tools, and guidance about emotional health, addiction, and family support.")}</p>
+        </div>
+        <div className={styles.socialGrid}>
+          {socialLinks.map((social) => <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`${t("Visitar", "Visit")} ${social.name}`}><span className={styles.socialIcon}>{social.icon}</span><span><b>{social.name}</b><small>{social.handle}</small></span><ExternalLink /></a>)}
+        </div>
+      </section>
+
       <section className={styles.stories}><div className={styles.storiesHead}><span>{t("Historias que acompañan", "Stories that offer support")}</span><h2>{t("Sentirse comprendido también es parte del proceso.", "Feeling understood is also part of the process.")}</h2><p>{t("Las experiencias de nuestra comunidad muestran que pedir ayuda puede abrir una posibilidad nueva.", "Our community's experiences show that asking for help can open up a new possibility.")}</p></div><div className={styles.quotes}><blockquote><p>{t("“Encontré un espacio donde pude hablar sin sentirme juzgado. Por primera vez el proceso se sintió mío.”", "“I found a space where I could talk without feeling judged. For the first time, the process felt like my own.”")}</p><footer>{t("Testimonio de paciente", "Patient testimonial")} <span>· {t("Identidad protegida", "Identity protected")}</span></footer></blockquote><blockquote><p>{t("“No solo acompañaron a nuestra persona querida; también nos enseñaron a la familia cómo estar presentes.”", "“They did not only support our loved one; they also taught our family how to be present.”")}</p><footer>{t("Testimonio familiar", "Family testimonial")} <span>· {t("Identidad protegida", "Identity protected")}</span></footer></blockquote></div><Link href={`/${lang}/agradecimientos`} className={styles.storyLink}>{t("Visitar el muro de agradecimientos", "Visit the gratitude wall")} <ArrowRight size={17} /></Link></section>
 
       <section className={styles.faq} id="respuestas"><div><span>{t("Preguntas directas · Respuestas transparentes", "Direct questions · Transparent answers")}</span><h2>{t("Lo que muchas personas necesitan saber antes de pedir ayuda.", "What many people need to know before asking for help.")}</h2><p>{t("Si algo no está claro, puedes preguntarlo sin compromiso durante la orientación gratuita.", "If anything is unclear, you can ask without obligation during the free guidance session.")}</p></div><div className={styles.faqList}>{faqs.map(([question, answer], index) => <article key={question}><button onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index}><span>{question}</span><ChevronDown className={openFaq === index ? styles.rotated : ""} /></button>{openFaq === index && <p>{answer}</p>}</article>)}</div></section>
@@ -154,7 +183,7 @@ export default function ExperienciaPage() {
 
       <Contact />
 
-      <footer className={styles.footer}><div className={styles.brand}><Image src="/logo-footer.png" alt="CREI" width={52} height={52} /><span><b>CREI</b><small>{t("Centro de Reestructuración Emocional Integral", "Comprehensive Emotional Restructuring Center")}</small></span></div><p>{t("Orientación clínica, coordinación y acompañamiento en salud emocional y adicciones.", "Clinical guidance, coordination, and support for mental health and addiction.")}</p><div className={styles.footerLinks}><Link href={`/${lang}/aviso-de-privacidad`}>{t("Privacidad", "Privacy")}</Link><Link href={`/${lang}/contacto`}>{t("Contacto", "Contact")}</Link><a href="tel:+525530412552"><Phone size={14} /> 55 3041 2552</a></div></footer>
+      <footer className={styles.footer}><div className={styles.brand}><Image src="/logo-footer.png" alt="CREI" width={52} height={52} /><span><b>CREI</b><small>{t("Centro de Reestructuración Emocional Integral", "Comprehensive Emotional Restructuring Center")}</small></span></div><p>{t("Orientación clínica, coordinación y acompañamiento en salud emocional y adicciones.", "Clinical guidance, coordination, and support for mental health and addiction.")}</p><div className={styles.footerRight}><div className={styles.footerSocials} aria-label={t("Redes sociales de CREI", "CREI social media")}>{socialLinks.map((social) => <a key={social.name} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={`${t("Visitar", "Visit")} ${social.name}`}>{social.icon}</a>)}</div><div className={styles.footerLinks}><Link href={`/${lang}/aviso-de-privacidad`}>{t("Privacidad", "Privacy")}</Link><Link href={`/${lang}/contacto`}>{t("Contacto", "Contact")}</Link><a href="tel:+525530412552"><Phone size={14} /> 55 3041 2552</a></div></div></footer>
     </main>
   );
 }
