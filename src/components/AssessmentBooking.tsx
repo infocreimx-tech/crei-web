@@ -34,10 +34,6 @@ const MONDAY_TO_THURSDAY_TIMES = [
 
 const FRIDAY_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
-const CREI_OFFICE_ADDRESS =
-  "Sacramento 521, Insurgentes San Borja, Benito Juárez, 03100 Ciudad de México, CDMX";
-const CREI_OFFICE_MAP_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CREI_OFFICE_ADDRESS)}`;
-
 const inputClass =
   "mt-2 h-12 w-full rounded-xl border border-[#cfc4dc] bg-[#f8f5fb] px-4 text-sm text-[#302747] outline-none transition placeholder:text-[#91879a] focus:border-[#7258a8] focus:bg-white focus:ring-4 focus:ring-[#7258a8]/10";
 
@@ -174,8 +170,6 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           modality: "Modality",
           inPerson: "In person",
           video: "Video call",
-          office: "CREI office",
-          openMap: "Open in maps",
           videoLocation: "The access link will be sent when the appointment is confirmed.",
           reason: "What would you like us to know? (optional)",
           reasonPlaceholder: "Briefly tell us the reason for the assessment.",
@@ -213,8 +207,6 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
           modality: "Modalidad",
           inPerson: "Presencial",
           video: "Videollamada",
-          office: "Consultorio CREI",
-          openMap: "Abrir en mapas",
           videoLocation: "El enlace de acceso se enviará al confirmar la cita.",
           reason: "¿Qué te gustaría que supiéramos? (opcional)",
           reasonPlaceholder: "Cuéntanos brevemente el motivo de la valoración.",
@@ -373,11 +365,11 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
                     : copy.video}
                   {" · "}60 min
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[#675e70]">
-                  {confirmation.modalidad === "presencial"
-                    ? CREI_OFFICE_ADDRESS
-                    : copy.videoLocation}
-                </p>
+                {confirmation.modalidad === "videollamada" && (
+                  <p className="mt-3 text-sm leading-6 text-[#675e70]">
+                    {copy.videoLocation}
+                  </p>
+                )}
               </div>
               <button
                 type="button"
@@ -537,36 +529,14 @@ export default function AssessmentBooking({ lang }: { lang: "es" | "en" }) {
                       <Video className="h-4 w-4" /> {copy.video}
                     </button>
                   </div>
-                  <div className="mt-3 rounded-xl border border-[#d9cfe2] bg-[#f8f5fb] p-4">
-                    {modality === "presencial" ? (
-                      <div className="flex items-start gap-3">
-                        <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#7258a8]" />
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-[.12em] text-[#7258a8]">
-                            {copy.office}
-                          </p>
-                          <p className="mt-1 text-sm leading-6 text-[#4f4658]">
-                            {CREI_OFFICE_ADDRESS}
-                          </p>
-                          <a
-                            href={CREI_OFFICE_MAP_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-2 inline-flex text-xs font-bold text-[#7258a8] underline decoration-[#7258a8]/30 underline-offset-4"
-                          >
-                            {copy.openMap}
-                          </a>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-start gap-3">
-                        <Video className="mt-0.5 h-5 w-5 shrink-0 text-[#7258a8]" />
-                        <p className="text-sm leading-6 text-[#4f4658]">
-                          {copy.videoLocation}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  {modality === "videollamada" && (
+                    <div className="mt-3 flex items-start gap-3 rounded-xl border border-[#d9cfe2] bg-[#f8f5fb] p-4">
+                      <Video className="mt-0.5 h-5 w-5 shrink-0 text-[#7258a8]" />
+                      <p className="text-sm leading-6 text-[#4f4658]">
+                        {copy.videoLocation}
+                      </p>
+                    </div>
+                  )}
                 </fieldset>
 
                 <label className="block text-sm font-bold text-[#40364b]">
