@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const MEXICO_CITY_OFFSET = "-06:00";
-const CREI_OFFICE_ADDRESS =
-  "Sacramento 521, Insurgentes San Borja, Benito Juárez, 03100 Ciudad de México, CDMX";
 const MONDAY_TO_THURSDAY_TIMES = [
   "09:00",
   "10:00",
@@ -270,8 +268,7 @@ export async function POST(request: NextRequest) {
         inicio: inicio.toISOString(),
         fin: fin.toISOString(),
         modalidad,
-        ubicacion:
-          modalidad === "presencial" ? CREI_OFFICE_ADDRESS : "Videollamada",
+        ubicacion: modalidad === "presencial" ? "Presencial" : "Videollamada",
         zona_horaria: "America/Mexico_City",
         motivo: motivo || null,
         consentimiento_privacidad: true,

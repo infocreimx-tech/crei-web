@@ -35,7 +35,7 @@ alter table public.citas_valoracion
 update public.citas_valoracion
 set ubicacion = case
   when modalidad = 'presencial'
-    then 'Sacramento 521, Insurgentes San Borja, Benito Juárez, 03100 Ciudad de México, CDMX'
+    then 'Presencial'
   else 'Videollamada'
 end
 where ubicacion is null;
