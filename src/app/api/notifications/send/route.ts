@@ -1,63 +1,69 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import webpush from 'web-push';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import webpush from "web-push";
+import { THERAPIST_COOKIE, verifyTherapistSession } from "@/lib/therapistSession";
+import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const dynamic = "force-dynamic";
 
+function serverClient() {
+  const { url, adminKey } = getServerSupabaseConfig();
+  if (!adminKey) throw new Error("Falta configurar la clave privada de Supabase.");
+  return createClient(url, adminKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
 
+export async function POST(request: NextRequest) {
+  const session = verifyTherapistSession(request.cookies.get(THERAPIST_COOKIE)?.value);
+  if (!session) return NextResponse.json({ error: "Sesión clínica vencida." }, { status: 401 });
 
-export async function POST(req: Request) {
+  const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  if (!publicKey || !privateKey) {
+    return NextResponse.json({ error: "Las claves VAPID no están configuradas." }, { status: 503 });
+  }
+
   try {
-    const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-    const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY!;
-
-    webpush.setVapidDetails(
-      'mailto:infocreimx@gmail.com',
-      VAPID_PUBLIC_KEY,
-      VAPID_PRIVATE_KEY
-    );
-    const { title, body, url } = await req.json();
-
-    // Obtener todas las suscripciones de Supabase
+    webpush.setVapidDetails("mailto:infocreimx@gmail.com", publicKey, privateKey);
+    const supabase = serverClient();
     const { data: subscriptions, error } = await supabase
-      .from('push_subscriptions')
-      .select('*');
+      .from("eventos_importantes_suscripciones")
+      .select("id, endpoint, keys_auth, keys_p256dh, subscription")
+      .eq("usuario_id", Number(session.id))
+      .eq("active", true);
+    if (error) throw error;
 
-    if (error || !subscriptions) {
-      return NextResponse.json({ error: 'Error obteniendo suscripciones' }, { status: 500 });
+    let sent = 0;
+    for (const subscription of subscriptions || []) {
+      const auth = subscription.keys_auth || subscription.subscription?.keys?.auth;
+      const p256dh = subscription.keys_p256dh || subscription.subscription?.keys?.p256dh;
+      if (!subscription.endpoint || !auth || !p256dh) continue;
+      try {
+        await webpush.sendNotification(
+          { endpoint: subscription.endpoint, keys: { auth, p256dh } },
+          JSON.stringify({
+            title: "Notificaciones CREI activadas",
+            body: "Este dispositivo recibirá los recordatorios de Eventos importantes.",
+            url: "/es/portal-terapeutas/app/eventos-importantes",
+            tag: "crei-push-test",
+          }),
+        );
+        sent += 1;
+      } catch (caught) {
+        const pushError = caught as { statusCode?: number };
+        if (pushError.statusCode === 404 || pushError.statusCode === 410) {
+          await supabase
+            .from("eventos_importantes_suscripciones")
+            .update({ active: false, updated_at: new Date().toISOString() })
+            .eq("id", subscription.id);
+        }
+      }
     }
 
-    const payload = JSON.stringify({
-      title: title || 'Actualización CREI',
-      body: body || 'Tienes una nueva alerta en el portal',
-      url: url || '/es/app',
-    });
-
-    const sendPromises = subscriptions.map((sub) => {
-      const pushSubscription = {
-        endpoint: sub.endpoint,
-        keys: {
-          auth: sub.keys_auth,
-          p256dh: sub.keys_p256dh,
-        },
-      };
-      
-      return webpush.sendNotification(pushSubscription, payload).catch((err) => {
-        if (err.statusCode === 410 || err.statusCode === 404) {
-          // El endpoint expiró, removerlo de Supabase
-          return supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
-        }
-        console.error("Push send Error:", err);
-      });
-    });
-
-    await Promise.all(sendPromises);
-
-    return NextResponse.json({ success: true, sent: subscriptions.length });
-  } catch (e) {
-    console.error("Broadcast push error:", e);
-    return NextResponse.json({ error: 'Error enviando notificaciones' }, { status: 500 });
+    return NextResponse.json({ success: true, sent });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No fue posible enviar la notificación de prueba.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

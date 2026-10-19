@@ -7,10 +7,12 @@ import Link from "next/link";
 import { ArrowLeft, Maximize, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import TherapistClinicalWorkspace from "@/components/TherapistClinicalWorkspace";
+import PortalCalendarWorkspace from "@/components/PortalCalendarWorkspace";
 import { isSuperAdminRole } from "@/lib/portalRoles";
 
 const appNames: Record<string, string> = {
   calendario: "Calendario Clínico",
+  "eventos-importantes": "Eventos importantes",
   expediente: "Expediente de Pacientes",
   terapias: "Gestión Finanzas",
   busqueda: "Buscador Global",
@@ -20,6 +22,7 @@ const appNames: Record<string, string> = {
 
 const appAccents: Record<string, string> = {
   calendario: "#7c5cbf",
+  "eventos-importantes": "#b7791f",
   expediente: "#0369a1",
   terapias: "#9f86c0",
   busqueda: "#6b5e7c",
@@ -138,7 +141,12 @@ export default function IframeAppContainer() {
         </div>
 
         <button
-          onClick={() => window.open(appStaticUrl, "_blank")}
+          onClick={() => window.open(
+            appId === "eventos-importantes"
+              ? `/${lang}/portal-terapeutas/app/${appId}`
+              : appStaticUrl,
+            "_blank",
+          )}
           className="p-2 rounded-full transition-all hover:bg-white/10"
           style={{ color: accent, background: "rgba(255,255,255,0.05)", border: `1px solid rgba(159,134,192,0.3)` }}
           title="Abrir en pestaña nueva"
@@ -152,7 +160,9 @@ export default function IframeAppContainer() {
         {/* Glow ambient background behind the frame while loading */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full mix-blend-screen filter blur-[100px] opacity-10 pointer-events-none" style={{ background: accent }} />
 
-        {nativeClinicalMode ? (
+        {appId === "eventos-importantes" ? (
+          <PortalCalendarWorkspace />
+        ) : nativeClinicalMode ? (
           <TherapistClinicalWorkspace mode={nativeClinicalMode} />
         ) : (
           <>

@@ -23,6 +23,7 @@ const sb = createClient(supabaseUrl, supabaseKey);
 
 const apps = [
   { id: "calendario", name: "Calendario", desc: "Gestión de citas y agenda diaria.", icon: CalendarDays, accent: "#7c5cbf" },
+  { id: "eventos-importantes", name: "Eventos importantes", desc: "Zoom, actividades internas y recordatorios.", icon: BellRing, accent: "#b7791f" },
   { id: "expediente", name: "Expediente", desc: "Historial clínico de pacientes activos.", icon: FolderOpen, accent: "#0369a1" },
   { id: "terapias", name: "Terapias & Finanzas", desc: "Control de pagos y cortes financieros.", icon: Activity, accent: "#9f86c0" },
   { id: "busqueda", name: "Búsqueda Global", desc: "Buscador inteligente de pacientes.", icon: Search, accent: "#6b5e7c" },
