@@ -234,10 +234,15 @@ export default function PortalCalendarWorkspace() {
     setSaving(true);
     setError("");
     try {
+      const payload = {
+        ...draft,
+        start_at: new Date(draft.start_at).toISOString(),
+        end_at: new Date(draft.end_at).toISOString(),
+      };
       const response = await fetch("/api/portal-calendar", {
         method: editingId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingId ? { id: editingId, action: "save", payload: draft } : { payload: draft }),
+        body: JSON.stringify(editingId ? { id: editingId, action: "save", payload } : { payload }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "No fue posible guardar el evento.");

@@ -66,17 +66,24 @@ function normalizeParticipantIds(value: unknown, ownId: number, isAdmin: boolean
   return Array.from(new Set([ownId, ...ids]));
 }
 
+function parseEventDateTime(value: unknown) {
+  const raw = String(value || "").trim();
+  const hasExplicitTimezone = /(?:z|[+-]\d{2}:\d{2})$/i.test(raw);
+  return new Date(hasExplicitTimezone ? raw : `${raw}-06:00`);
+}
+
 function validateEvent(payload: Record<string, unknown>) {
   const title = String(payload.title || "").trim();
   const eventKind = payload.event_kind === "internal_event" ? "internal_event" : "zoom_meeting";
-  const startAt = new Date(String(payload.start_at || ""));
-  const endAt = new Date(String(payload.end_at || ""));
+  const startAt = parseEventDateTime(payload.start_at);
+  const endAt = parseEventDateTime(payload.end_at);
   const meetingUrl = String(payload.meeting_url || "").trim();
 
   if (title.length < 3) throw new Error("Escribe un título de al menos 3 caracteres.");
   if (Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) {
     throw new Error("Selecciona una fecha y un horario válidos.");
   }
+  if (startAt.getTime() <= Date.now()) throw new Error("La fecha de inicio debe ser futura.");
   if (endAt <= startAt) throw new Error("La hora de término debe ser posterior al inicio.");
 
   if (eventKind === "zoom_meeting") {
