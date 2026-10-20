@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import webpush from "web-push";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
+import { formatEventReminderOffset } from "@/lib/eventReminderOffsets";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -30,7 +31,15 @@ export async function POST(request: NextRequest) {
     webpush.setVapidDetails("mailto:infocreimx@gmail.com", publicKey, privateKey);
     const supabase = serverClient();
     const now = new Date().toISOString();
-    const { data: reminders, error: remindersError } = await supabase
+    const staleClaim = new Date(Date.now() - 5 * 60_000).toISOString();
+    const { error: staleClaimError } = await supabase
+      .from("eventos_importantes_recordatorios")
+      .update({ status: "pending", claimed_at: null, updated_at: now })
+      .eq("status", "processing")
+      .lt("claimed_at", staleClaim);
+    if (staleClaimError) throw staleClaimError;
+
+    const { data: dueReminders, error: remindersError } = await supabase
       .from("eventos_importantes_recordatorios")
       .select("id, evento_importante_id, usuario_id, minutes_before, attempts")
       .eq("status", "pending")
@@ -38,14 +47,17 @@ export async function POST(request: NextRequest) {
       .order("scheduled_for", { ascending: true })
       .limit(100);
     if (remindersError) throw remindersError;
-    if (!reminders?.length) return NextResponse.json({ success: true, processed: 0, sent: 0 });
+    if (!dueReminders?.length) return NextResponse.json({ success: true, processed: 0, sent: 0 });
 
-    const reminderIds = reminders.map((item) => item.id);
-    await supabase
+    const reminderIds = dueReminders.map((item) => item.id);
+    const { data: reminders, error: claimError } = await supabase
       .from("eventos_importantes_recordatorios")
       .update({ status: "processing", claimed_at: now, updated_at: now })
       .in("id", reminderIds)
-      .eq("status", "pending");
+      .eq("status", "pending")
+      .select("id, evento_importante_id, usuario_id, minutes_before, attempts");
+    if (claimError) throw claimError;
+    if (!reminders?.length) return NextResponse.json({ success: true, processed: 0, sent: 0 });
 
     const eventIds = Array.from(new Set(reminders.map((item) => item.evento_importante_id)));
     const userIds = Array.from(new Set(reminders.map((item) => Number(item.usuario_id))));
@@ -79,6 +91,7 @@ export async function POST(request: NextRequest) {
         !event
         || !["zoom_meeting", "internal_event"].includes(String(event.event_kind))
         || String(event.status).toLowerCase() === "cancelled"
+        || new Date(String(event.start_at)).getTime() <= Date.now()
       ) {
         await supabase
           .from("eventos_importantes_recordatorios")
@@ -103,7 +116,7 @@ export async function POST(request: NextRequest) {
             },
             JSON.stringify({
               title: "Recordatorio de evento importante",
-              body: `Tu actividad comienza en ${reminder.minutes_before} minutos.`,
+              body: `Tu actividad comienza en ${formatEventReminderOffset(Number(reminder.minutes_before))}.`,
               url: `/es/portal-terapeutas/app/eventos-importantes?evento=${event.id}`,
               tag: `crei-calendar-${event.id}-${reminder.minutes_before}`,
             }),
@@ -122,16 +135,44 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      await supabase
-        .from("eventos_importantes_recordatorios")
-        .update({
-          status: "sent",
-          sent_at: new Date().toISOString(),
-          attempts: Number(reminder.attempts || 0) + 1,
-          last_error: successfulForReminder ? null : lastError,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", reminder.id);
+      const updatedAt = new Date().toISOString();
+      if (successfulForReminder > 0) {
+        await supabase
+          .from("eventos_importantes_recordatorios")
+          .update({
+            status: "sent",
+            sent_at: updatedAt,
+            claimed_at: null,
+            attempts: Number(reminder.attempts || 0) + 1,
+            last_error: null,
+            updated_at: updatedAt,
+          })
+          .eq("id", reminder.id);
+      } else {
+        const retryAt = new Date(Date.now() + 2 * 60_000);
+        const eventStartsAt = new Date(String(event.start_at));
+        const nextAttempt = Number(reminder.attempts || 0) + 1;
+        const canRetry = userSubscriptions.length > 0 && nextAttempt < 3 && retryAt < eventStartsAt;
+        await supabase
+          .from("eventos_importantes_recordatorios")
+          .update(canRetry
+            ? {
+                status: "pending",
+                scheduled_for: retryAt.toISOString(),
+                claimed_at: null,
+                attempts: nextAttempt,
+                last_error: lastError || "No fue posible entregar la notificación.",
+                updated_at: updatedAt,
+              }
+            : {
+                status: "failed",
+                claimed_at: null,
+                attempts: nextAttempt,
+                last_error: lastError || "No fue posible entregar la notificación.",
+                updated_at: updatedAt,
+              })
+          .eq("id", reminder.id);
+      }
     }
 
     return NextResponse.json({ success: true, processed: reminders.length, sent });

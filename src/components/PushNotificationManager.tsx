@@ -27,6 +27,14 @@ async function saveSubscription(subscription: PushSubscription) {
   }
 }
 
+async function sendTestNotification() {
+  const response = await fetch("/api/notifications/send", { method: "POST" });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || Number(result.sent || 0) < 1) {
+    throw new Error(result.error || "La suscripción se guardó, pero no fue posible confirmar la entrega Push.");
+  }
+}
+
 export default function PushNotificationManager({
   promptOnMount = false,
   showControl = true,
@@ -138,9 +146,10 @@ export default function PushNotificationManager({
       }
 
       setIsSubscribed(true);
-      setShowPrompt(false);
-      setMessage("Recibirás los avisos de 30, 15 y 5 minutos en este dispositivo.");
       window.dispatchEvent(new CustomEvent("crei-push-subscription-change", { detail: { subscribed: true } }));
+      await sendTestNotification();
+      setShowPrompt(false);
+      setMessage("Prueba enviada. Recibirás avisos 1 día, 1 hora, 30, 15 y 5 minutos antes.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "No fue posible activar las alertas.");
       if (promptOnMount) setShowPrompt(true);
@@ -216,11 +225,11 @@ export default function PushNotificationManager({
             </div>
 
             <div className="space-y-5 p-7 text-[#392d48]">
-              <div className="grid grid-cols-3 gap-2">
-                {[30, 15, 5].map((minutes) => (
-                  <div key={minutes} className="rounded-2xl border border-[#e6ddeb] bg-[#faf8fc] p-3 text-center">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                {["1 día", "1 hora", "30 min", "15 min", "5 min"].map((label) => (
+                  <div key={label} className="rounded-2xl border border-[#e6ddeb] bg-[#faf8fc] p-3 text-center">
                     <Clock3 className="mx-auto h-4 w-4 text-[#7c5cbf]" />
-                    <b className="mt-2 block text-sm">{minutes} min</b>
+                    <b className="mt-2 block text-sm">{label}</b>
                     <span className="text-[10px] text-[#7d7187]">antes</span>
                   </div>
                 ))}

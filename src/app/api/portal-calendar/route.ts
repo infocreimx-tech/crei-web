@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { THERAPIST_COOKIE, verifyTherapistSession } from "@/lib/therapistSession";
 import { getServerSupabaseConfig } from "@/lib/serverSupabaseConfig";
 import { isAdministrativeRole } from "@/lib/portalRoles";
+import { EVENT_REMINDER_MINUTES } from "@/lib/eventReminderOffsets";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -131,7 +132,10 @@ async function replaceParticipantsAndReminders(
     .in("status", ["pending", "failed", "cancelled"]);
   if (deleteRemindersError) throw deleteRemindersError;
 
-  const offsets = [30, 15, 5];
+  const now = Date.now();
+  const offsets = EVENT_REMINDER_MINUTES.filter(
+    (minutesBefore) => startAt.getTime() - minutesBefore * 60_000 > now,
+  );
   const rows = participantIds.flatMap((usuarioId) =>
     offsets.map((minutesBefore) => ({
       evento_importante_id: eventId,
@@ -147,10 +151,12 @@ async function replaceParticipantsAndReminders(
     })),
   );
 
-  const { error: remindersError } = await supabase
-    .from("eventos_importantes_recordatorios")
-    .upsert(rows, { onConflict: "evento_importante_id,usuario_id,minutes_before" });
-  if (remindersError) throw remindersError;
+  if (rows.length) {
+    const { error: remindersError } = await supabase
+      .from("eventos_importantes_recordatorios")
+      .upsert(rows, { onConflict: "evento_importante_id,usuario_id,minutes_before" });
+    if (remindersError) throw remindersError;
+  }
 }
 
 export async function GET(request: NextRequest) {

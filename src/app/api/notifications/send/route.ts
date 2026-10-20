@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
           { endpoint: subscription.endpoint, keys: { auth, p256dh } },
           JSON.stringify({
             title: "Notificaciones CREI activadas",
-            body: "Este dispositivo recibirá los recordatorios de Eventos importantes.",
+            body: "Prueba correcta: recibirás avisos 1 día, 1 hora, 30, 15 y 5 minutos antes.",
             url: "/es/portal-terapeutas/app/eventos-importantes",
             tag: "crei-push-test",
           }),
